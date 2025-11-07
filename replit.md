@@ -37,17 +37,42 @@ The app follows clean architecture principles with clear separation:
 - **Forms**: React Hook Form 7.66
 - **Language**: TypeScript 5.9
 
-## Database Schema
-Key tables implemented:
-- `users` - User profiles and settings
-- `restaurants` - Restaurant listings
-- `bookings` - Table reservations
-- `reviews` - Ratings and reviews
-- `stories` - Time-limited restaurant stories
-- `favorites` - User's favorite restaurants
-- `menu_items` - Restaurant menu items
+## Database Schema (Version 2.0)
 
-All tables have Row Level Security (RLS) policies configured.
+The database migration is ready in `supabase/migrations/20251107_initial_schema.sql`.
+
+### Comprehensive Schema Features:
+- **30+ Production Tables** with optimized indexes
+- **Role-Based Access Control (RBAC)** with granular permissions
+- **Row Level Security (RLS)** policies on all tables
+- **Automated Triggers** for business logic
+- **Performance Views** for analytics
+- **Audit Logging** for compliance
+
+### Core Tables:
+- **users** - User profiles extending Supabase Auth
+- **roles & permissions** - RBAC system with 50+ permissions
+- **venues** - Restaurant listings with full details
+- **bookings** - Table reservations with confirmation codes
+- **reviews** - Ratings (food, service, ambiance) with photos
+- **menu_items** - Restaurant menus with allergens & nutrition
+
+### Advanced Features:
+- **Loyalty Program** - Points system with bronze/silver/gold/platinum tiers
+- **Premier Subscriptions** - Premium membership with Stripe integration
+- **Promotions & Offers** - Discount codes and special deals
+- **User Stories** - Time-limited content (Instagram-style)
+- **Notifications** - Multi-channel (email, push, SMS)
+- **Analytics** - Business intelligence and reporting
+- **Payment Methods** - Secure card storage via Stripe
+- **Venue Staff** - Team management with role assignments
+- **Search History** - Personalized recommendations
+- **Reports & Moderation** - Content flagging system
+- **Banned Users** - Security and compliance
+- **Audit Logs** - Complete activity tracking
+
+### To Apply Migration:
+See `supabase/README.md` and `supabase/MIGRATION_GUIDE.md` for detailed instructions.
 
 ## Environment Setup
 Required environment variables (configured via Replit Secrets):
@@ -93,3 +118,9 @@ None recorded yet.
     - Updated auth service to use Supabase Auth API for sign-up, sign-in, sign-out, and password reset
     - Added @lib path mapping to TypeScript configuration
     - Implemented cross-platform password reset with proper deep link scheme (jaw://)
+  - **Database Migration Ready:**
+    - Created comprehensive Supabase database schema (Version 2.0)
+    - 30+ production-ready tables with RBAC, RLS policies, triggers, and seed data
+    - Migration file: `supabase/migrations/20251107_initial_schema.sql`
+    - Complete documentation: `supabase/README.md` and `supabase/MIGRATION_GUIDE.md`
+    - Ready to apply via Supabase Dashboard SQL Editor
