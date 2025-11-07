@@ -1,25 +1,82 @@
 import { useState, useEffect } from 'react';
-import { User } from '@supabase/supabase-js';
+import { authService } from '@services/auth/auth.service';
+
+interface User {
+  id: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  userType: string;
+}
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    try {
+      const currentUser = await authService.getUser();
+      setUser(currentUser);
+    } catch (error) {
+      console.error('Error checking user:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
-    console.log('Sign up will be implemented with Replit Auth');
+    try {
+      setLoading(true);
+      const { user } = await authService.signUp(email, password, firstName, lastName);
+      setUser(user);
+    } catch (error) {
+      console.error('Sign up error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    console.log('Sign in will be implemented with Replit Auth');
+    try {
+      setLoading(true);
+      const { user } = await authService.signIn(email, password);
+      setUser(user);
+    } catch (error) {
+      console.error('Sign in error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signOut = async () => {
-    console.log('Sign out will be implemented with Replit Auth');
-    setUser(null);
+    try {
+      setLoading(true);
+      await authService.signOut();
+      setUser(null);
+    } catch (error) {
+      console.error('Sign out error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const resetPassword = async (email: string) => {
-    console.log('Reset password will be implemented with Replit Auth');
+    try {
+      setLoading(true);
+      await authService.resetPassword(email);
+    } catch (error) {
+      console.error('Reset password error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {

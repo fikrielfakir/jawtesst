@@ -10,6 +10,7 @@ export const storyStatusEnum = pgEnum('story_status', ['active', 'expired']);
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
   email: text('email').notNull().unique(),
+  password: text('password'),
   firstName: text('first_name'),
   lastName: text('last_name'),
   phone: text('phone'),
