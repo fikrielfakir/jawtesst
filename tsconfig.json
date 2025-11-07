@@ -13,6 +13,9 @@
       "@services/*": [
         "./src/services/*"
       ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
       "@hooks/*": [
         "./src/lib/hooks/*"
       ],
