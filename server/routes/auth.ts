@@ -6,7 +6,12 @@ import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required for authentication');
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 interface SignUpBody {
   email: string;
