@@ -30,6 +30,9 @@
       ],
       "@domain/*": [
         "./src/domain/*"
+      ],
+      "@shared/*": [
+        "./shared/*"
       ]
     }
   },
