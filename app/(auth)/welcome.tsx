@@ -47,7 +47,7 @@ export default function WelcomeScreen() {
               shadowOffset={{ width: 0, height: 4 }}
               shadowOpacity={1}
               shadowRadius={8}
-              onPress={() => router.push('/(auth)/sign-up')}
+              onPress={() => router.push('/(auth)/register-restaurant')}
             >
               <Text fontSize={16} fontWeight="600" color={colors.white}>
                 I'm an Owner

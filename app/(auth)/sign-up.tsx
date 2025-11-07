@@ -1,22 +1,32 @@
-import { useState } from 'react';
-import { Link, useRouter } from 'expo-router';
-import { YStack, XStack, Text, Button, Input, H2 } from 'tamagui';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Link, useRouter } from 'expo-router';
+import { authDesign } from '@constants/theme/authDesign';
+import { CustomInput } from '@components/auth/CustomInput';
+import { CustomButton } from '@components/auth/CustomButton';
+import { SocialButton } from '@components/auth/SocialButton';
 import { useAuth } from '@hooks/useAuth';
-import { Alert } from 'react-native';
 
 export default function SignUpScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const router = useRouter();
 
   const handleSignUp = async () => {
-    if (!email || !password || !firstName || !lastName) {
+    Keyboard.dismiss();
+    
+    if (!firstName || !lastName || !email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password.length < 8) {
+      Alert.alert('Error', 'Password must be at least 8 characters');
       return;
     }
 
@@ -32,75 +42,196 @@ export default function SignUpScreen() {
     }
   };
 
+  const handleSocialSignUp = (provider: 'google' | 'facebook') => {
+    Alert.alert('Coming Soon', `${provider} sign up will be available soon`);
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <YStack flex={1} padding="$4" backgroundColor="$background">
-        <H2 color="$color" marginBottom="$6">Create Account</H2>
-        
-        <YStack gap="$4">
-          <XStack gap="$2">
-            <YStack flex={1} gap="$2">
-              <Text color="$color">First Name</Text>
-              <Input
-                size="$4"
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView 
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.logoContainer}>
+          <Text style={styles.logo}>JAW</Text>
+        </View>
+
+        <View style={styles.headerContainer}>
+          <Text style={styles.title}>Sign Up Account</Text>
+          <Text style={styles.subtitle}>Enter your personal data to create your account.</Text>
+        </View>
+
+        <View style={styles.socialButtonsContainer}>
+          <SocialButton provider="google" onPress={() => handleSocialSignUp('google')} />
+          <View style={styles.socialButtonSpacer} />
+          <SocialButton provider="facebook" onPress={() => handleSocialSignUp('facebook')} />
+        </View>
+
+        <View style={styles.dividerContainer}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>Or</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <View style={styles.formContainer}>
+          <View style={styles.nameRow}>
+            <View style={styles.nameField}>
+              <CustomInput
+                label="First Name"
+                placeholder="eg.John"
                 value={firstName}
                 onChangeText={setFirstName}
-                placeholder="John"
+                autoCapitalize="words"
               />
-            </YStack>
-            <YStack flex={1} gap="$2">
-              <Text color="$color">Last Name</Text>
-              <Input
-                size="$4"
+            </View>
+            <View style={styles.nameFieldSpacer} />
+            <View style={styles.nameField}>
+              <CustomInput
+                label="Last Name"
+                placeholder="eg.Francisco"
                 value={lastName}
                 onChangeText={setLastName}
-                placeholder="Doe"
+                autoCapitalize="words"
               />
-            </YStack>
-          </XStack>
+            </View>
+          </View>
 
-          <YStack gap="$2">
-            <Text color="$color">Email</Text>
-            <Input
-              size="$4"
-              value={email}
-              onChangeText={setEmail}
-              placeholder="your@email.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </YStack>
+          <CustomInput
+            label="Email"
+            placeholder="eg.johnfran@gmail.com"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
 
-          <YStack gap="$2">
-            <Text color="$color">Password</Text>
-            <Input
-              size="$4"
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Create a password"
-              secureTextEntry
-            />
-          </YStack>
+          <CustomInput
+            label="Password"
+            placeholder="Enter your password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            icon="password"
+          />
 
-          <Button
-            size="$5"
-            backgroundColor="$primary"
-            color="white"
-            marginTop="$4"
+          <Text style={styles.passwordHint}>Must be at least 8 characters</Text>
+
+          <CustomButton
+            title="Sign Up"
             onPress={handleSignUp}
+            loading={loading}
             disabled={loading}
-          >
-            {loading ? 'Creating Account...' : 'Sign Up'}
-          </Button>
+          />
+        </View>
 
-          <XStack justifyContent="center" marginTop="$4">
-            <Text color="$color">Already have an account? </Text>
-            <Link href="/(auth)/sign-in" asChild>
-              <Text color="$primary" fontWeight="bold">Sign In</Text>
-            </Link>
-          </XStack>
-        </YStack>
-      </YStack>
+        <View style={styles.footerContainer}>
+          <Text style={styles.footerText}>Already have an account ? </Text>
+          <Link href="/(auth)/sign-in" asChild>
+            <TouchableOpacity>
+              <Text style={styles.footerLink}>Sign In</Text>
+            </TouchableOpacity>
+          </Link>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: authDesign.colors.background,
+  },
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: authDesign.spacing.paddingHorizontal,
+    paddingBottom: authDesign.spacing.paddingVertical,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: 32,
+    marginBottom: 32,
+  },
+  logo: {
+    fontSize: 48,
+    fontWeight: '700',
+    color: authDesign.colors.textPrimary,
+    letterSpacing: 4,
+  },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  title: {
+    fontSize: authDesign.typography.title.size,
+    fontWeight: authDesign.typography.title.weight,
+    color: authDesign.colors.textPrimary,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: authDesign.typography.subtitle.size,
+    fontWeight: authDesign.typography.subtitle.weight,
+    color: authDesign.colors.textSecondary,
+    textAlign: 'center',
+  },
+  socialButtonsContainer: {
+    flexDirection: 'row',
+    marginBottom: 24,
+  },
+  socialButtonSpacer: {
+    width: 12,
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: authDesign.colors.border,
+  },
+  dividerText: {
+    marginHorizontal: 16,
+    fontSize: authDesign.typography.caption.size,
+    color: authDesign.colors.textSecondary,
+  },
+  formContainer: {
+    marginBottom: 24,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    marginBottom: 0,
+  },
+  nameField: {
+    flex: 1,
+  },
+  nameFieldSpacer: {
+    width: 12,
+  },
+  passwordHint: {
+    fontSize: authDesign.typography.caption.size,
+    color: authDesign.colors.textSecondary,
+    marginTop: -16,
+    marginBottom: 16,
+  },
+  footerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  footerText: {
+    fontSize: authDesign.typography.caption.size,
+    color: authDesign.colors.textSecondary,
+  },
+  footerLink: {
+    fontSize: authDesign.typography.link.size,
+    fontWeight: authDesign.typography.link.weight,
+    color: authDesign.colors.textPrimary,
+  },
+});
