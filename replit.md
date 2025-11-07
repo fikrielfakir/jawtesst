@@ -82,4 +82,7 @@ Features ready to be built:
 None recorded yet.
 
 ## Recent Changes
-- **2025-11-07**: Initial project setup and authentication implementation
+- **2025-11-07**: 
+  - Initial project setup and authentication implementation
+  - Replaced "JAW" text with jwa-logo.png image across all authentication screens (sign-in, sign-up, register-restaurant, welcome)
+  - Logo displays at appropriate sizes for each screen (120x60 for sign-in/sign-up, 100x50 for register-restaurant header, 150x75 for welcome)
