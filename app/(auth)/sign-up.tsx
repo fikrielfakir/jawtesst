@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
 import { authDesign } from '@constants/theme/authDesign';
+import { gradients } from '@constants/theme/colors';
 import { CustomInput } from '@components/auth/CustomInput';
 import { CustomButton } from '@components/auth/CustomButton';
 import { SocialButton } from '@components/auth/SocialButton';
@@ -49,9 +50,9 @@ export default function SignUpScreen() {
 
   return (
     <LinearGradient
-      colors={['#4C3472', '#2F2342', '#0D0713']}
-      start={{ x: 0.5, y: 0 }}
-      end={{ x: 0.5, y: 1 }}
+      colors={[...gradients.auth]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
       style={styles.gradient}
     >
       <SafeAreaView style={styles.safeArea} edges={['top']}>

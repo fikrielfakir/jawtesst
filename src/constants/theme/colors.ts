@@ -34,3 +34,7 @@ export const colors = {
     blackBlur: 'rgba(0, 0, 0, 0.5)',
   },
 } as const;
+
+export const gradients = {
+  auth: ['#47306F', '#2E214D', '#0A050F'],
+} as const;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Button, YStack, XStack, Image } from 'tamagui';
 import { LinearGradient } from '@tamagui/linear-gradient';
-import { colors } from '@constants/theme/colors';
+import { colors, gradients } from '@constants/theme/colors';
 import { spacing, borderRadius } from '@constants/theme/spacing';
 import { Pressable } from 'react-native';
 
@@ -26,7 +26,9 @@ export function OnboardingScreen({
 }: OnboardingScreenProps) {
   return (
     <LinearGradient
-      colors={['#2B0D57', '#0F062A']}
+      colors={[...gradients.auth]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
       style={{ flex: 1 }}
     >
       <YStack flex={1} paddingTop={60} paddingBottom={40}>

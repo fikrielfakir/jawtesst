@@ -7,11 +7,15 @@ import { eq } from 'drizzle-orm';
 
 const router = Router();
 
-if (!process.env.JWT_SECRET) {
+const JWT_SECRET = process.env.JWT_SECRET ?? (process.env.NODE_ENV !== 'production' ? 'dev-only-secret-change-me' : undefined);
+
+if (!JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is required for authentication');
 }
 
-const JWT_SECRET = process.env.JWT_SECRET;
+if (!process.env.JWT_SECRET && process.env.NODE_ENV !== 'production') {
+  console.warn('⚠️  WARNING: Using development-only JWT_SECRET. Set JWT_SECRET environment variable for production!');
+}
 
 interface SignUpBody {
   email: string;
