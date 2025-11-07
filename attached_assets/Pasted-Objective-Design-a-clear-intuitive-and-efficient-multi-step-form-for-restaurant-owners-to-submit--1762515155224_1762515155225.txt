@@ -1,0 +1,164 @@
+Objective: Design a clear, intuitive, and efficient multi-step form for restaurant owners to submit a registration request. The form must guide the user through providing essential business information with minimal friction.
+
+Overall Aesthetic:
+
+Style: Clean, Professional, and Form-Focused.
+
+Mood: Trustworthy, straightforward, and professional.
+
+Color Palette:
+
+Background: Light Grey (#F9F9F9 or #FFFFFF).
+
+Primary Color: A color that inspires trust and action (e.g., Forest Green #0A7A4B, Royal Blue #2563EB).
+
+Text Color:
+
+Headings/Labels: Near-Black (#1F2937).
+
+Body/Placeholder: Dark Grey (#6B7280).
+
+Border: Light Grey (#D1D5DB).
+
+Typography: Use a highly legible sans-serif font (e.g., Inter, SF Pro Text).
+
+Font Weight Strategy: Use font weights strategically to create a clear hierarchy (e.g., Semibold for labels, Regular for input text).
+
+Detailed Layout & Specifications
+1. Header Section
+Position: Top of the scrollable content area.
+
+Content:
+
+Title: "Register Restaurant"
+
+Text Size: 26pt (Bold)
+
+Color: #1F2937 (Near-Black)
+
+Alignment: Left-aligned.
+
+Padding: 24pt from the top and sides.
+
+Subtitle: "Enter your restaurant details to submit a request"
+
+Position: Directly below the main title.
+
+Text Size: 16pt (Regular)
+
+Color: #6B7280 (Dark Grey)
+
+Alignment: Left-aligned.
+
+2. Form Fields Section
+Position: Below the header, in a scrollable container if necessary.
+
+Layout: All form fields should be stacked vertically with consistent spacing.
+
+General Field Structure:
+
+Label: e.g., "Restaurant Name"
+
+Text Size: 14pt (Semibold)
+
+Color: #1F2937
+
+Spacing: 8pt margin below the label.
+
+Input Field Container:
+
+Height: 50pt
+
+Background: White (#FFFFFF)
+
+Border: 1pt solid #D1D5DB
+
+Corner Radius: 8pt
+
+Padding: 0pt 12pt (horizontal padding for text).
+
+Placeholder Text: e.g., "eg Romanes"
+
+Text Size: 16pt (Regular)
+
+Color: #9CA3AF (Medium Grey)
+
+Input Text (User Typing):
+
+Text Size: 16pt (Regular)
+
+Color: #1F2937 (Near-Black)
+
+Specific Field Behaviors:
+
+"Type" Field ("Select Type"): This should be a dropdown selector. The placeholder "Select Type" should be in the medium grey placeholder color. Tapping it should open a modal or action sheet with options like "Fine Dining," "Casual," "Cafe," "Fast Food," etc.
+
+"About your business" Field: This should be a multi-line text input.
+
+Height: 100pt (to allow for multiple lines of text).
+
+Vertical Alignment: Text should align to the top.
+
+Divider Line ("---"):
+
+Position: After the last form field ("About your business"), before the submit button.
+
+Style: 1pt solid #E5E7EB.
+
+Margin: 24pt top and bottom.
+
+3. Action Section
+Position: Below the form fields and divider, fixed to the bottom if the form is long, or static if short.
+
+Content:
+
+"Submit" Button:
+
+Style: Full-width, solid button.
+
+Height: 50pt
+
+Background Color: Primary Color (e.g., Forest Green #0A7A4B).
+
+Corner Radius: 8pt
+
+Text Label: "Submit"
+
+Text Size: 17pt (Semibold)
+
+Text Color: White (#FFFFFF)
+
+Positioning: It should have a margin of 16pt from the sides and 24pt from the bottom (or bottom safe area).
+
+Additional Design Details & Requirements
+Interaction & Feedback States:
+
+Input Field Focus State: When a user taps on a field, the border should change to the Primary Color (e.g., #0A7A4B) and thicken to 2pt.
+
+Input Field Error State: (For future validation) Border color changes to Red (#EF4444), and a red error message appears below the field in 12pt text.
+
+Button States:
+
+Default: As described.
+
+Pressed: Background color darkens by 15% (e.g., #06603E).
+
+Disabled: Background color changes to #D1D5DB and text color to #9CA3AF. This state is used before all required fields are valid.
+
+Spacing:
+
+The vertical gap between each form field group (Label + Input) should be 24pt.
+
+Keyboard Considerations:
+
+The "Phone" field should trigger a numeric keypad.
+
+The "Email" field should trigger an email-optimized keyboard (with '@' and '.').
+
+Accessibility:
+
+All interactive elements must have a minimum touch target of 44x44pt.
+
+Ensure all text has a contrast ratio of at least 4.5:1 against its background.
+
+Form labels should be programmatically associated with their input fields for screen readers.
