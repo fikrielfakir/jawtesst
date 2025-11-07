@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Keyboard, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
@@ -60,7 +60,11 @@ export default function SignInScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.logoContainer}>
-            <Text style={styles.logo}>JAW</Text>
+            <Image
+              source={require('@assets/jwa-logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
           </View>
 
           <View style={styles.headerContainer}>
@@ -166,10 +170,8 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   logo: {
-    fontSize: 48,
-    fontWeight: '700',
-    color: authDesign.colors.textPrimary,
-    letterSpacing: 4,
+    width: 120,
+    height: 60,
   },
   headerContainer: {
     alignItems: 'center',

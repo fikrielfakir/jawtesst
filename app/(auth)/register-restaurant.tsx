@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Keyboard, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -74,7 +74,11 @@ export default function RegisterRestaurantScreen() {
             <ChevronLeft size={28} color={authDesign.colors.textPrimary} />
           </TouchableOpacity>
           <View style={styles.logoContainer}>
-            <Text style={styles.logo}>JAW</Text>
+            <Image
+              source={require('@assets/jwa-logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
           </View>
           <View style={styles.backButtonPlaceholder} />
         </View>
@@ -196,10 +200,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: authDesign.colors.textPrimary,
-    letterSpacing: 4,
+    width: 100,
+    height: 50,
   },
   container: {
     flex: 1,

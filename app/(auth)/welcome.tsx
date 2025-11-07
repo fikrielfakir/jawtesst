@@ -1,5 +1,6 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image } from 'react-native';
 import { YStack, Button, Text, View } from 'tamagui';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from '@tamagui/linear-gradient';
@@ -16,16 +17,12 @@ export default function WelcomeScreen() {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <YStack flex={1} paddingHorizontal={spacing.m} justifyContent="center" alignItems="center" gap={spacing.xxl}>
-          <View marginTop={120}>
-            <Text
-              fontSize={48}
-              fontWeight="bold"
-              color={colors.white}
-              letterSpacing={2}
-              textAlign="center"
-            >
-              JAW
-            </Text>
+          <View marginTop={120} alignItems="center">
+            <Image
+              source={require('@assets/jwa-logo.png')}
+              style={{ width: 150, height: 75, marginBottom: spacing.m }}
+              resizeMode="contain"
+            />
             <Text
               fontSize={28}
               fontWeight="bold"
