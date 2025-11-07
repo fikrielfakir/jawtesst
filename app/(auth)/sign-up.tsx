@@ -8,6 +8,7 @@ import { gradients } from '@constants/theme/colors';
 import { CustomInput } from '@components/auth/CustomInput';
 import { CustomButton } from '@components/auth/CustomButton';
 import { SocialButton } from '@components/auth/SocialButton';
+import { ChevronLeft } from '@tamagui/lucide-icons';
 import { useAuth } from '@hooks/useAuth';
 
 export default function SignUpScreen() {
@@ -56,19 +57,30 @@ export default function SignUpScreen() {
       style={styles.gradient}
     >
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <ScrollView 
-          style={styles.container}
-          contentContainerStyle={styles.contentContainer}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.logoContainer}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <ChevronLeft size={28} color={authDesign.colors.textPrimary} />
+          </TouchableOpacity>
+          <View style={styles.logoContainerHeader}>
             <Image
               source={require('@assets/jwa-logo.png')}
               style={styles.logo}
               resizeMode="contain"
             />
           </View>
+          <View style={styles.backButtonPlaceholder} />
+        </View>
+
+        <ScrollView 
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
 
           <View style={styles.headerContainer}>
             <Text style={styles.title}>Sign Up Account</Text>
@@ -159,6 +171,25 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: authDesign.spacing.paddingHorizontal,
+    paddingVertical: 16,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  backButtonPlaceholder: {
+    width: 40,
+  },
+  logoContainerHeader: {
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
   },
@@ -172,8 +203,8 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   logo: {
-    width: 120,
-    height: 60,
+    width: 100,
+    height: 50,
   },
   headerContainer: {
     alignItems: 'center',

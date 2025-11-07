@@ -15,6 +15,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@supabase/supabase-js": "^2.80.0",
     "@tamagui/animations-react-native": "^1.136.1",
     "@tamagui/config": "^1.136.1",
     "@tamagui/core": "^1.136.1",
