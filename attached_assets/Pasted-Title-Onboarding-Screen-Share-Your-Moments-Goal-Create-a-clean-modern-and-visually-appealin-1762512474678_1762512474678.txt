@@ -1,0 +1,119 @@
+Title: Onboarding Screen – “Share Your Moments”
+
+Goal: Create a clean, modern, and visually appealing onboarding screen for a mobile app. Focus on clarity, hierarchy, and smooth onboarding flow.
+
+✅ Screen Layout
+
+Background:
+
+Vertical gradient from #2B0D57 (top) to #0F062A (bottom).
+
+Smooth fade to give a premium, modern look.
+
+Top Section:
+
+Time, status icons at the very top (standard iOS/Android notch layout).
+
+Skip button on the top-right corner:
+
+Font: Medium, 16px
+
+Color: White (#FFFFFF)
+
+Tappable area: Minimum 44×44 px
+
+Positioned with 20px horizontal padding and 10px top margin.
+
+✅ Logo Area
+
+App Logo centered horizontally.
+
+Margin-top: 80–100px from top safe-area.
+
+Logo height: 40–50px.
+
+Full white color (#FFFFFF).
+
+✅ Main Title & Subtitle
+
+Title Text:
+
+“Share your moments with reviews, photos, and videos”
+
+Font: Bold, 22–24px
+
+Color: White (#FFFFFF)
+
+Line-height: 130%
+
+Width: Max 80% of screen
+
+Center-aligned
+
+Vertical spacing: 20px below logo
+
+✅ Illustration Area
+
+Illustration centered horizontally.
+
+Size: approx. 220–260px width, proportional height.
+
+Vertical spacing: 35–45px below title text.
+
+✅ Pagination Dots
+
+Location: Centered horizontally under the illustration.
+
+Spacing: 20–25px below illustration.
+
+Dot size:
+
+Inactive: 6px
+
+Active: 8px
+
+Colors:
+
+Active: #A071FF
+
+Inactive: #C5B1F7 (30% opacity)
+
+✅ “Next” Button
+
+Position:
+
+Fixed at bottom with 30–40px margin above safe-area.
+
+Dimensions:
+
+Width: 85% of screen
+
+Height: 52–56px
+
+Border radius: 14–18px
+
+Button Background:
+
+Solid violet: #793EF5 / #7A45E5
+
+Text:
+
+“Next”
+
+Font: Semi-Bold
+
+Size: 18px
+
+Color: White (#FFFFFF)
+
+✅ Spacing and Alignment
+
+Every element is center-aligned.
+
+All vertical spacing uses a rhythm of 8px increments (8 / 16 / 24 / 32).
+
+Maintain safe-area padding on top and bottom.
+
+✅ Final Prompt (Copy-Paste Ready for AI Design Tools)
+
+“Design a modern onboarding mobile screen with a dark purple gradient background. Place a ‘Skip’ button at the top-right with 16px medium white text and 20px padding. Center the app logo near the top, followed by a bold 24px white headline saying ‘Share your moments with reviews, photos, and videos’. Add a clean illustration centered below the text, sized around 240px width. Under the illustration, include four pagination dots, with the active dot in #A071FF and the inactive dots in semi-transparent white. At the bottom center, add a full-width rounded button (85% width, 56px height, 16px corner radius) with a purple background (#7A45E5) and white 18px semi-bold text labeled ‘Next’. Use balanced spacing, center alignment, and smooth vertical rhythm across the layout.”
