@@ -1,0 +1,2051 @@
+Design a modern, dark-themed restaurant discovery and booking mobile application called "JAW" that connects diners with restaurants and allows restaurant owners to manage their business. The app features a sophisticated purple and dark color scheme with smooth, contemporary UI elements.
+
+Design System Foundation
+Color Palette
+Primary Colors:
+- Primary Purple: #6B5CE7 (main brand, buttons, active states)
+- Dark Purple: #3D3A5C (card backgrounds, secondary surfaces)
+- Deep Black Purple: #1A1625 (main background)
+- Gradient Background: Linear gradient from #2D2640 to #1A1625
+
+Accent Colors:
+- White: #FFFFFF (primary text, icons)
+- Light Gray: #E0E0E0 (secondary text)
+- Medium Gray: #8B8B8B (tertiary text, placeholders)
+- Dark Gray: #4A4A4A (borders, dividers)
+
+Semantic Colors:
+- Success Green: #4CAF50 (approved status, positive actions)
+- Warning Red: #E53935 (cancel, delete, errors)
+- Gold Yellow: #FFD700 (ratings, stars)
+- Info Blue: #2196F3 (notifications, information)
+
+Overlay Colors:
+- Black Overlay: rgba(0, 0, 0, 0.6) (image overlays)
+- Purple Overlay: rgba(107, 92, 231, 0.1) (hover states)
+Typography System
+Font Family:
+- Primary: Poppins (headings, buttons, important text)
+- Secondary: Inter (body text, descriptions)
+- Fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif
+
+Font Sizes & Weights:
+- H1: 32px, Bold (700) - Main headers
+- H2: 28px, Bold (700) - Section headers
+- H3: 24px, SemiBold (600) - Card titles
+- H4: 20px, SemiBold (600) - Subsection headers
+- H5: 18px, SemiBold (600) - List headers
+- Body Large: 16px, Regular (400) - Primary body text
+- Body Medium: 15px, Regular (400) - Standard text
+- Body Small: 14px, Regular (400) - Secondary text
+- Caption: 13px, Regular (400) - Helper text
+- Small Caption: 12px, Regular (400) - Timestamps, labels
+- Tiny: 11px, Regular (400) - Bottom nav labels
+
+Line Heights:
+- Headings: 1.2-1.3
+- Body text: 1.5-1.6
+- Captions: 1.4
+Spacing System
+Base Unit: 4px (use multiples)
+
+Common Spacing:
+- XXS: 4px (tight spacing)
+- XS: 8px (compact elements)
+- S: 12px (small gaps)
+- M: 16px (standard spacing) - DEFAULT
+- L: 20px (comfortable spacing)
+- XL: 24px (section spacing)
+- XXL: 32px (large sections)
+- XXXL: 48px (major sections)
+
+Screen Padding:
+- Horizontal: 16px (standard)
+- Vertical: 20px (standard)
+- Bottom safe area: 24px (for bottom nav)
+Border Radius System
+- Small: 8px (chips, tags)
+- Medium: 12px (cards, inputs)
+- Large: 16px (large cards, modals)
+- X-Large: 24px (buttons with emphasis)
+- Circle: 50% (avatars, circular buttons)
+- Pill: 999px (pill-shaped buttons)
+Shadow System
+- Light: 0 2px 4px rgba(0, 0, 0, 0.1)
+- Medium: 0 4px 8px rgba(0, 0, 0, 0.15)
+- Heavy: 0 8px 16px rgba(0, 0, 0, 0.2)
+- Card: 0 4px 12px rgba(0, 0, 0, 0.25)
+- Float: 0 8px 24px rgba(0, 0, 0, 0.3)
+
+Screen Designs - Detailed Specifications
+1. ONBOARDING FLOW (4 Screens)
+Screen 1: Discover Perfect Vibe
+Purpose: Introduce app value proposition - finding restaurants for any occasion
+
+Layout:
+- Status Bar: 10:56, signal icons (white)
+- Skip Button: 
+  - Position: Top right, 16px from edge
+  - Text: "Skip", 14px, white, Regular
+  - Tap area: 44x44px
+
+- Logo:
+  - Position: Top center, 48px from top
+  - Text: "JAW" (stylized brand logo)
+  - Font: Custom bold, 36px, white
+  - Letter spacing: 2px
+
+- Illustration Container:
+  - Position: Center, 60px below logo
+  - Size: 300x300px
+  - Content: Illustration of dining scene with purple tones
+  - Background: Circular gradient backdrop, purple to transparent
+
+- Heading:
+  - Position: 40px below illustration
+  - Text: "Discover the perfect vibe for every occasion"
+  - Font: 24px, SemiBold, white
+  - Alignment: Center
+  - Line height: 32px
+  - Max width: 280px
+
+- Next Button:
+  - Position: 32px from bottom (above safe area)
+  - Width: 90% (340px on 375px screen)
+  - Height: 52px
+  - Background: #6B5CE7
+  - Border radius: 26px (pill shape)
+  - Text: "Next", 16px, SemiBold, white
+  - Shadow: 0 4px 12px rgba(107, 92, 231, 0.3)
+
+Background: 
+- Linear gradient: #2D2640 (top) to #1A1625 (bottom)
+Screens 2-4: Similar Layout, Different Content
+Screen 2: "Share your moments with reviews, photos, and videos"
+- Illustration: Social sharing theme (people with phones)
+- Colors: Warm orange/yellow tones
+
+Screen 3: "Easily grow and promote all your businesses"
+- Illustration: Business growth theme (plants, upward arrows)
+- Colors: Green nature tones
+
+Screen 4: "Book a table and create lasting memories"
+- Illustration: Dining couple theme (romantic setting)
+- Colors: Blue serene tones
+
+All maintain same layout structure and button positioning
+
+2. WELCOME & AUTHENTICATION SCREENS
+Welcome Screen
+Purpose: Entry point - choose user type
+
+Layout:
+- Logo Section:
+  - Position: Top center, 120px from top
+  - Logo: "JAW", 48px, Bold, white
+  - Tagline: "Welcome to JAW", 28px, Bold, white, 16px below logo
+
+- Primary Button (Owner):
+  - Position: Center screen, 200px from top
+  - Width: 85% (320px)
+  - Height: 52px
+  - Background: #6B5CE7
+  - Text: "I'm an Owner", 16px, SemiBold, white
+  - Border radius: 12px
+  - Icon: Small building icon, 20px, left of text
+  - Shadow: Medium
+
+- Secondary Link (User):
+  - Position: 16px below owner button
+  - Width: 85%
+  - Height: 52px
+  - Background: Transparent
+  - Border: 2px solid rgba(255, 255, 255, 0.3)
+  - Text: "I'm a User", 16px, SemiBold, white
+  - Border radius: 12px
+  - Icon: User icon, 20px, left of text
+
+Background: Dark gradient with subtle pattern
+Sign Up Screen
+Purpose: New user registration
+
+Header:
+- Back arrow: Top left, 24px icon, 16px from edge
+- Title: "Sign Up Account", 24px, Bold, centered
+- Subtitle: "Enter your personal data to create your account", 13px, gray, centered
+
+Social Auth Buttons:
+- Position: 100px from top
+- Layout: Horizontal, 2 buttons side by side
+- Gap: 12px between buttons
+- Each button:
+  - Width: 48% of container
+  - Height: 48px
+  - Background: #2D2640
+  - Border radius: 12px
+  - Icon: Google/Facebook logo, 24px
+  - Text: "Google"/"Facebook", 14px, white
+  - Icon-text gap: 8px
+
+Divider:
+- Position: 24px below social buttons
+- Text: "or", 14px, gray, centered
+- Lines: 1px gray, extending left/right
+
+Input Fields (Vertical Stack, 16px gap):
+1. First Name:
+   - Height: 52px
+   - Background: #2D2640
+   - Border: 1px solid #4A4A4A
+   - Border radius: 12px
+   - Placeholder: "First Name", 14px, gray
+   - Padding: 16px
+   - Icon: User icon, 20px, left side
+
+2. Last Name: (same styling)
+
+3. Email:
+   - Icon: Envelope, 20px
+   - Keyboard type: Email
+
+4. Phone:
+   - Icon: Phone, 20px
+   - Prefix: Country code selector
+   - Keyboard type: Phone
+
+5. Password:
+   - Icon: Lock, 20px, left
+   - Toggle: Eye icon, 20px, right
+   - Secure entry: Yes
+
+6. Confirm Password: (same as password)
+
+Checkbox:
+- Position: 16px below last input
+- Size: 20x20px, rounded 4px
+- Border: 1px purple when unchecked
+- Background: Purple when checked, white checkmark
+- Label: "I have read and agree to the Terms", 13px, white
+- Link: "Terms" underlined, purple
+
+Sign Up Button:
+- Position: 24px below checkbox
+- Width: 100%
+- Height: 52px
+- Background: #6B5CE7
+- Text: "Sign Up", 16px, SemiBold, white
+- Border radius: 12px
+
+Footer Text:
+- Position: 24px below button
+- Text: "Already have an account? Sign In", 13px, centered
+- "Sign In" in purple, clickable
+Sign In Screen
+Purpose: Existing user login
+
+Similar layout to Sign Up, with:
+
+Fewer Fields:
+1. Email (with icon)
+2. Password (with toggle)
+
+Additional Elements:
+- "Remember me" checkbox (left aligned)
+- "Forgot Password?" link (right aligned, purple)
+- Both on same row, 16px below password field
+
+Sign In Button:
+- Same styling as Sign Up button
+- Text: "Sign In"
+
+Footer:
+- "Don't have an account? Sign Up"
+
+Alternative: Fingerprint icon option shown at bottom
+Email Verification Screen
+Purpose: OTP verification
+
+Layout:
+- Back arrow: Top left
+- Logo: "JAW", centered, 32px from top
+
+Icon:
+- Position: Center, 120px from top
+- Type: Mail envelope icon
+- Size: 80px
+- Color: Purple with white details
+- Background circle: Light purple, 120px diameter
+
+Heading:
+- Position: 32px below icon
+- Text: "Verify Your Email to", 22px, SemiBold, white, centered
+- Subtext: "Enter the 6 digit code", 14px, gray, centered, 8px below
+
+OTP Input:
+- Position: 48px below heading
+- Layout: 6 boxes in horizontal row
+- Each box:
+  - Size: 48x48px
+  - Background: #2D2640
+  - Border: 2px solid #4A4A4A (inactive), purple (active/filled)
+  - Border radius: 12px
+  - Text: Single digit, 24px, white, centered
+  - Gap: 12px between boxes
+
+Continue Button:
+- Position: 40px below OTP
+- Width: 90%
+- Height: 52px
+- Background: #6B5CE7
+- Text: "Continue", 16px, SemiBold, white
+- Border radius: 12px
+
+Footer Link:
+- Position: 16px below button
+- Text: "Didn't get code receive any code? Resend Code", 13px
+- "Resend Code" in purple, clickable
+Forgot Password Screen
+Purpose: Password reset initiation
+
+Elements:
+- Fingerprint icon: 80px, centered, purple
+- Heading: "Forgot Your Password and Continue", 22px, centered
+- Subtext: "Don't worry! It happens.", 14px, gray
+
+Email Input:
+- Same styling as other input fields
+- Placeholder: "Enter your email"
+
+Submit Button:
+- Text: "Submit Now"
+- Full width, purple background
+
+Back Link:
+- Arrow + "Back to Sign In", 14px, centered
+- 24px below button
+Reset Password Screen
+Purpose: Set new password
+
+Elements:
+- Email verification icon (centered)
+- Heading: "Enter Your New Password"
+- Two password fields:
+  1. "New Password"
+  2. "Confirm Password"
+- Both with eye toggle icons
+- Confirm button: Purple, "Confirm"
+- Cancel button: Gray, transparent background
+
+3. MAIN APP SCREENS
+Home/Discovery Feed
+Purpose: Browse and discover restaurants
+
+Header:
+- Logo: "JAW", top left, 24px, white
+- Notifications: Bell icon, top right, 24px, badge if unread
+
+Search Bar:
+- Position: 16px below header
+- Width: Calc(100% - 64px - 32px) [leaves room for filter]
+- Height: 44px
+- Background: #2D2640
+- Border radius: 22px
+- Icon: Search icon, 20px, left, 16px padding
+- Placeholder: "Search", 14px, gray
+- Text color: White
+
+Filter Button:
+- Position: Right of search bar, 8px gap
+- Size: 44x44px
+- Background: #2D2640
+- Border radius: 22px
+- Icon: Sliders icon, 20px, purple
+
+Restaurant Cards (Vertical Scroll):
+- Position: 16px below search
+- Gap: 16px between cards
+
+Card Structure:
+- Width: 100% (with 16px side margins)
+- Total height: 280px
+- Border radius: 16px
+- Shadow: 0 4px 12px rgba(0, 0, 0, 0.25)
+- Overflow: Hidden
+
+Image Section:
+- Height: 180px
+- Width: 100%
+- Object fit: Cover
+- Gradient overlay: Linear, transparent to rgba(0,0,0,0.3) bottom
+
+Favorite Button (on image):
+- Position: Top right, 12px from edges
+- Size: 36x36px
+- Background: rgba(0, 0, 0, 0.5), blur effect
+- Border radius: 18px
+- Icon: Heart, 20px, white (filled if favorited)
+
+Info Section (100px height):
+- Padding: 12px
+- Background: #2D2640
+
+Restaurant Name:
+- Font: 18px, SemiBold, white
+- Margin bottom: 4px
+- Max lines: 1, ellipsis
+
+Rating Row:
+- Layout: Horizontal
+- Star icons: 5 stars, 16px each, gold
+- Rating number: "4.5", 14px, white, 4px left margin
+- Review count: "(120)", 13px, gray, 4px left margin
+
+Location Row:
+- Margin top: 6px
+- Icon: Pin, 16px, gray
+- Text: Address, 13px, gray, 4px left margin
+- Max lines: 1, ellipsis
+
+Tags Row:
+- Margin top: 8px
+- Layout: Horizontal scroll
+- Each tag:
+  - Height: 24px
+  - Padding: 6px 12px
+  - Background: rgba(107, 92, 231, 0.2)
+  - Border radius: 12px
+  - Text: 11px, purple, Medium
+  - Gap: 6px between tags
+Category Selection
+Purpose: Filter by food category
+
+Layout:
+- Title: "Choose Category", 24px, SemiBold, centered, 32px from top
+- Background: Radial gradient, purple to dark
+
+Category Icons:
+- Arrangement: Circular formation (6 icons)
+- Center: Empty space with decorative element
+
+Each Category Button:
+- Size: 80x80px
+- Layout: Vertical (icon above text)
+- Background: #2D2640
+- Border radius: 40px
+- Border: 2px solid transparent (3px purple when selected)
+- Shadow: Medium
+
+Icon:
+- Size: 40x40px
+- Color: White
+- Position: Centered, top 12px
+
+Label:
+- Font: 12px, Medium, white
+- Position: Below icon, 4px gap
+- Alignment: Center
+
+Categories (positions in circle):
+- Top: Coffee
+- Top Right: Fine Dining
+- Right: Lounge & Pub
+- Bottom Right: Cheftagate
+- Bottom Left: Pastry
+- Left: Moroccan Tagine
+
+Bottom Navigation (present on all screens):
+- Height: 72px
+- Background: #1A1625 with blur
+- Border top: 1px solid #2D2640
+- Safe area: Padding bottom 24px
+
+5 Navigation Items (evenly spaced):
+1. Home: House icon
+2. Search: Magnifying glass
+3. Favorites: Heart
+4. Bookings: Calendar
+5. Profile: User icon
+
+Each Nav Item:
+- Icon size: 28px
+- Active color: #6B5CE7
+- Inactive color: #8B8B8B
+- Label (optional): 11px, below icon
+- Tap area: 60x60px
+
+4. RESTAURANT DETAIL SCREENS
+Restaurant Profile View
+Purpose: Detailed restaurant information
+
+Hero Image:
+- Height: 280px
+- Width: 100%
+- Object fit: Cover
+- Gradient overlay: Bottom, height 100px
+
+Back Button (on hero):
+- Position: Top left, 16px from edges, 44x44px safe area
+- Background: rgba(0, 0, 0, 0.5) blur
+- Icon: Left arrow, 24px, white
+- Border radius: 22px
+
+Share Button (on hero):
+- Position: Top right, same styling as back
+
+Restaurant Info Card:
+- Position: Overlaps hero by 40px (elevation effect)
+- Margin: 0 16px
+- Background: #2D2640
+- Border radius: 20px
+- Padding: 20px
+- Shadow: Heavy
+
+Name:
+- Font: 26px, Bold, white
+- Margin bottom: 8px
+
+Rating Row:
+- Stars: 20px each, gold
+- Rating: "4.5", 16px, SemiBold, white
+- Count: "(3.5k)", 14px, gray
+- Verified badge: Icon, 16px, blue checkmark
+
+Status Row:
+- Margin top: 8px
+- Icon: Clock, 16px, green
+- Text: "Open Until 11PM", 14px, green, SemiBold
+
+Location:
+- Margin top: 8px
+- Icon: Pin, 16px, gray
+- Text: Full address, 13px, gray
+- Underlined (clickable)
+
+Action Buttons Row:
+- Margin top: 20px
+- Gap: 12px
+
+Favorite Button:
+- Width: 30%
+- Height: 48px
+- Background: rgba(107, 92, 231, 0.2)
+- Border: 1px solid #6B5CE7
+- Border radius: 12px
+- Icon: Heart, 20px, purple
+- Text: "Favorite", 14px, purple, SemiBold
+
+Book Now Button:
+- Width: Remaining space (68% minus gap)
+- Height: 48px
+- Background: #6B5CE7
+- Border radius: 12px
+- Text: "Book Now", 16px, white, SemiBold
+
+Tab Navigation:
+- Position: 20px below action buttons
+- Height: 48px
+- Layout: Horizontal
+
+Tabs:
+1. Overview (with description icon)
+2. Menu (with food icon)
+
+Each Tab:
+- Width: 50%
+- Height: 48px
+- Background: Transparent
+- Text: 15px, SemiBold
+- Active: White text, 3px purple bottom border
+- Inactive: Gray text
+
+Content Sections (Overview Tab):
+
+About Section:
+- Title: "About", 18px, SemiBold, white
+- Description: 14px, Regular, gray, line height 1.6
+- "Read more" link: Purple, if text truncated
+
+Cuisine Tags:
+- Layout: Horizontal wrap
+- Each tag: Same as home cards
+- Margin: 16px vertical
+
+Photo Gallery:
+- Layout: Horizontal scroll
+- Each photo: 120x120px, rounded 12px
+- Gap: 12px
+- Show 3.5 photos to indicate scroll
+
+Location Map:
+- Height: 200px
+- Border radius: 12px
+- Interactive map embed
+- Pin: Restaurant location
+
+Opening Hours:
+- Layout: List
+- Each day:
+  - Day: 14px, white, left
+  - Hours: 14px, gray, right
+  - Height: 36px
+  - Today: Purple highlight
+
+Contact Section:
+- Phone button: Icon + number
+- Website button: Icon + URL
+- Social buttons: Icon grid (Instagram, Facebook, Twitter)
+Menu Tab View
+Purpose: Display restaurant menu
+
+Category Filter:
+- Position: Sticky below tabs
+- Height: 44px
+- Layout: Horizontal scroll
+- Each chip:
+  - Height: 32px
+  - Padding: 8px 16px
+  - Background: #2D2640 (inactive), #6B5CE7 (active)
+  - Border radius: 16px
+  - Text: 13px, SemiBold
+  - Gap: 8px
+
+Menu Grid:
+- Layout: 2 columns
+- Gap: 12px column, 16px row
+- Padding: 16px
+
+Menu Item Card:
+- Width: Calc(50% - 6px)
+- Aspect ratio: 1:1
+- Border radius: 12px
+- Shadow: Medium
+- Position: Relative
+
+Image:
+- Height: 60%
+- Border radius: 12px 12px 0 0
+- Object fit: Cover
+
+Info Section:
+- Height: 40%
+- Padding: 8px
+- Background: #2D2640
+
+Item Name:
+- Font: 14px, SemiBold, white
+- Max lines: 2
+- Margin bottom: 4px
+
+Rating:
+- Stars: 12px, inline
+- Number: 12px, gray
+
+Price:
+- Font: 16px, Bold, white
+- Position: Bottom right
+- Color: #6B5CE7
+
+Add Button:
+- Position: Bottom right, 8px padding
+- Size: 28x28px
+- Background: #6B5CE7
+- Border radius: 14px
+- Icon: Plus, 16px, white
+
+5. BOOKING SCREENS
+Booking Form
+Purpose: Create restaurant reservation
+
+Header:
+- Background: #2D2640
+- Height: 60px
+- Title: "Booking", 20px, SemiBold, white, centered
+- Back button: Left, 24px icon
+
+Guest Selection:
+- Position: 20px below header
+- Title: "Guests", 16px, Medium, white
+- Layout: Horizontal, centered
+
+Counter Control:
+- Minus button:
+  - Size: 40x40px
+  - Background: #2D2640
+  - Border: 1px solid #4A4A4A
+  - Border radius: 20px
+  - Icon: Minus, 20px, white
+
+Count Display:
+  - Font: 20px, Bold, white
+  - Width: 60px
+  - Alignment: Center
+  - Margin: 0 16px
+
+Plus Button:
+  - Same as minus
+  - Icon: Plus
+  - Active state: Purple background
+
+Date Selection:
+- Position: 24px below guests
+- Title: "Date", 16px, Medium, white, margin bottom 12px
+
+Calendar Widget:
+- Background: #2D2640
+- Border radius: 16px
+- Padding: 16px
+
+Month Header:
+- Layout: Space between
+- Month/Year: 18px, SemiBold, white, centered
+- Nav arrows: 24px, white, sides
+- Height: 44px
+
+Weekday Labels:
+- Layout: Grid, 7 columns
+- Text: "M T W T F S S", 12px, gray
+- Height: 32px
+
+Date Grid:
+- Layout: Grid, 7 columns
+- Gap: 4px
+
+Each Date:
+- Size: 40x40px
+- Border radius: 20px
+- Font: 14px, Medium
+- States:
+  - Default: White text, transparent
+  - Selected: Purple background, white text
+  - Today: Purple border, white text
+  - Disabled: Gray text, 50% opacity
+  - Other month: 30% opacity
+
+Time Selection:
+- Position: 24px below calendar
+- Title: "Time", 16px, Medium, white
+- Layout: Horizontal, centered
+- Gap: 12px
+
+Time Slots:
+- Width: Calc(33.33% - 8px)
+- Height: 44px
+- Border radius: 22px
+- Font: 15px, SemiBold
+- States:
+  - Available: #2D2640 background, white text, gray border
+  - Selected: Purple background, white text
+  - Unavailable: Gray background, gray text, strikethrough
+
+Options: "12 PM", "6 PM", "8 PM" (customizable)
+
+Action Buttons:
+- Position: Fixed bottom, 24px from edge
+- Layout: Horizontal, 50-50 split
+- Gap: 12px
+
+Cancel Button:
+- Width: 48%
+- Height: 52px
+- Background: Transparent
+- Border: 2px solid #4A4A4A
+- Border radius: 12px
+- Text: "Cancel", 16px, SemiBold, white
+
+Book Now Button:
+- Width: 48%
+- Height: 52px
+- Background: #6B5CE7
+- Border radius: 12px
+- Text: "Book Now", 16px, SemiBold, white
+- Shadow: Medium
+- Disabled: 40% opacity if incomplete
+Booking Management (Upcoming/Past)
+Purpose: View and manage bookings
+
+Header:
+- Tabs: "Upcoming" | "Past"
+- Height: 48px
+- Active tab: Purple underline
+
+Booking Card:
+- Width: 100%, 16px margin
+- Height: 140px
+- Background: #2D2640
+- Border radius: 16px
+- Padding: 12px
+- Layout: Horizontal
+- Shadow: Medium
+- Margin bottom: 16px
+
+Restaurant Image:
+- Width: 100px
+- Height: 100%
+- Border radius: 12px
+- Object fit: Cover
+- Position: Left
+
+Info Section:
+- Flex: 1
+- Padding left: 12px
+
+Restaurant Name:
+- Font: 18px, SemiBold, white
+- Margin bottom: 6px
+
+Detail Rows (vertical stack, 6px gap):
+Each Row:
+- Icon: 16px, gray, left
+- Text: 13px, Regular, gray
+- Gap: 8px icon-text
+
+Icons & Info:
+1. Users icon + "2 Guests"
+2. Calendar icon + "Nov 15, 2025"
+3. Clock icon + "7:00 PM"
+
+Status Badge:
+- Position: Top right of info section
+- Padding: 4px 12px
+- Border radius: 12px
+- Font: 11px, SemiBold
+- Colors by status:
+  - Approved: Green background, white text
+  - Pending: Orange background, white text
+  - Cancelled: Red background, white text
+
+Action Buttons (if upcoming):
+- Position: Bottom of card
+- Layout: Horizontal, right aligned
+- Gap: 8px
+
+Complete Button:
+- Padding: 8px 16px
+- Height: 32px
+- Background: #4CAF50
+- Border radius: 8px
+- Text: "Completed", 12px, white, SemiBold
+
+Cancel Button:
+- Padding: 8px 16px
+- Height: 32px
+- Background: Transparent
+- Border: 1px solid #E53935
+- Border radius: 8px
+- Text: "Cancel", 12px, #E53935, SemiBold
+
+Empty State (if no bookings):
+- Icon: Calendar with slash, 80px, gray
+- Text: "No bookings yet", 18px, white
+- Subtext: "Start exploring restaurants", 14px, gray
+- Button: "Explore Now", purple
+
+6. PROFILE & SETTINGS
+User Profile
+Purpose: User account management
+
+Header:
+- Height: 60px
+- Background: Gradient
+- Title: "My Profile", 20px, SemiBold, white
+- Settings icon: Top right, 24px
+
+Profile Section:
+- Layout: Horizontal
+- Padding: 20px 16px
+- Background: #2D2640
+- Border radius: 16px (top corners)
+
+Avatar:
+- Size: 80px
+- Border radius: 40px
+- Border: 3px solid #6B5CE7
+- Position: Left
+
+Info (next to avatar, 12px gap):
+- Name: "Khouala", 22px, Bold, white
+- Role: "Restaurant Owner", 14px, gray
+- Bio: 13px, gray, max 3 lines, 8px top margin
+- Line height: 1.5
+
+Action Buttons:
+- Position: 20px below profile section
+- Layout: Horizontal, equal width
+- Gap: 12px
+
+Edit Profile:
+- Width: 48%
+- Height: 44px
+- Background: Transparent
+- Border: 1px solid #6B5CE7
+- Border radius: 12px
+- Text: "Edit Profile", 14px, purple, SemiBold
+
+Insight:
+- Width: 48%
+- Height: 44px
+- Background: #6B5CE7
+- Border radius: 12px
+- Text: "Insight", 14px, white, SemiBold
+
+Restaurant Grid (for owners):
+- Title: "My Restaurant", 18px, SemiBold, white, 20px margin bottom
+- Layout: Grid, 2 columns
+- Gap: 12px
+
+Each Restaurant Card:
+- Aspect ratio: 1:1
+- Border radius: 12px
+- Position: Relative
+- Shadow: Medium
+
+Image:
+- Full size
+- Object fit: Cover
+- Border radius: 12px
+
+Overlay (bottom):
+- Height: 40px
+- Gradient: Transparent to black
+- Border radius: 0 0 12px 12px
+
+Name:
+- Position: Bottom, 8px padding
+- Font: 14px, SemiBold, white
+
+Action Icons (top right, on image):
+- Size: 32x32px each
+- Background: rgba(0, 0, 0, 0.6) blur
+- Border radius: 16px
+- Icons: 18px, white
+- Gap: 8px
+- Options: Like, Share
+
+Statistics Panel (alternative view):
+- Background: #2D2640
+- Border radius: 16px
+- Padding: 16px
+
+Title Row:
+- "Views", 18px, white, left
+- "Weekly" dropdown, 13px, right
+
+Graph:
+- Height: 200px
+- Type: Bar chart
+- Bar color: #6B5CE7
+- Grid lines: 1px, #4A4A4A
+- Labels: 12px, gray
+
+Metrics Row:
+- Layout: Horizontal, space around
+- Each metric:
+  - Value: 24px, Bold, white
+  - Label: 12px, gray, below
+  - Icon: 20px, purple, left
+Settings Menu
+Purpose: App configuration
+
+Layout: List view, full width
+
+Section Headers:
+- Font: 16px, SemiBold, gray
+- Padding: 20px 16px 8px
+- Examples: "Account", "Preferences", "Support"
+
+Menu Items:
+- Height: 60px
+- Background: #2D2640
+- Border radius: 12px
+- Margin: 4px 16px
+- Padding: 0 16px
+- Layout: Horizontal, space between
+- Tap effect: Scale 0.98
+
+Left Content:
+- Icon: 24px, purple
+- Text: 15px, white, 12px left margin
+
+Right Content:
+- Arrow: 20px, gray, right chevron
+
+Toggle Items (for switches):
+- Layout: Icon + Text (left) | Toggle (right)
+- Switch:
+  - Width: 52px
+  - Height: 28px
+  - Border radius: 14px
+  - Background: #4A4A4A (off), #6B5CE7 (on)
+  - Knob: 24px circle, white, slides with animation
+  - Transition: 0.3s ease
+
+Menu Item List:
+
+Account Section:
+1. Profile Settings
+   - Icon: User circle
+   - Arrow: Right chevron
+
+2. Premier Plan
+   - Icon: Crown
+   - Badge: "Premium", gold, 8px right margin
+
+Preferences Section:
+3. Notifications
+   - Icon: Bell
+   - Toggle: On/off switch
+
+4. Language
+   - Icon: Globe
+   - Value: "English", 14px, gray, right
+   - Arrow: Right chevron
+
+5. Currency
+   - Icon: Dollar sign
+   - Value: "USD", 14px, gray, right
+   - Arrow: Right chevron
+
+6. Dark Theme
+   - Icon: Moon
+   - Toggle: On/off switch
+
+Support Section:
+7. Contact Us
+   - Icon: Mail
+   - Arrow: Right chevron
+
+8. Terms & Conditions
+   - Icon: Document
+   - Arrow: Right chevron
+
+9. FAQ
+   - Icon: Question circle
+   - Arrow: Right chevron
+
+Danger Zone:
+10. Delete Account
+    - Position: Bottom, centered
+    - Text only, no background
+    - Font: 14px, SemiBold, #E53935
+    - Padding: 20px
+    - Underline on press
+Account Settings Detail
+Purpose: Edit account information
+
+Header:
+- Title: "Account Settings", 20px, SemiBold, centered
+- Back button: Left arrow, 24px
+
+Profile Photo Section:
+- Position: Top center, 40px from header
+- Avatar: 100px circle, current photo
+- Edit button:
+  - Position: Bottom right of avatar, overlapping
+  - Size: 36x36px
+  - Background: #6B5CE7
+  - Border: 3px solid #1A1625
+  - Border radius: 18px
+  - Icon: Camera, 20px, white
+
+Form Fields (vertical stack, 16px gap):
+- Start: 32px below avatar
+
+1. Full Name:
+   - Label: "Full Name", 13px, gray, above input
+   - Input: Same styling as auth screens
+   - Icon: User, 20px, left
+
+2. Email:
+   - Label: "Email Address", 13px, gray
+   - Input: Email keyboard
+   - Icon: Envelope, 20px, left
+   - Verified badge: Right, green checkmark, 16px
+
+3. Phone Number:
+   - Label: "Phone Number", 13px, gray
+   - Input: Phone keyboard
+   - Icon: Phone, 20px, left
+   - Country code: Dropdown, left of input
+
+4. Date of Birth:
+   - Label: "Date of Birth", 13px, gray
+   - Input: Date picker
+   - Icon: Calendar, 20px, left
+   - Format: MM/DD/YYYY
+
+5. Gender:
+   - Label: "Gender", 13px, gray
+   - Type: Segmented control
+   - Options: "Male" | "Female" | "Other"
+   - Each segment:
+     - Height: 44px
+     - Background: #2D2640 (inactive), #6B5CE7 (active)
+     - Text: 14px, SemiBold
+     - Border radius: 12px for outer segments
+
+Change Password Section:
+- Position: 24px below last field
+- Layout: Collapsed by default
+
+Trigger Button:
+- Width: 100%
+- Height: 52px
+- Background: Transparent
+- Border: 1px dashed #4A4A4A
+- Border radius: 12px
+- Text: "Change Password", 15px, purple
+- Icon: Lock, 20px, left
+
+Expanded State (if clicked):
+- Current Password field
+- New Password field
+- Confirm Password field
+- All with eye toggle icons
+
+Save Button:
+- Position: Fixed bottom, 24px from edge
+- Width: Calc(100% - 32px)
+- Height: 52px
+- Background: #6B5CE7
+- Border radius: 12px
+- Text: "Save Changes", 16px, SemiBold, white
+- Shadow: Medium
+
+Discard Button:
+- Position: 12px above save button
+- Text only: "Discard Changes", 14px, gray, centered
+- No background
+
+7. RESTAURANT OWNER SCREENS
+Restaurant Dashboard
+Purpose: Business management overview
+
+Header:
+- Background: Gradient with pattern
+- Height: 140px
+- Padding: 20px 16px
+
+Welcome Text:
+- "Welcome back,", 14px, gray
+- Owner name: 24px, Bold, white, 4px below
+
+Quick Stats Row:
+- Position: 60px from top
+- Layout: 3 cards, horizontal
+- Gap: 12px
+
+Each Stat Card:
+- Width: Calc(33.33% - 8px)
+- Height: 80px
+- Background: rgba(255, 255, 255, 0.1)
+- Border: 1px solid rgba(255, 255, 255, 0.2)
+- Border radius: 12px
+- Backdrop filter: Blur(10px)
+- Padding: 12px
+
+Card Content:
+- Icon: 24px, white, top left
+- Value: 24px, Bold, white, center
+- Label: 11px, gray, bottom, center
+
+Stat Types:
+1. Today's Bookings: Calendar icon
+2. Total Revenue: Dollar icon
+3. Reviews: Star icon
+
+Content Section:
+- Position: Below header
+- Background: #1A1625
+- Border radius: 24px 24px 0 0 (top corners)
+- Padding: 24px 16px
+
+Section: Today's Bookings
+- Title: "Today's Bookings", 18px, SemiBold, white
+- Filter: "All" | "Upcoming" | "Completed"
+  - Horizontal pills, 32px height
+
+Booking List Items:
+- Height: 100px
+- Background: #2D2640
+- Border radius: 12px
+- Padding: 12px
+- Margin: 8px 0
+- Layout: Horizontal
+
+Customer Info:
+- Avatar: 60px circle, left
+- Name: 16px, SemiBold, white
+- Email: 12px, gray, below name
+- Time: 13px, white, with clock icon
+
+Actions (right side):
+- Check-in button: 32px height, green
+- Cancel button: 32px height, red outline
+
+Section: Performance Chart
+- Title: "This Week's Performance", 18px
+- Chart: Line graph, 200px height
+- Purple line, smooth curves
+- Grid: Dotted, gray
+- X-axis: Days of week
+- Y-axis: Numbers
+
+Section: Quick Actions
+- Layout: Grid, 2x2
+- Gap: 12px
+
+Action Cards:
+- Aspect ratio: 1:1
+- Background: Gradient (unique per card)
+- Border radius: 16px
+- Padding: 16px
+- Shadow: Medium
+
+Card Content:
+- Icon: 40px, top left
+- Title: 16px, SemiBold, bottom left
+- Arrow: 24px, bottom right
+
+Actions:
+1. Add Menu Item: Purple gradient, plate icon
+2. View Reviews: Blue gradient, star icon
+3. Edit Hours: Orange gradient, clock icon
+4. Promotions: Green gradient, megaphone icon
+Register Restaurant Form
+Purpose: Add new restaurant to platform
+
+Header:
+- Title: "Register Restaurant", 20px, SemiBold, centered
+- Progress indicator: "Step 1 of 3", 13px, gray, below title
+- Progress bar: 
+  - Height: 4px
+  - Background: #2D2640
+  - Fill: #6B5CE7, animated
+  - Width: 33% (step 1)
+
+Form Sections:
+
+Basic Information:
+1. Restaurant Name:
+   - Label: "Restaurant Name", 13px, gray
+   - Input: 52px height
+   - Placeholder: "Enter restaurant name"
+   - Icon: Store, 20px, left
+
+2. Email & Phone (horizontal, 2 columns):
+   - Email: Left, 48% width
+   - Phone: Right, 48% width
+   - Gap: 4% between
+   - Height: 52px each
+
+3. Address:
+   - Type: Multi-line
+   - Height: 80px
+   - Icon: Pin, 20px, top left
+   - Placeholder: "Full address"
+
+4. City & ZIP (horizontal):
+   - City: 60% width
+   - ZIP: 38% width
+   - Gap: 2%
+
+5. Select Type (dropdown):
+   - Height: 52px
+   - Options: "Restaurant" | "Cafe" | "Bar" | "Lounge" | etc.
+   - Icon: Down arrow, 20px, right
+
+6. Cuisine Types (multi-select):
+   - Layout: Tag selector
+   - Options displayed as pills
+   - Selected: Purple background
+   - Unselected: Gray border
+   - Examples: Italian, Mexican, Chinese, etc.
+
+Upload Section:
+- Title: "Upload Images", 16px, SemiBold, white
+
+Image Upload Grid:
+- Layout: 3 columns
+- Gap: 8px
+
+Upload Slot:
+- Aspect ratio: 1:1
+- Border: 2px dashed #4A4A4A
+- Border radius: 12px
+- Background: #2D2640
+
+Empty State:
+- Icon: Image/Plus, 32px, centered, gray
+- Text: "Add Photo", 12px, gray, centered
+
+Filled State:
+- Image: Full size, cover
+- Remove button: Top right, 24x24px, red bg, X icon
+- Edit overlay on hover
+
+About Section:
+- Title: "About your Restaurant", 16px, SemiBold
+- Textarea: 120px height, 16px padding
+- Character count: "0/500", 12px, gray, bottom right
+- Placeholder: "Description goes here..."
+
+Navigation Buttons:
+- Position: Fixed bottom, 24px from edge
+- Layout: Horizontal if multi-step
+
+Cancel/Back Button:
+- Width: 30%
+- Height: 52px
+- Background: Transparent
+- Border: 1px solid #4A4A4A
+- Text: "Cancel" or "Back", 15px
+
+Next/Submit Button:
+- Width: 68%
+- Height: 52px
+- Background: #6B5CE7
+- Text: "Next" or "Submit", 16px, SemiBold, white
+
+Success State:
+- Full screen overlay
+- Background: #1A1625
+- Checkmark animation: 120px, green, center
+- Text: "Your request is being studied", 18px, white
+- Subtext: "we will contact you soon", 14px, gray
+- Auto-dismiss: 3 seconds or tap to close
+
+8. REVIEWS & RATINGS
+Reviews List View
+Purpose: Display user reviews for restaurant
+
+Header:
+- Title: "Reviews", 20px, SemiBold, white, centered
+- Back button: Left arrow
+
+Rating Summary Card:
+- Height: 140px
+- Background: #2D2640
+- Border radius: 16px
+- Padding: 20px
+- Margin: 16px
+
+Layout: Horizontal split
+
+Left Side (40%):
+- Overall rating: "4.5", 48px, Bold, white, centered
+- Stars: 5 stars, 24px each, centered below
+- Count: "1,234 reviews", 13px, gray, centered
+
+Right Side (60%):
+- Star breakdown (vertical list):
+
+Each Row:
+- Layout: Horizontal
+- Star label: "5★", 14px, white, left
+- Progress bar:
+  - Height: 8px
+  - Background: #1A1625
+  - Fill: #FFD700
+  - Rounded: 4px
+  - Width: 60%
+- Percentage: "45%", 12px, gray, right
+- Spacing: 8px between rows
+
+Filter Tabs:
+- Position: 16px below summary
+- Height: 40px
+- Layout: Horizontal scroll
+
+Filter Options:
+- "All" | "5 Stars" | "4 Stars" | "3 Stars" | "With Photos" | "Recent"
+- Each: Pill-shaped, 32px height
+- Active: Purple background
+- Inactive: Gray border, transparent
+
+Review Cards:
+- Background: #2D2640
+- Border radius: 12px
+- Padding: 16px
+- Margin: 12px 16px
+- Shadow: Light
+
+Card Header:
+- Layout: Horizontal
+
+Avatar:
+- Size: 44px
+- Border radius: 22px
+- Position: Left
+
+User Info (next to avatar):
+- Name: 15px, SemiBold, white
+- Date: 12px, gray, below name
+
+Rating:
+- Position: Right aligned
+- Stars: 16px
+- Layout: Horizontal
+
+Review Text:
+- Position: 12px below header
+- Font: 14px, Regular, gray
+- Line height: 1.6
+- Max lines: 3
+- "Read more": Purple link if truncated
+
+Photo Grid (if present):
+- Position: 12px below text
+- Layout: Horizontal scroll
+- Each photo: 80x80px, rounded 8px
+- Gap: 8px
+- First 3 visible, "+5" overlay on last if more
+
+Actions Row:
+- Position: 12px below photos/text
+- Layout: Horizontal
+
+Helpful Button:
+- Icon: Thumbs up, 18px
+- Text: "Helpful (24)", 13px, gray
+- Padding: 6px 12px
+- Background: Transparent
+- Border: 1px solid #4A4A4A
+- Border radius: 16px
+- Active: Purple border and text
+
+Reply Button:
+- Same styling
+- Icon: Reply arrow
+- Text: "Reply"
+
+Owner Response (if exists):
+- Position: 12px below actions
+- Background: rgba(107, 92, 231, 0.1)
+- Border left: 3px solid #6B5CE7
+- Padding: 12px
+- Border radius: 0 8px 8px 0
+
+Response Header:
+- Badge: "Restaurant Owner", 11px, purple bg, white text
+- Name: 13px, white
+- Date: 11px, gray
+
+Response Text:
+- Font: 13px, Regular, gray
+- Line height: 1.5
+Write Review Screen
+Purpose: User creates restaurant review
+
+Header:
+- Title: "Rate Your Experience", 20px, SemiBold, centered
+- Close button: X icon, top right
+
+Restaurant Info:
+- Layout: Horizontal
+- Image: 60px square, rounded 8px
+- Name: 16px, SemiBold, white, 12px left
+- Location: 12px, gray, below name
+
+Rating Section:
+- Position: 40px below info
+- Title: "How was your experience?", 16px, centered
+
+Star Selector:
+- Position: Centered, 20px below title
+- 5 stars, 44px each
+- Gap: 12px
+- Inactive: Gray outline
+- Active: Gold fill
+- Tap animation: Scale 1.2
+
+Rating Labels (below stars):
+- Text: "Excellent" | "Good" | "Average" | "Poor" | "Terrible"
+- Font: 12px, gray
+- Positioned under respective stars
+
+Review Text:
+- Position: 32px below stars
+- Label: "Share your thoughts", 15px, SemiBold, white
+
+Textarea:
+- Height: 140px
+- Background: #2D2640
+- Border: 1px solid #4A4A4A
+- Border radius: 12px
+- Padding: 16px
+- Font: 14px, Regular, white
+- Placeholder: "Tell us about your experience..."
+- Character counter: "0/500", 12px, gray, bottom right
+
+Photo Upload:
+- Position: 20px below textarea
+- Label: "Add Photos (Optional)", 15px, SemiBold
+
+Upload Grid:
+- Layout: Horizontal scroll
+- Each slot: 100x100px
+- Gap: 12px
+
+Add Photo Button:
+- Size: 100x100px
+- Border: 2px dashed #4A4A4A
+- Border radius: 12px
+- Icon: Camera, 32px, purple, centered
+- Text: "Add", 12px, purple, below icon
+
+Uploaded Photos:
+- Size: 100x100px
+- Border radius: 12px
+- Remove button: Top right corner
+  - Size: 24x24px
+  - Background: Black blur
+  - Icon: X, white
+
+Submit Button:
+- Position: Fixed bottom, 24px from edge
+- Width: Calc(100% - 32px)
+- Height: 52px
+- Background: #6B5CE7
+- Text: "Submit Review", 16px, SemiBold, white
+- Disabled: Gray, 40% opacity if rating not selected
+
+Success Animation:
+- Checkmark: 100px, green, centered
+- Text: "Thanks for your feedback!", 18px, white
+- Auto-close: 2 seconds
+
+9. NOTIFICATIONS
+Notifications List
+Purpose: Display app notifications
+
+Header:
+- Title: "Notification", 20px, SemiBold, white
+- Mark all read: "Mark all", 14px, purple, right
+- Height: 60px
+
+Date Separators:
+- Text: "Yesterday" | "Last 7 days" | etc.
+- Font: 14px, SemiBold, gray
+- Padding: 16px (left), 12px (top/bottom)
+- Background: Slightly darker than main
+
+Notification Items:
+- Height: Dynamic (min 80px)
+- Background: #2D2640 (unread), transparent (read)
+- Padding: 12px 16px
+- Border bottom: 1px solid #1A1625
+
+Layout: Horizontal
+
+Avatar/Icon:
+- Size: 48px
+- Border radius: 24px
+- Position: Left
+- Type: User avatar or category icon
+- Badge: Notification type icon, 16px, bottom right corner
+
+Content Section:
+- Flex: 1
+- Padding left: 12px
+
+Name/Title:
+- Font: 14px, SemiBold, white
+- Margin bottom: 4px
+- Bold keywords (e.g., restaurant name)
+
+Message:
+- Font: 13px, Regular, gray
+- Line height: 1.5
+- Max lines: 2
+- Emoji support
+
+Time:
+- Font: 11px, Regular, gray
+- Margin top: 4px
+
+Action Buttons (if applicable):
+- Position: Below message, 8px margin
+- Layout: Horizontal, gap 8px
+
+Accept Button:
+- Height: 32px
+- Padding: 8px 16px
+- Background: #6B5CE7
+- Border radius: 16px
+- Text: "Accept", 12px, white, SemiBold
+
+Decline Button:
+- Same size
+- Background: Transparent
+- Border: 1px solid #E53935
+- Text: Red
+
+Unread Indicator:
+- Position: Right side, centered
+- Size: 8px circle
+- Background: #6B5CE7
+- Only on unread items
+
+Swipe Actions (gesture-based):
+- Swipe left: Delete (red background)
+- Swipe right: Mark read (purple background)
+
+Empty State:
+- Icon: Bell with slash, 80px, gray, centered
+- Text: "No notifications yet", 18px, white, centered
+- Subtext: "You're all caught up!", 14px, gray
+
+Notification Types:
+
+1. Booking Confirmation:
+   - Icon: Calendar check, purple
+   - Example: "Booking confirmed at [Restaurant]"
+
+2. Review:
+   - Icon: Star, gold
+   - Example: "[User] left a 5-star review"
+
+3. Promotion:
+   - Icon: Tag, orange
+   - Example: "20% off at [Restaurant] today"
+
+4. System:
+   - Icon: Bell, blue
+   - Example: "New features available"
+
+5. Reminder:
+   - Icon: Clock, purple
+   - Example: "Your reservation is in 1 hour"
+
+10. SEARCH & FILTERS
+Search Screen
+Purpose: Advanced restaurant search
+
+Search Header:
+- Background: #2D2640
+- Height: 100px
+- Padding: 16px
+
+Search Bar:
+- Width: 100%
+- Height: 48px
+- Background: #1A1625
+- Border radius: 24px
+- Layout: Horizontal
+
+Back Button:
+- Size: 40x40px, inside search bar
+- Icon: Left arrow, 20px, white
+
+Input Field:
+- Flex: 1
+- Font: 15px, Regular, white
+- Placeholder: "Search restaurants, cuisines..."
+- No border
+
+Microphone Button:
+- Size: 40x40px
+- Icon: Microphone, 20px, purple
+
+Filter Button:
+- Position: Right of search bar
+- Size: 48x48px
+- Background: #1A1625
+- Border radius: 24px
+- Icon: Sliders, 24px, white
+- Badge: Purple dot if filters active
+
+Quick Filters:
+- Position: 16px below search
+- Layout: Horizontal scroll
+- Height: 36px
+
+Filter Chips:
+- Height: 36px
+- Padding: 10px 16px
+- Background: #2D2640
+- Border: 1px solid #4A4A4A
+- Border radius: 18px
+- Text: 13px, SemiBold, white
+- Active: Purple background, no border
+- Icon: Left of text, 16px (optional)
+- Gap: 8px between chips
+
+Examples:
+- "Open Now" (clock icon)
+- "Near Me" (location icon)
+- "Top Rated" (star icon)
+- "$ Budget" (dollar icon)
+
+Recent Searches:
+- Title: "Recent Searches", 16px, SemiBold, white
+- Position: 24px below filters
+
+List Items:
+- Height: 48px
+- Layout: Horizontal
+
+Clock Icon:
+- Size: 20px, gray, left
+
+Search Term:
+- Font: 14px, Regular, white
+- Position: 12px left of icon
+
+Clear Button:
+- Size: 32x32px
+- Icon: X, 16px, gray
+- Position: Right
+
+Popular Searches:
+- Title: "Popular", 16px, SemiBold, white
+- Layout: Wrap grid
+- Gap: 8px
+
+Each Tag:
+- Height: 32px
+- Padding: 8px 14px
+- Background: Gradient purple
+- Border radius: 16px
+- Text: 12px, white, SemiBold
+- Tap: Opens search for that term
+
+Search Results View:
+- Replaces content when typing
+- Live update as user types
+
+Result Items:
+- Height: 72px
+- Layout: Horizontal
+- Padding: 12px 16px
+
+Thumbnail:
+- Size: 60x60px
+- Border radius: 8px
+- Position: Left
+
+Info:
+- Padding left: 12px
+- Flex: 1
+
+Name:
+- Font: 15px, SemiBold, white
+- Margin bottom: 4px
+- Highlight: Search term in purple
+
+Meta Info:
+- Font: 12px, Regular, gray
+- Layout: Horizontal
+- Separator: " • " between items
+- Content: Cuisine • Rating • Distance
+
+Arrow:
+- Icon: Right chevron, 20px, gray, right
+
+No Results State:
+- Icon: Search with X, 80px, gray, centered
+- Text: "No results found", 18px, white
+- Subtext: "Try different keywords", 14px, gray
+Advanced Filters Modal
+Purpose: Detailed search filtering
+
+Presentation: Bottom sheet modal
+- Height: 80% of screen
+- Background: #1A1625
+- Border radius: 24px 24px 0 0
+- Handle: 40px wide, 4px height, gray, top center
+
+Header:
+- Height: 60px
+- Title: "Filters", 20px, SemiBold, white, centered
+- Close: X icon, top right
+- Clear all: "Reset", 14px, purple, top left
+
+Content: Scrollable sections
+
+Section 1: Distance
+- Title: "Distance", 16px, SemiBold, white
+- Slider:
+  - Track: 4px height, gray
+  - Fill: Purple
+  - Thumb: 24px circle, white, shadow
+  - Labels: "0 mi" (left), "50+ mi" (right)
+  - Value: "Within 10 miles", 14px, purple, centered
+
+Section 2: Price Range
+- Title: "Price Range", 16px, SemiBold
+- Layout: 4 options, horizontal
+
+Each Price Level:
+- Size: 64x64px
+- Border: 2px solid #4A4A4A
+- Border radius: 12px
+- Content: "$" to "$$$$", 20px, centered
+- Selected: Purple border and background
+- Multi-select enabled
+
+Section 3: Cuisine Type
+- Title: "Cuisine Type", 16px, SemiBold
+- Layout: Wrap grid, 3 columns
+- Gap: 12px
+
+Each Cuisine:
+- Height: 40px
+- Background: #2D2640
+- Border: 1px solid #4A4A4A
+- Border radius: 20px
+- Text: 13px, SemiBold, white, centered
+- Selected: Purple background
+- Multi-select enabled
+
+Section 4: Rating
+- Title: "Minimum Rating", 16px, SemiBold
+- Layout: Horizontal, 5 options
+
+Star Options:
+- "1+" to "5", 15px
+- Icon: Star, 24px
+- Layout: Vertical (star above number)
+- Selected: Purple background, rounded 12px
+- Size: 56x64px
+- Single select
+
+Section 5: Features
+- Title: "Features", 16px, SemiBold
+- Layout: Vertical list
+
+Feature Items:
+- Height: 48px
+- Layout: Horizontal, space between
+
+Left: Icon + Text
+- Icon: 24px, purple
+- Text: 14px, white, 12px left margin
+
+Right: Checkbox
+- Size: 24x24px
+- Border: 2px purple
+- Check: Purple fill, white checkmark
+- Border radius: 6px
+
+Features List:
+- Reservations Available
+- Delivery
+- Outdoor Seating
+- WiFi
+- Parking
+- Pet Friendly
+- Kid Friendly
+- Wheelchair Accessible
+
+Section 6: Open Hours
+- Title: "Open Hours", 16px, SemiBold
+- Toggle: "Open Now"
+- Time selector: If toggle off
+  - Day dropdown
+  - Time range picker
+
+Footer (Fixed):
+- Height: 80px
+- Background: #1A1625
+- Border top: 1px solid #2D2640
+- Padding: 16px
+- Layout: Horizontal, 50-50
+
+Clear Button:
+- Width: 48%
+- Height: 52px
+- Background: Transparent
+- Border: 1px solid #4A4A4A
+- Text: "Clear", 16px, white
+
+Apply Button:
+- Width: 48%
+- Height: 52px
+- Background: #6B5CE7
+- Text: "Apply Filters", 16px, white
+- Badge: Count of active filters, top right
+
+11. PREMIUM/SUBSCRIPTION
+Premium Plan Screen
+Purpose: Upgrade to premium features
+
+Header:
+- Background: Gradient (purple to gold)
+- Height: 200px
+- Crown icon: 80px, gold, centered
+- Title: "JAW Premier", 28px, Bold, white, centered
+- Subtitle: "Unlock premium benefits and rewards", 14px, centered
+
+Features List:
+- Background: #1A1625
+- Border radius: 24px 24px 0 0
+- Padding: 24px 16px
+
+Section Title:
+- "Premium Benefits", 20px, SemiBold, white
+- Margin bottom: 20px
+
+Feature Items:
+- Height: Auto (min 60px)
+- Layout: Horizontal
+- Margin bottom: 16px
+
+Icon Container:
+- Size: 48px
+- Background: rgba(107, 92, 231, 0.2)
+- Border radius: 12px
+- Icon: 24px, purple, centered
+
+Content:
+- Padding left: 16px
+- Flex: 1
+
+Title:
+- Font: 15px, SemiBold, white
+- Margin bottom: 4px
+
+Description:
+- Font: 13px, Regular, gray
+- Line height: 1.5
+
+Features:
+1. Priority Bookings
+2. Exclusive Deals (up to 30% off)
+3. Free Cancellation
+4. Premium Support
+5. No Ads
+6. Early Access to Features
+
+Plan Selection:
+- Title: "Choose Your Plan", 18px, SemiBold
+- Position: 24px below features
+
+Plan Cards:
+- Layout: Vertical stack
+- Gap: 12px
+
+Each Plan:
+- Height: 100px
+- Background: #2D2640
+- Border: 2px solid transparent
+- Border radius: 16px
+- Padding: 16px
+- Selected: Purple border, purple glow shadow
+
+Header Row:
+- Layout: Horizontal, space between
+
+Left:
+- Duration: "Monthly" | "Yearly", 16px, SemiBold, white
+- Badge: "Save 40%", green bg, 11px (yearly only)
+
+Right:
+- Price: "$9.99", 24px, Bold, white
+- Period: "/month", 13px, gray
+
+Features Row:
+- Font: 12px, Regular, gray
+- Checkmarks: Purple, 14px
+- Layout: Horizontal, wrap
+- Examples: "Cancel anytime" • "All features"
+
+Most Popular Badge:
+- Position: Top right corner of card
+- Background: Linear gradient purple
+- Padding: 4px 12px
+- Border radius: 0 16px 0 12px
+- Text: "Most Popular", 11px, white, Bold
+
+Payment Methods:
+- Title: "Payment Method", 16px, SemiBold
+- Position: 24px below plans
+
+Method Buttons:
+- Height: 56px
+- Background: #2D2640
+- Border: 1px solid #4A4A4A
+- Border radius: 12px
+- Margin bottom: 12px
+- Layout: Horizontal
+
+Icon:
+- Size: 32px, left, 16px padding
+- Type: Credit card, PayPal, Apple Pay, Google Pay
+
+Name:
+- Font: 15px, SemiBold, white
+- Position: Left of icon
+
+Radio:
+- Size: 20px
+- Position: Right
+- Selected: Purple fill, white dot
+
+Subscribe Button:
+- Position: Fixed bottom, 24px from edge
+- Width: Calc(100% - 32px)
+- Height: 56px
+- Background: Linear gradient (purple to gold)
+- Border radius: 12px
+- Text: "Subscribe Now", 17px, Bold, white
+- Shadow: 0 8px 24px rgba(107, 92, 231, 0.4)
+
+Terms:
+- Position: 12px above button
+- Text: "Auto-renews. Cancel anytime.", 12px, gray, centered
+- Link: "Terms of Service", purple, underlined
+
+12. CONTACT & SUPPORT
+Contact Us Screen
+Purpose: User support contact form
+
+Header:
+- Title: "Contact Us", 20px, SemiBold, centered
+- Subtitle: "Get in Touch", 14px, gray, centered
+
+Icon:
+- Type: Mail with heart, 64px, purple, centered
+- Position: 40px below header
+
+Tagline:
+- Text: "We're here to help you", 16px, white, centered
+- Margin: 16px below icon
+
+Contact Methods:
+- Layout: Horizontal, 3 cards
+- Gap: 12px
+- Margin: 24px below tagline
+
+Each Method Card:
+- Width: Calc(33.33% - 8px)
+- Height: 80px
+- Background: #2D2640
+- Border radius: 12px
+- Layout: Vertical, centered
+- Tap effect: Scale 0.95
+
+Icon:
+- Size: 28px, purple
+- Types: Phone, Email, Chat
+
+Label:
+- Font: 12px, Regular, white
+- Position: 8px below icon
+
+Contact Form:
+- Position: 32px below methods
+- Title: "Send a Message", 18px, SemiBold, white
+
+Form Fields:
+
+1. Name:
+   - Height: 52px
+   - Icon: User, 20px, left
+   - Placeholder: "Your name"
+
+2. Email:
+   - Height: 52px
+   - Icon: Envelope, 20px, left
+   - Placeholder: "your.email@example.com"
+   - Keyboard: Email type
