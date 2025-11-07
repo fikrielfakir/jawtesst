@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react';
-import { authService } from '@services/auth/auth.service';
-
-interface User {
-  id: string;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  userType: string;
-}
+import { authService, User } from '@services/auth/auth.service';
+import { supabase } from '@/lib/supabaseClient';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -15,6 +8,23 @@ export function useAuth() {
 
   useEffect(() => {
     checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session?.user) {
+            const currentUser = await authService.getUser();
+            setUser(currentUser);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const checkUser = async () => {
@@ -28,10 +38,22 @@ export function useAuth() {
     }
   };
 
-  const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    userType: 'customer' | 'owner' = 'customer'
+  ) => {
     try {
       setLoading(true);
-      const { user } = await authService.signUp(email, password, firstName, lastName);
+      const { user } = await authService.signUp({
+        email,
+        password,
+        firstName,
+        lastName,
+        userType,
+      });
       setUser(user);
     } catch (error) {
       console.error('Sign up error:', error);

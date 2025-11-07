@@ -7,6 +7,7 @@ import { CustomButton } from '@components/auth/CustomButton';
 import { AuthScreenWrapper } from '@components/auth/AuthScreenWrapper';
 import { IconContainer } from '@components/auth/IconContainer';
 import { Fingerprint, ArrowLeft } from '@tamagui/lucide-icons';
+import { authService } from '@services/auth/auth.service';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -29,13 +30,19 @@ export default function ForgotPasswordScreen() {
 
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      router.push({
-        pathname: '/(auth)/verify-email',
-        params: { email }
-      });
+      await authService.resetPassword(email);
+      Alert.alert(
+        'Success',
+        'Password reset link has been sent to your email. Please check your inbox.',
+        [
+          {
+            text: 'OK',
+            onPress: () => router.replace('/(auth)/sign-in')
+          }
+        ]
+      );
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to send verification code');
+      Alert.alert('Error', error.message || 'Failed to send password reset email');
     } finally {
       setLoading(false);
     }
