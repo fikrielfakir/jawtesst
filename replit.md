@@ -50,9 +50,9 @@ Key tables implemented:
 All tables have Row Level Security (RLS) policies configured.
 
 ## Environment Setup
-Required environment variables (add via Replit Secrets):
-- `EXPO_PUBLIC_SUPABASE_URL` - Your Supabase project URL
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anon/public key
+Required environment variables (configured via Replit Secrets):
+- `EXPO_PUBLIC_SUPABASE_URL` - Your Supabase project URL (configured)
+- `EXPO_PUBLIC_SUPABASE_KEY` - Your Supabase anon/public key (configured)
 
 ## Current State
 The app has a working authentication system and basic navigation structure. Users can:
@@ -86,3 +86,10 @@ None recorded yet.
   - Initial project setup and authentication implementation
   - Replaced "JAW" text with jwa-logo.png image across all authentication screens (sign-in, sign-up, register-restaurant, welcome)
   - Logo displays at appropriate sizes for each screen (120x60 for sign-in/sign-up, 100x50 for register-restaurant header, 150x75 for welcome)
+  - **Authentication Enhancement:**
+    - Added back buttons to sign-in and sign-up screens (matching register-restaurant pattern)
+    - Integrated Supabase authentication (replacing local backend auth)
+    - Configured Supabase client with environment variables
+    - Updated auth service to use Supabase Auth API for sign-up, sign-in, sign-out, and password reset
+    - Added @lib path mapping to TypeScript configuration
+    - Implemented cross-platform password reset with proper deep link scheme (jaw://)
