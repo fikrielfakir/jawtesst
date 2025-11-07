@@ -61,7 +61,7 @@ export default function WelcomeScreen() {
               borderRadius={borderRadius.medium}
               height={52}
               pressStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-              onPress={() => router.push('/(auth)/sign-in')}
+              onPress={() => router.push('/(auth)/sign-up')}
             >
               <Text fontSize={16} fontWeight="600" color={colors.white}>
                 I'm a User

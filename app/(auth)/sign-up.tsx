@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
 import { authDesign } from '@constants/theme/authDesign';
 import { CustomInput } from '@components/auth/CustomInput';
@@ -47,102 +48,111 @@ export default function SignUpScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView 
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.logoContainer}>
-          <Text style={styles.logo}>JAW</Text>
-        </View>
-
-        <View style={styles.headerContainer}>
-          <Text style={styles.title}>Sign Up Account</Text>
-          <Text style={styles.subtitle}>Enter your personal data to create your account.</Text>
-        </View>
-
-        <View style={styles.socialButtonsContainer}>
-          <SocialButton provider="google" onPress={() => handleSocialSignUp('google')} />
-          <View style={styles.socialButtonSpacer} />
-          <SocialButton provider="facebook" onPress={() => handleSocialSignUp('facebook')} />
-        </View>
-
-        <View style={styles.dividerContainer}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>Or</Text>
-          <View style={styles.dividerLine} />
-        </View>
-
-        <View style={styles.formContainer}>
-          <View style={styles.nameRow}>
-            <View style={styles.nameField}>
-              <CustomInput
-                label="First Name"
-                placeholder="eg.John"
-                value={firstName}
-                onChangeText={setFirstName}
-                autoCapitalize="words"
-              />
-            </View>
-            <View style={styles.nameFieldSpacer} />
-            <View style={styles.nameField}>
-              <CustomInput
-                label="Last Name"
-                placeholder="eg.Francisco"
-                value={lastName}
-                onChangeText={setLastName}
-                autoCapitalize="words"
-              />
-            </View>
+    <LinearGradient
+      colors={['#4C3472', '#2F2342', '#0D0713']}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 0.5, y: 1 }}
+      style={styles.gradient}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScrollView 
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.logoContainer}>
+            <Text style={styles.logo}>JAW</Text>
           </View>
 
-          <CustomInput
-            label="Email"
-            placeholder="eg.johnfran@gmail.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>Sign Up Account</Text>
+            <Text style={styles.subtitle}>Enter your personal data to create your account.</Text>
+          </View>
 
-          <CustomInput
-            label="Password"
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            icon="password"
-          />
+          <View style={styles.socialButtonsContainer}>
+            <SocialButton provider="google" onPress={() => handleSocialSignUp('google')} />
+            <View style={styles.socialButtonSpacer} />
+            <SocialButton provider="facebook" onPress={() => handleSocialSignUp('facebook')} />
+          </View>
 
-          <Text style={styles.passwordHint}>Must be at least 8 characters</Text>
+          <View style={styles.dividerContainer}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>Or</Text>
+            <View style={styles.dividerLine} />
+          </View>
 
-          <CustomButton
-            title="Sign Up"
-            onPress={handleSignUp}
-            loading={loading}
-            disabled={loading}
-          />
-        </View>
+          <View style={styles.formContainer}>
+            <View style={styles.nameRow}>
+              <View style={styles.nameField}>
+                <CustomInput
+                  label="First Name"
+                  placeholder="eg.John"
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  autoCapitalize="words"
+                />
+              </View>
+              <View style={styles.nameFieldSpacer} />
+              <View style={styles.nameField}>
+                <CustomInput
+                  label="Last Name"
+                  placeholder="eg.Francisco"
+                  value={lastName}
+                  onChangeText={setLastName}
+                  autoCapitalize="words"
+                />
+              </View>
+            </View>
 
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>Already have an account ? </Text>
-          <Link href="/(auth)/sign-in" asChild>
-            <TouchableOpacity>
-              <Text style={styles.footerLink}>Sign In</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+            <CustomInput
+              label="Email"
+              placeholder="eg.johnfran@gmail.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+
+            <CustomInput
+              label="Password"
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              icon="password"
+            />
+
+            <Text style={styles.passwordHint}>Must be at least 8 characters</Text>
+
+            <CustomButton
+              title="Sign Up"
+              onPress={handleSignUp}
+              loading={loading}
+              disabled={loading}
+            />
+          </View>
+
+          <View style={styles.footerContainer}>
+            <Text style={styles.footerText}>Already have an account ? </Text>
+            <Link href="/(auth)/sign-in" asChild>
+              <TouchableOpacity>
+                <Text style={styles.footerLink}>Sign In</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
-    backgroundColor: authDesign.colors.background,
   },
   container: {
     flex: 1,

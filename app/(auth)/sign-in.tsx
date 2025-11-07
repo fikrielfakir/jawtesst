@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
 import { authDesign } from '@constants/theme/authDesign';
 import { CustomInput } from '@components/auth/CustomInput';
@@ -45,103 +46,112 @@ export default function SignInScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <ScrollView 
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.logoContainer}>
-          <Text style={styles.logo}>JAW</Text>
-        </View>
+    <LinearGradient
+      colors={['#4C3472', '#2F2342', '#0D0713']}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 0.5, y: 1 }}
+      style={styles.gradient}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScrollView 
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.logoContainer}>
+            <Text style={styles.logo}>JAW</Text>
+          </View>
 
-        <View style={styles.headerContainer}>
-          <Text style={styles.title}>Sign In</Text>
-          <Text style={styles.subtitle}>Sign in to continue</Text>
-        </View>
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>Sign In</Text>
+            <Text style={styles.subtitle}>Sign in to continue</Text>
+          </View>
 
-        <View style={styles.socialButtonsContainer}>
-          <SocialButton provider="google" onPress={() => handleSocialLogin('google')} />
-          <View style={styles.socialButtonSpacer} />
-          <SocialButton provider="facebook" onPress={() => handleSocialLogin('facebook')} />
-        </View>
+          <View style={styles.socialButtonsContainer}>
+            <SocialButton provider="google" onPress={() => handleSocialLogin('google')} />
+            <View style={styles.socialButtonSpacer} />
+            <SocialButton provider="facebook" onPress={() => handleSocialLogin('facebook')} />
+          </View>
 
-        <View style={styles.dividerContainer}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>Or</Text>
-          <View style={styles.dividerLine} />
-        </View>
+          <View style={styles.dividerContainer}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>Or</Text>
+            <View style={styles.dividerLine} />
+          </View>
 
-        <View style={styles.formContainer}>
-          <CustomInput
-            label="Email"
-            placeholder="eg.johnfran@gmail.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            icon="email"
-          />
+          <View style={styles.formContainer}>
+            <CustomInput
+              label="Email"
+              placeholder="eg.johnfran@gmail.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              icon="email"
+            />
 
-          <CustomInput
-            label="Password"
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            icon="password"
-          />
+            <CustomInput
+              label="Password"
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              icon="password"
+            />
 
-          <Text style={styles.passwordHint}>Must be at least 8 characters</Text>
+            <Text style={styles.passwordHint}>Must be at least 8 characters</Text>
 
-          <View style={styles.rememberForgotContainer}>
-            <TouchableOpacity
-              style={styles.rememberMeContainer}
-              onPress={() => setRememberMe(!rememberMe)}
-              activeOpacity={0.7}
-              accessibilityRole="checkbox"
-              accessibilityLabel="Remember me"
-              accessibilityState={{ checked: rememberMe }}
-            >
-              <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
-                {rememberMe && <Text style={styles.checkmark}>✓</Text>}
-              </View>
-              <Text style={styles.rememberMeText}>Remember me</Text>
-            </TouchableOpacity>
+            <View style={styles.rememberForgotContainer}>
+              <TouchableOpacity
+                style={styles.rememberMeContainer}
+                onPress={() => setRememberMe(!rememberMe)}
+                activeOpacity={0.7}
+                accessibilityRole="checkbox"
+                accessibilityLabel="Remember me"
+                accessibilityState={{ checked: rememberMe }}
+              >
+                <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
+                  {rememberMe && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+                <Text style={styles.rememberMeText}>Remember me</Text>
+              </TouchableOpacity>
 
-            <Link href="/(auth)/forgot-password" asChild>
+              <Link href="/(auth)/forgot-password" asChild>
+                <TouchableOpacity>
+                  <Text style={styles.forgotPassword}>Forget Password?</Text>
+                </TouchableOpacity>
+              </Link>
+            </View>
+
+            <CustomButton
+              title="Sign In"
+              onPress={handleSignIn}
+              loading={loading}
+              disabled={loading}
+            />
+          </View>
+
+          <View style={styles.footerContainer}>
+            <Text style={styles.footerText}>Don't have an account ? </Text>
+            <Link href="/(auth)/sign-up" asChild>
               <TouchableOpacity>
-                <Text style={styles.forgotPassword}>Forget Password?</Text>
+                <Text style={styles.footerLink}>Sign Up</Text>
               </TouchableOpacity>
             </Link>
           </View>
-
-          <CustomButton
-            title="Sign In"
-            onPress={handleSignIn}
-            loading={loading}
-            disabled={loading}
-          />
-        </View>
-
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>Don't have an account ? </Text>
-          <Link href="/(auth)/sign-up" asChild>
-            <TouchableOpacity>
-              <Text style={styles.footerLink}>Sign Up</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
-    backgroundColor: authDesign.colors.background,
   },
   container: {
     flex: 1,
