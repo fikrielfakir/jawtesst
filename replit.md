@@ -1,19 +1,21 @@
 # JAW Restaurant App - Project Documentation
 
 ## Overview
-JAW is a comprehensive React Native restaurant discovery and booking application built with modern technologies including Expo Router, Tamagui UI library, and Supabase backend.
+JAW is a comprehensive React Native restaurant discovery and booking application built with modern technologies including Expo Router, Tamagui UI library, Express.js API, and Neon PostgreSQL database via Drizzle ORM.
 
 ## Project Status (November 7, 2025)
 The project has been initialized with the foundational architecture and core features. The app currently includes:
 
 ### Completed Features
 - ✅ Project structure setup with Expo Router file-based navigation
-- ✅ TypeScript configuration with path aliases
+- ✅ TypeScript configuration with path aliases and esModuleInterop
 - ✅ Tamagui UI library integration
-- ✅ Supabase client configuration for authentication and database
-- ✅ Authentication flow (sign-in, sign-up, forgot password)
+- ✅ Express.js API backend with JWT authentication
+- ✅ Neon PostgreSQL database with Drizzle ORM
+- ✅ Authentication flow (sign-in, sign-up, reset password)
+- ✅ Restaurant registration with owner account creation
 - ✅ Main tab navigation (Home, Search, Bookings, Favorites, Profile)
-- ✅ Database schema with migrations and RLS policies
+- ✅ Database schema pushed to production
 - ✅ Custom hooks (useAuth)
 - ✅ Theme constants (colors, spacing, categories)
 
@@ -21,63 +23,59 @@ The project has been initialized with the foundational architecture and core fea
 The app follows clean architecture principles with clear separation:
 - **app/**: File-based routing with Expo Router
 - **src/components/**: Reusable UI components
-- **src/services/**: External service integrations (Supabase, etc.)
+- **src/services/**: API service integrations
 - **src/domain/**: Business logic, models, repositories, use cases
 - **src/lib/**: Utilities, hooks, helpers
 - **src/constants/**: Theme, categories, configuration
-- **supabase/**: Database migrations, policies, seeds
+- **server/**: Express.js API server with routes
+- **shared/**: Drizzle ORM database schema
 
 ### Tech Stack
 - **Frontend**: React Native 0.81.5, Expo 54
 - **Navigation**: Expo Router 3.5
 - **UI**: Tamagui 1.136
-- **Backend**: Supabase (PostgreSQL + Auth)
+- **Backend**: Express.js 5.1 API
+- **Database**: Neon PostgreSQL via Drizzle ORM 0.44
+- **Authentication**: JWT-based auth with bcrypt
 - **State**: Zustand 4.5
 - **Data Fetching**: TanStack Query 5.90
 - **Forms**: React Hook Form 7.66
 - **Language**: TypeScript 5.9
 
-## Database Schema (Version 2.0)
+## Database Schema (Current)
 
-The database migration is ready in `supabase/migrations/20251107_initial_schema.sql`.
-
-### Comprehensive Schema Features:
-- **30+ Production Tables** with optimized indexes
-- **Role-Based Access Control (RBAC)** with granular permissions
-- **Row Level Security (RLS)** policies on all tables
-- **Automated Triggers** for business logic
-- **Performance Views** for analytics
-- **Audit Logging** for compliance
+The database schema is managed using Drizzle ORM in `shared/schema.ts`.
 
 ### Core Tables:
-- **users** - User profiles extending Supabase Auth
-- **roles & permissions** - RBAC system with 50+ permissions
-- **venues** - Restaurant listings with full details
-- **bookings** - Table reservations with confirmation codes
-- **reviews** - Ratings (food, service, ambiance) with photos
-- **menu_items** - Restaurant menus with allergens & nutrition
+- **users** - User profiles with authentication
+  - Fields: id, email, password, firstName, lastName, phone, profileImage, bio
+  - User types: customer, restaurant_owner, admin
+- **restaurants** - Restaurant listings
+  - Fields: id, ownerId, name, description, address, city, country, phone, email
+  - Category, price range, cover image, hours, rating, reviews
+- **bookings** - Table reservations
+  - Fields: id, userId, restaurantId, bookingDate, bookingTime, numberOfGuests
+  - Status: pending, confirmed, cancelled, completed
+  - Unique confirmation codes
+- **reviews** - Restaurant ratings and reviews
+  - Fields: id, userId, restaurantId, rating, comment, images
+  - Verified status
+- **stories** - Time-limited content (Instagram-style)
+  - Fields: id, restaurantId, mediaUrl, mediaType, duration, views
+  - Auto-expiring with status tracking
+- **favorites** - User saved restaurants
+- **menu_items** - Restaurant menus with pricing
 
-### Advanced Features:
-- **Loyalty Program** - Points system with bronze/silver/gold/platinum tiers
-- **Premier Subscriptions** - Premium membership with Stripe integration
-- **Promotions & Offers** - Discount codes and special deals
-- **User Stories** - Time-limited content (Instagram-style)
-- **Notifications** - Multi-channel (email, push, SMS)
-- **Analytics** - Business intelligence and reporting
-- **Payment Methods** - Secure card storage via Stripe
-- **Venue Staff** - Team management with role assignments
-- **Search History** - Personalized recommendations
-- **Reports & Moderation** - Content flagging system
-- **Banned Users** - Security and compliance
-- **Audit Logs** - Complete activity tracking
-
-### To Apply Migration:
-See `supabase/README.md` and `supabase/MIGRATION_GUIDE.md` for detailed instructions.
+### Managing Schema:
+- Schema defined in `shared/schema.ts` using Drizzle ORM
+- Push changes: `npm run db:push`
+- Open Drizzle Studio: `npm run db:studio`
 
 ## Environment Setup
-Required environment variables (configured via Replit Secrets):
-- `EXPO_PUBLIC_SUPABASE_URL` - Your Supabase project URL (configured)
-- `EXPO_PUBLIC_SUPABASE_KEY` - Your Supabase anon/public key (configured)
+Required environment variables (configured via Replit):
+- `DATABASE_URL` - Neon PostgreSQL connection string (auto-configured)
+- `JWT_SECRET` - Secret key for JWT token signing (optional, has dev fallback)
+- `API_PORT` - API server port (defaults to 3000)
 
 ## Current State
 The app has a working authentication system and basic navigation structure. Users can:
@@ -99,28 +97,41 @@ Features ready to be built:
 
 ## Development Notes
 - The Expo web server runs on port 5000
+- The Express API server runs on port 3000
 - Package versions have minor warnings but are functional
 - Using React 19.1.0 with Expo 54
-- All authentication flows are connected to Supabase Auth
+- Authentication flows use JWT tokens stored in AsyncStorage
+- Database schema managed with Drizzle ORM
 
 ## User Preferences
 None recorded yet.
 
 ## Recent Changes
-- **2025-11-07**: 
+- **2025-11-07 (Latest - Migration to Neon PostgreSQL)**:
+  - **Backend Migration:**
+    - Migrated from Supabase to Neon PostgreSQL with Drizzle ORM
+    - Created Express.js API server with authentication routes
+    - Implemented JWT-based authentication with bcrypt password hashing
+    - Added restaurant registration endpoint at `/api/restaurants/register`
+    - Removed Supabase dependencies and cleaned up unused code
+    - Successfully pushed database schema to Neon PostgreSQL
+  - **Frontend Updates:**
+    - Updated auth service to call Express API instead of Supabase
+    - Modified register-restaurant screen with full form (name, password, etc.)
+    - Dynamic API URL detection for Replit environment
+    - All auth flows now work with JWT tokens
+  - **TypeScript Configuration:**
+    - Added `esModuleInterop: true` for proper module imports
+    - Fixed all LSP errors in server code
+  - **Database Schema:**
+    - Drizzle schema in `shared/schema.ts`
+    - Core tables: users, restaurants, bookings, reviews, stories, favorites, menu_items
+    - Enums: user_type, price_range, booking_status, media_type, story_status
+
+- **2025-11-07 (Earlier)**:
   - Initial project setup and authentication implementation
-  - Replaced "JAW" text with jwa-logo.png image across all authentication screens (sign-in, sign-up, register-restaurant, welcome)
-  - Logo displays at appropriate sizes for each screen (120x60 for sign-in/sign-up, 100x50 for register-restaurant header, 150x75 for welcome)
-  - **Authentication Enhancement:**
-    - Added back buttons to sign-in and sign-up screens (matching register-restaurant pattern)
-    - Integrated Supabase authentication (replacing local backend auth)
-    - Configured Supabase client with environment variables
-    - Updated auth service to use Supabase Auth API for sign-up, sign-in, sign-out, and password reset
-    - Added @lib path mapping to TypeScript configuration
-    - Implemented cross-platform password reset with proper deep link scheme (jaw://)
-  - **Database Migration Ready:**
-    - Created comprehensive Supabase database schema (Version 2.0)
-    - 30+ production-ready tables with RBAC, RLS policies, triggers, and seed data
-    - Migration file: `supabase/migrations/20251107_initial_schema.sql`
-    - Complete documentation: `supabase/README.md` and `supabase/MIGRATION_GUIDE.md`
-    - Ready to apply via Supabase Dashboard SQL Editor
+  - Replaced "JAW" text with jwa-logo.png image across all authentication screens
+  - Logo displays at appropriate sizes for each screen
+  - Added back buttons to sign-in and sign-up screens
+  - Added @lib path mapping to TypeScript configuration
+  - Implemented cross-platform password reset with proper deep link scheme (jaw://)
