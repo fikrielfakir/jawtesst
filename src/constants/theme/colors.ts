@@ -5,6 +5,9 @@ export const colors = {
   gradientStart: '#2D2640',
   gradientEnd: '#1A1625',
   
+  buttonPrimary: '#6C4AB6',
+  buttonPrimaryHover: '#AE90EE',
+  
   white: '#FFFFFF',
   lightGray: '#E0E0E0',
   mediumGray: '#8B8B8B',

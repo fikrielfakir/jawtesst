@@ -4,9 +4,9 @@ export const authDesign = {
     backgroundDark: '#2D2640',
     surface: '#FFFFFF',
     
-    primary: '#8B7FE8',
+    primary: '#6C4AB6',
     primaryDark: '#6B5CE7',
-    primaryPressed: '#5A4BC6',
+    primaryPressed: '#AE90EE',
     
     textPrimary: '#FFFFFF',
     textSecondary: '#D1D5DB',

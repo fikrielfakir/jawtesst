@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, ViewStyle } from 'react-native';
 import { authDesign } from '@constants/theme/authDesign';
+import { colors } from '@constants/theme/colors';
 
 interface CustomButtonProps {
   title: string;
@@ -20,6 +21,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
   style,
 }) => {
   const isPrimary = variant === 'primary';
+  const [isPressed, setIsPressed] = React.useState(false);
   
   return (
     <TouchableOpacity
@@ -27,11 +29,14 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
         styles.button,
         isPrimary ? styles.primaryButton : styles.secondaryButton,
         (disabled || loading) && styles.disabledButton,
+        isPrimary && isPressed && { backgroundColor: colors.buttonPrimaryHover },
         style,
       ]}
       onPress={onPress}
       disabled={disabled || loading}
-      activeOpacity={0.85}
+      activeOpacity={1}
+      onPressIn={() => setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}
     >
       {loading ? (
         <ActivityIndicator color={isPrimary ? authDesign.colors.textPrimary : authDesign.colors.primary} />
@@ -59,7 +64,7 @@ const styles = StyleSheet.create({
     marginTop: authDesign.spacing.buttonMarginTop,
   },
   primaryButton: {
-    backgroundColor: authDesign.colors.primary,
+    backgroundColor: colors.buttonPrimary,
   },
   secondaryButton: {
     backgroundColor: 'transparent',

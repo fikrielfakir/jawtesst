@@ -4,7 +4,7 @@ import { Image } from 'react-native';
 import { YStack, Button, Text, View } from 'tamagui';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from '@tamagui/linear-gradient';
-import { gradients } from '@constants/theme/colors';
+import { gradients, colors } from '@constants/theme/colors';
 import { spacing, borderRadius } from '@constants/theme/spacing';
 
 export default function WelcomeScreen() {
@@ -51,10 +51,10 @@ export default function WelcomeScreen() {
 
           <YStack gap={spacing.m} width="85%" marginTop={spacing.xxxl}>
             <Button
-              backgroundColor="#7D4EFF"
+              backgroundColor={colors.buttonPrimary}
               borderRadius={borderRadius.medium}
               height={48}
-              pressStyle={{ opacity: 0.8 }}
+              pressStyle={{ backgroundColor: colors.buttonPrimaryHover }}
               shadowColor="#000"
               shadowOffset={{ width: 0, height: 4 }}
               shadowOpacity={0.25}

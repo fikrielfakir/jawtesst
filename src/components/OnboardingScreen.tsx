@@ -91,10 +91,10 @@ export function OnboardingScreen({
 
         <View paddingHorizontal="7.5%" paddingBottom={spacing.xl}>
           <Button
-            backgroundColor="#793EF5"
+            backgroundColor={colors.buttonPrimary}
             borderRadius={16}
             height={54}
-            pressStyle={{ opacity: 0.9, scale: 0.98 }}
+            pressStyle={{ backgroundColor: colors.buttonPrimaryHover, scale: 0.98 }}
             onPress={onNext}
           >
             <Text fontSize={18} fontWeight="600" color={colors.white}>
