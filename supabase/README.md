@@ -50,9 +50,14 @@ If you have the Supabase CLI installed:
 # Link to your Supabase project
 supabase link --project-ref your-project-ref
 
-# Apply the migration
-supabase db push
+# Execute the migration file directly
+supabase db execute --file supabase/migrations/20251107_initial_schema.sql
+
+# Or use psql via the CLI
+supabase db psql < supabase/migrations/20251107_initial_schema.sql
 ```
+
+> **Note:** This is a hand-authored SQL migration file, not a CLI-generated migration.
 
 ### Option 3: Using psql
 
