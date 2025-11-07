@@ -20,6 +20,13 @@ const RESTAURANT_TYPES = [
   'Bar & Grill',
 ];
 
+const getApiUrl = () => {
+  if (typeof window !== 'undefined' && window.location) {
+    return `${window.location.protocol}//${window.location.host}`;
+  }
+  return 'http://localhost:5000';
+};
+
 export default function RegisterRestaurantScreen() {
   const [restaurantName, setRestaurantName] = useState('');
   const [email, setEmail] = useState('');
@@ -28,26 +35,59 @@ export default function RegisterRestaurantScreen() {
   const [type, setType] = useState('');
   const [cuisineType, setCuisineType] = useState('');
   const [about, setAbout] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async () => {
     Keyboard.dismiss();
     
-    if (!restaurantName || !email || !phone || !address || !type || !cuisineType || !about) {
+    if (!restaurantName || !firstName || !lastName || !email || !phone || !address || !type || !cuisineType || !about || !password) {
       Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password.length < 8) {
+      Alert.alert('Error', 'Password must be at least 8 characters');
       return;
     }
 
     setLoading(true);
     try {
+      const API_URL = getApiUrl();
+      const response = await fetch(`${API_URL}/api/restaurants/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          restaurantName,
+          email,
+          phone,
+          address,
+          type,
+          cuisineType,
+          about,
+          password,
+          firstName,
+          lastName,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to submit registration');
+      }
+
       Alert.alert(
         'Success',
         'Your restaurant registration request has been submitted! We will review it and get back to you soon.',
         [
           {
             text: 'OK',
-            onPress: () => router.back(),
+            onPress: () => router.replace('/(auth)/sign-in'),
           },
         ]
       );
@@ -107,6 +147,28 @@ export default function RegisterRestaurantScreen() {
             <View style={styles.rowContainer}>
               <View style={styles.rowField}>
                 <CustomInput
+                  label="First Name"
+                  placeholder="John"
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  autoCapitalize="words"
+                />
+              </View>
+              <View style={styles.rowSpacer} />
+              <View style={styles.rowField}>
+                <CustomInput
+                  label="Last Name"
+                  placeholder="Doe"
+                  value={lastName}
+                  onChangeText={setLastName}
+                  autoCapitalize="words"
+                />
+              </View>
+            </View>
+
+            <View style={styles.rowContainer}>
+              <View style={styles.rowField}>
+                <CustomInput
                   label="Email"
                   placeholder="exemple@gmail.com"
                   value={email}
@@ -126,6 +188,15 @@ export default function RegisterRestaurantScreen() {
                 />
               </View>
             </View>
+
+            <CustomInput
+              label="Password"
+              placeholder="Minimum 8 characters"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+            />
 
             <CustomInput
               label="Address"
