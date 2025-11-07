@@ -1,0 +1,165 @@
+jaw-app/
+│
+├── app/                          # All screens + navigation (Expo Router)
+│   ├── (auth)/                   # Authentication flow
+│   │   ├── sign-in.tsx
+│   │   ├── sign-up.tsx
+│   │   ├── forgot-password.tsx
+│   │   ├── verify-email.tsx
+│   │   └── reset-password.tsx
+│   │
+│   ├── (onboarding)/             # Onboarding screens
+│   │   ├── intro-1.tsx
+│   │   ├── intro-2.tsx
+│   │   ├── intro-3.tsx
+│   │   └── intro-4.tsx
+│   │
+│   ├── (user)/                   # Customer-side app UI
+│   │   ├── home.tsx
+│   │   ├── search.tsx
+│   │   ├── restaurant/[id].tsx
+│   │   ├── booking/booking-form.tsx
+│   │   ├── booking/booking-confirm.tsx
+│   │   ├── favorites.tsx
+│   │   ├── notifications.tsx
+│   │   └── profile.tsx
+│   │
+│   ├── (owner)/                  # Restaurant Owner App UI
+│   │   ├── dashboard.tsx
+│   │   ├── my-restaurants.tsx
+│   │   ├── restaurant-editor.tsx
+│   │   ├── analytics.tsx
+│   │   ├── bookings.tsx
+│   │   ├── reviews.tsx
+│   │   ├── subscription.tsx
+│   │   └── settings.tsx
+│   │
+│   ├── (shared)/                 # Shared screens
+│   │   ├── faq.tsx
+│   │   ├── contact.tsx
+│   │   ├── terms.tsx
+│   │   └── payment-methods.tsx
+│   │
+│   ├── index.tsx                 # Root router
+│   └── _layout.tsx               # Tab bar / stack navigation
+│
+│
+├── components/                   # Reusable components
+│   ├── ui/                       # Buttons, cards, etc.
+│   │   ├── Button.tsx
+│   │   ├── TextField.tsx
+│   │   ├── Checkbox.tsx
+│   │   ├── RatingStars.tsx
+│   │   ├── CategoryChip.tsx
+│   │   └── Modal.tsx
+│   │
+│   ├── restaurant/
+│   │   ├── RestaurantCard.tsx
+│   │   ├── RestaurantGallery.tsx
+│   │   ├── MenuItemCard.tsx
+│   │   └── ReviewItem.tsx
+│   │
+│   ├── booking/
+│   │   ├── CalendarPicker.tsx
+│   │   ├── TimePicker.tsx
+│   │   └── BookingSummary.tsx
+│   │
+│   └── stories/
+│       ├── StoryBubble.tsx
+│       └── StoryViewer.tsx
+│
+│
+├── services/                     # Connect to Supabase, Stripe, etc.
+│   ├── supabase/
+│   │   ├── client.ts             # Main Supabase client
+│   │   ├── auth.ts               # Signup, signin, sessions
+│   │   ├── restaurants.ts        # CRUD restaurants
+│   │   ├── bookings.ts           # Reservations
+│   │   ├── reviews.ts            # Reviews + images
+│   │   ├── notifications.ts
+│   │   ├── favorites.ts
+│   │   ├── bookmarks.ts
+│   │   ├── payment.ts            # Payment methods
+│   │   ├── subscriptions.ts      # Premier subscription
+│   │   └── stories.ts
+│   │
+│   ├── stripe/
+│   │   ├── create-subscription.ts
+│   │   └── add-payment-method.ts
+│
+│
+├── domain/                       # Business logic layer
+│   ├── models/
+│   │   ├── User.ts
+│   │   ├── Restaurant.ts
+│   │   ├── Booking.ts
+│   │   ├── Review.ts
+│   │   ├── MenuItem.ts
+│   │   ├── Story.ts
+│   │   └── PaymentMethod.ts
+│   │
+│   ├── repositories/
+│   │   ├── RestaurantRepository.ts
+│   │   ├── BookingRepository.ts
+│   │   ├── ReviewRepository.ts
+│   │   └── StoryRepository.ts
+│   │
+│   └── usecases/
+│       ├── CreateBooking.ts
+│       ├── SubmitReview.ts
+│       ├── UploadStory.ts
+│       └── ToggleFavorite.ts
+│
+│
+├── lib/                          # Utilities, hooks, helpers
+│   ├── hooks/
+│   │   ├── useUser.ts
+│   │   ├── useRestaurant.ts
+│   │   ├── useBooking.ts
+│   │   ├── useNotifications.ts
+│   │   └── useTheme.ts
+│   │
+│   ├── utils/
+│   │   ├── format-date.ts
+│   │   ├── validators.ts
+│   │   ├── upload-to-storage.ts
+│   │   └── generate-code.ts
+│   │
+│   ├── constants/
+│   │   ├── colors.ts
+│   │   ├── categories.ts
+│   │   └── env.ts
+│
+│
+├── assets/                       # Images, icons, fonts
+│   ├── icons/
+│   ├── images/
+│   └── fonts/
+│
+│
+├── supabase/                     # Backend side of project
+│   ├── migrations/               # SQL files
+│   │   ├── 0001_init_schema.sql
+│   │   ├── 0002_rls_policies.sql
+│   │   └── 0003_sample_data.sql
+│   │
+│   ├── functions/                # RPC Functions
+│   │   ├── get_restaurant_stats.sql
+│   │   ├── verify_review.sql
+│   │   └── calculate_analytics.sql
+│   │
+│   ├── storage/
+│   │   ├── restaurant-images/
+│   │   ├── review-images/
+│   │   └── stories/
+│   │
+│   └── seeds/
+│       ├── categories_seed.sql
+│       └── faqs_seed.sql
+│
+│
+├── .env
+├── package.json
+├── app.json
+├── tsconfig.json
+└── README.md
