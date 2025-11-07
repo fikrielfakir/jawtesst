@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useRouter } from 'expo-router';
-import { YStack, Text, Button, Input, H2 } from 'tamagui';
+import { YStack, XStack, Text, Button, Input, H2 } from 'tamagui';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@hooks/useAuth';
 import { Alert } from 'react-native';
