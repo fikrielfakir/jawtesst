@@ -19,24 +19,24 @@ args = "expo-web-server"
 name = "expo-web-server"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx expo start --web --port 5000"
-waitForPort = 5000
-
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run web"
+waitForPort = 5000
 
 [[ports]]
 localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 5001
-externalPort = 3001
+localPort = 8081
+externalPort = 8081
 
 [[ports]]
-localPort = 41555
+localPort = 33701
 externalPort = 3000
 
 [[ports]]

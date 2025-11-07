@@ -33,8 +33,12 @@
       ],
       "@shared/*": [
         "./shared/*"
+      ],
+      "@server/*": [
+        "./server/*"
       ]
-    }
+    },
+    "skipLibCheck": true
   },
   "include": [
     "**/*.ts",

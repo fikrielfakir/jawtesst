@@ -39,14 +39,12 @@ export function OnboardingScreen({
         </XStack>
 
         <YStack alignItems="center" marginTop={spacing.l}>
-          <Text
-            fontSize={48}
-            fontWeight="bold"
-            color={colors.white}
-            letterSpacing={2}
-          >
-            JAW
-          </Text>
+          <Image
+            source={require('../../attached_assets/Profile Restaurent Booking_1762514069783.png')}
+            width={120}
+            height={60}
+            resizeMode="contain"
+          />
         </YStack>
 
         <YStack flex={1} justifyContent="center" alignItems="center" paddingHorizontal={spacing.xl}>
