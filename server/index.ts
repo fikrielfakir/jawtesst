@@ -15,7 +15,7 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRouter);
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'ok', message: 'API is running' });
 });
 
