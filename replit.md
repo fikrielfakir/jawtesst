@@ -1,0 +1,85 @@
+# JAW Restaurant App - Project Documentation
+
+## Overview
+JAW is a comprehensive React Native restaurant discovery and booking application built with modern technologies including Expo Router, Tamagui UI library, and Supabase backend.
+
+## Project Status (November 7, 2025)
+The project has been initialized with the foundational architecture and core features. The app currently includes:
+
+### Completed Features
+- ✅ Project structure setup with Expo Router file-based navigation
+- ✅ TypeScript configuration with path aliases
+- ✅ Tamagui UI library integration
+- ✅ Supabase client configuration for authentication and database
+- ✅ Authentication flow (sign-in, sign-up, forgot password)
+- ✅ Main tab navigation (Home, Search, Bookings, Favorites, Profile)
+- ✅ Database schema with migrations and RLS policies
+- ✅ Custom hooks (useAuth)
+- ✅ Theme constants (colors, spacing, categories)
+
+### Architecture
+The app follows clean architecture principles with clear separation:
+- **app/**: File-based routing with Expo Router
+- **src/components/**: Reusable UI components
+- **src/services/**: External service integrations (Supabase, etc.)
+- **src/domain/**: Business logic, models, repositories, use cases
+- **src/lib/**: Utilities, hooks, helpers
+- **src/constants/**: Theme, categories, configuration
+- **supabase/**: Database migrations, policies, seeds
+
+### Tech Stack
+- **Frontend**: React Native 0.81.5, Expo 54
+- **Navigation**: Expo Router 3.5
+- **UI**: Tamagui 1.136
+- **Backend**: Supabase (PostgreSQL + Auth)
+- **State**: Zustand 4.5
+- **Data Fetching**: TanStack Query 5.90
+- **Forms**: React Hook Form 7.66
+- **Language**: TypeScript 5.9
+
+## Database Schema
+Key tables implemented:
+- `users` - User profiles and settings
+- `restaurants` - Restaurant listings
+- `bookings` - Table reservations
+- `reviews` - Ratings and reviews
+- `stories` - Time-limited restaurant stories
+- `favorites` - User's favorite restaurants
+- `menu_items` - Restaurant menu items
+
+All tables have Row Level Security (RLS) policies configured.
+
+## Environment Setup
+Required environment variables (add via Replit Secrets):
+- `EXPO_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anon/public key
+
+## Current State
+The app has a working authentication system and basic navigation structure. Users can:
+- Sign up for new accounts
+- Sign in to existing accounts
+- Reset forgotten passwords
+- Navigate between main app sections
+
+## Next Steps
+Features ready to be built:
+1. Restaurant listing and detail pages
+2. Search and filtering functionality
+3. Booking creation and management
+4. Review submission with photos
+5. Stories feature implementation
+6. Restaurant owner dashboard
+7. Menu management
+8. Analytics dashboard
+
+## Development Notes
+- The Expo web server runs on port 5000
+- Package versions have minor warnings but are functional
+- Using React 19.1.0 with Expo 54
+- All authentication flows are connected to Supabase Auth
+
+## User Preferences
+None recorded yet.
+
+## Recent Changes
+- **2025-11-07**: Initial project setup and authentication implementation
