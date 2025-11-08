@@ -53,7 +53,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       <Modal
         visible={isVisible}
         transparent
-        animationType="fade"
+        animationType="slide"
         onRequestClose={() => {
           setIsVisible(false);
           setIsFocused(false);
@@ -67,7 +67,10 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             setIsFocused(false);
           }}
         >
-          <View style={styles.modalContent}>
+          <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
+            <View style={styles.modalHandle}>
+              <View style={styles.modalHandleLine} />
+            </View>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{label}</Text>
             </View>
@@ -93,7 +96,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                 </TouchableOpacity>
               )}
             />
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
     </View>
@@ -145,15 +148,25 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   modalContent: {
     backgroundColor: authDesign.colors.background,
-    borderRadius: authDesign.sizes.cornerRadius * 2,
-    width: '80%',
-    maxHeight: '60%',
+    borderTopLeftRadius: authDesign.sizes.cornerRadius * 3,
+    borderTopRightRadius: authDesign.sizes.cornerRadius * 3,
+    width: '100%',
+    maxHeight: '70%',
     overflow: 'hidden',
+  },
+  modalHandle: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  modalHandleLine: {
+    width: 40,
+    height: 4,
+    backgroundColor: authDesign.colors.border,
+    borderRadius: 2,
   },
   modalHeader: {
     padding: authDesign.spacing.paddingHorizontal,
