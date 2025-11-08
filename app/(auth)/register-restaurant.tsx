@@ -13,12 +13,13 @@ import { supabase } from '@/lib/supabaseClient';
 
 const RESTAURANT_TYPES = [
   'Fine Dining',
-  'Casual',
-  'Cafe',
+  'Casual Dining',
   'Fast Food',
+  'Cafe',
+  'Bar & Grill',
   'Food Truck',
   'Bakery',
-  'Bar & Grill',
+  'Buffet',
 ];
 
 export default function RegisterRestaurantScreen() {
@@ -26,6 +27,8 @@ export default function RegisterRestaurantScreen() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
   const [type, setType] = useState('');
   const [cuisineType, setCuisineType] = useState('');
   const [about, setAbout] = useState('');
@@ -38,21 +41,31 @@ export default function RegisterRestaurantScreen() {
   const handleSubmit = async () => {
     Keyboard.dismiss();
     
-    if (!restaurantName || !firstName || !lastName || !email || !phone || !address || !type || !cuisineType || !about || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+    // Validate all fields
+    if (!restaurantName || !firstName || !lastName || !email || !phone || !address || !city || !country || !type || !cuisineType || !about || !password) {
+      Alert.alert('Missing Information', 'Please fill in all fields');
       return;
     }
 
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address');
+      return;
+    }
+
+    // Validate password
     if (password.length < 8) {
-      Alert.alert('Error', 'Password must be at least 8 characters');
+      Alert.alert('Weak Password', 'Password must be at least 8 characters');
       return;
     }
 
     setLoading(true);
+
     try {
       // Step 1: Sign up with Supabase Auth
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email,
+        email: email.toLowerCase().trim(),
         password,
         options: {
           data: {
@@ -75,42 +88,57 @@ export default function RegisterRestaurantScreen() {
         .from('users')
         .insert({
           id: authData.user.id,
-          first_name: firstName,
-          last_name: lastName,
-          phone: phone,
-          user_type: 'owner',
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          phone: phone.trim(),
+          user_type: 'restaurant_owner',
           is_verified: false,
         });
 
       if (userError) {
-        console.error('User profile creation error:', userError);
+        console.error('User profile error:', userError);
         throw new Error('Failed to create user profile');
       }
 
-      // Step 3: Create venue (restaurant) entry
-      const { error: venueError } = await supabase
-        .from('venues')
+      // Step 3: Create restaurant entry
+      const { error: restaurantError } = await supabase
+        .from('restaurants')
         .insert({
           owner_id: authData.user.id,
-          name: restaurantName,
-          description: about,
-          address: address,
-          city: 'Unknown', // You can add a city field later
-          country: 'Unknown', // You can add a country field later
-          phone,
-          email,
-          is_active: false, // Restaurant needs approval
+          name: restaurantName.trim(),
+          description: about.trim(),
+          address: address.trim(),
+          city: city.trim(),
+          country: country.trim(),
+          phone: phone.trim(),
+          email: email.toLowerCase().trim(),
+          category: type,
+          is_active: false, // Needs admin approval
+          is_premier: false,
+          rating: '0',
+          total_reviews: 0,
         });
 
-      if (venueError) {
-        console.error('Restaurant creation error:', venueError);
-        throw new Error('Failed to submit restaurant registration');
+      if (restaurantError) {
+        console.error('Restaurant creation error:', restaurantError);
+        throw new Error('Failed to register restaurant');
       }
 
       // Success! Navigate to success screen
       router.replace('/(auth)/registration-success');
+      
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to submit registration');
+      console.error('Registration error:', error);
+      
+      let errorMessage = 'Failed to submit registration. Please try again.';
+      
+      if (error.message?.includes('already registered')) {
+        errorMessage = 'This email is already registered. Please use a different email.';
+      } else if (error.message?.includes('Invalid')) {
+        errorMessage = error.message;
+      }
+      
+      Alert.alert('Registration Failed', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -129,6 +157,7 @@ export default function RegisterRestaurantScreen() {
             style={styles.backButton}
             onPress={() => router.back()}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            disabled={loading}
           >
             <ChevronLeft size={28} color={authDesign.colors.textPrimary} />
           </TouchableOpacity>
@@ -156,10 +185,11 @@ export default function RegisterRestaurantScreen() {
           <View style={styles.formContainer}>
             <CustomInput
               label="Restaurant Name"
-              placeholder="eg Romanes"
+              placeholder="eg. Romanes"
               value={restaurantName}
               onChangeText={setRestaurantName}
               autoCapitalize="words"
+              editable={!loading}
             />
 
             <View style={styles.rowContainer}>
@@ -170,6 +200,7 @@ export default function RegisterRestaurantScreen() {
                   value={firstName}
                   onChangeText={setFirstName}
                   autoCapitalize="words"
+                  editable={!loading}
                 />
               </View>
               <View style={styles.rowSpacer} />
@@ -180,6 +211,7 @@ export default function RegisterRestaurantScreen() {
                   value={lastName}
                   onChangeText={setLastName}
                   autoCapitalize="words"
+                  editable={!loading}
                 />
               </View>
             </View>
@@ -188,11 +220,12 @@ export default function RegisterRestaurantScreen() {
               <View style={styles.rowField}>
                 <CustomInput
                   label="Email"
-                  placeholder="exemple@gmail.com"
+                  placeholder="example@gmail.com"
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  editable={!loading}
                 />
               </View>
               <View style={styles.rowSpacer} />
@@ -203,6 +236,7 @@ export default function RegisterRestaurantScreen() {
                   value={phone}
                   onChangeText={setPhone}
                   keyboardType="phone-pad"
+                  editable={!loading}
                 />
               </View>
             </View>
@@ -214,18 +248,44 @@ export default function RegisterRestaurantScreen() {
               onChangeText={setPassword}
               secureTextEntry
               autoCapitalize="none"
+              editable={!loading}
             />
 
             <CustomInput
               label="Address"
-              placeholder="eg 123 Main st, City"
+              placeholder="eg. 123 Main St"
               value={address}
               onChangeText={setAddress}
               autoCapitalize="words"
+              editable={!loading}
             />
 
+            <View style={styles.rowContainer}>
+              <View style={styles.rowField}>
+                <CustomInput
+                  label="City"
+                  placeholder="eg. Fes"
+                  value={city}
+                  onChangeText={setCity}
+                  autoCapitalize="words"
+                  editable={!loading}
+                />
+              </View>
+              <View style={styles.rowSpacer} />
+              <View style={styles.rowField}>
+                <CustomInput
+                  label="Country"
+                  placeholder="eg. Morocco"
+                  value={country}
+                  onChangeText={setCountry}
+                  autoCapitalize="words"
+                  editable={!loading}
+                />
+              </View>
+            </View>
+
             <CustomSelect
-              label="Type"
+              label="Restaurant Type"
               placeholder="Select Type"
               value={type}
               onSelect={setType}
@@ -233,25 +293,27 @@ export default function RegisterRestaurantScreen() {
             />
 
             <CustomInput
-              label="Cuisine type"
-              placeholder="eg Italian, Mexican"
+              label="Cuisine Type"
+              placeholder="eg. Italian, Mexican"
               value={cuisineType}
               onChangeText={setCuisineType}
               autoCapitalize="words"
+              editable={!loading}
             />
 
             <CustomInput
-              label="About your business"
-              placeholder="Description your restaurant"
+              label="About Your Business"
+              placeholder="Describe your restaurant"
               value={about}
               onChangeText={setAbout}
               multiline
+              editable={!loading}
             />
 
             <View style={styles.divider} />
 
             <CustomButton
-              title="Submit"
+              title={loading ? "Submitting..." : "Submit"}
               onPress={handleSubmit}
               loading={loading}
               disabled={loading}

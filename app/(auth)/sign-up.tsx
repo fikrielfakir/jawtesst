@@ -16,7 +16,6 @@ export default function SignUpScreen() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -24,7 +23,7 @@ export default function SignUpScreen() {
     Keyboard.dismiss();
     
     // Client-side validation
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !email || !password) {
       Alert.alert('Missing Information', 'Please fill in all fields to continue.');
       return;
     }
@@ -37,11 +36,6 @@ export default function SignUpScreen() {
 
     if (password.length < 8) {
       Alert.alert('Weak Password', 'Password must be at least 8 characters long.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert('Passwords Do Not Match', 'Please ensure both passwords are the same.');
       return;
     }
 
@@ -177,17 +171,6 @@ export default function SignUpScreen() {
               placeholder="Enter your password"
               value={password}
               onChangeText={setPassword}
-              secureTextEntry
-              icon="password"
-              autoCapitalize="none"
-              editable={!loading}
-            />
-
-            <CustomInput
-              label="Confirm Password"
-              placeholder="Re-enter your password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
               secureTextEntry
               icon="password"
               autoCapitalize="none"
