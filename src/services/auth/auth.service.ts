@@ -252,9 +252,9 @@ class AuthService {
   }
 
   /**
-   * Send password reset email
+   * Generate and store password reset OTP via backend API
    */
-  async resetPassword(email: string): Promise<AuthResponse> {
+  async resetPassword(email: string): Promise<AuthResponse & { otp?: string }> {
     try {
       if (!email) {
         return {
@@ -272,28 +272,121 @@ class AuthService {
         };
       }
 
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'jaw://reset-password',
+      const API_URL = this.getApiUrl();
+      const response = await fetch(`${API_URL}/api/auth/request-password-reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
 
-      if (error) {
+      const result = await response.json();
+      
+      if (!response.ok || !result.success) {
         return {
           success: false,
-          message: error.message || 'Failed to send reset email',
+          message: result.message || 'Failed to generate verification code',
         };
       }
 
       return {
         success: true,
-        message: 'If an account exists with this email, you will receive a password reset link shortly.',
+        message: result.message,
+        otp: result.otp,
       };
     } catch (error: any) {
       console.error('Reset password error:', error);
       return {
         success: false,
-        message: error.message || 'Failed to send reset email',
+        message: error.message || 'Failed to generate verification code',
       };
     }
+  }
+
+  /**
+   * Verify password reset OTP via backend API
+   */
+  async verifyResetOtp(email: string, otp: string): Promise<AuthResponse> {
+    try {
+      const API_URL = this.getApiUrl();
+      const response = await fetch(`${API_URL}/api/auth/verify-reset-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok || !result.success) {
+        return {
+          success: false,
+          message: result.message || 'Invalid or expired verification code',
+        };
+      }
+
+      return {
+        success: true,
+        message: result.message,
+      };
+    } catch (error: any) {
+      console.error('Verify OTP error:', error);
+      return {
+        success: false,
+        message: error.message || 'Failed to verify code',
+      };
+    }
+  }
+
+  /**
+   * Reset password with new password via backend API (after OTP verification)
+   */
+  async resetPasswordWithOtp(email: string, otp: string, newPassword: string): Promise<AuthResponse> {
+    try {
+      if (newPassword.length < 8) {
+        return {
+          success: false,
+          message: 'Password must be at least 8 characters long',
+        };
+      }
+
+      const API_URL = this.getApiUrl();
+      const response = await fetch(`${API_URL}/api/auth/reset-password-with-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp, newPassword }),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok || !result.success) {
+        return {
+          success: false,
+          message: result.message || 'Failed to reset password',
+        };
+      }
+
+      return {
+        success: true,
+        message: result.message,
+      };
+    } catch (error: any) {
+      console.error('Reset password with OTP error:', error);
+      return {
+        success: false,
+        message: error.message || 'Failed to reset password',
+      };
+    }
+  }
+  
+  /**
+   * Get the API URL based on environment
+   */
+  private getApiUrl(): string {
+    // In Replit, use the domain for backend API
+    if (typeof process !== 'undefined' && process.env.REPLIT_DEV_DOMAIN) {
+      return `https://${process.env.REPLIT_DEV_DOMAIN}`;
+    }
+    // Fallback for local development
+    return 'http://localhost:3000';
   }
 
   /**
