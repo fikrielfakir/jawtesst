@@ -11,7 +11,6 @@ import Animated, {
   Extrapolate,
 } from 'react-native-reanimated';
 import { ChevronDown } from '@tamagui/lucide-icons';
-import { authDesign } from '@constants/theme/authDesign';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 100;
@@ -30,7 +29,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   onClose,
   title,
   children,
-  snapPoints = [0.5],
+  snapPoints = [0.48],
   showScrollIndicator = true,
 }) => {
   const translateY = useSharedValue(0);
@@ -45,7 +44,8 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     active.value = destination !== 0;
     translateY.value = withSpring(destination, {
       damping: 50,
-      stiffness: 300,
+      stiffness: 400,
+      mass: 0.8,
     });
   }, []);
 
@@ -76,7 +76,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     if (visible) {
       scrollTo(-(initialHeight - 100));
     } else {
-      translateY.value = withTiming(0);
+      translateY.value = withTiming(0, { duration: 250 });
     }
   }, [visible, initialHeight, scrollTo]);
 
@@ -104,7 +104,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
 
   const rBackdropStyle = useAnimatedStyle(() => {
     return {
-      opacity: withTiming(visible ? 1 : 0),
+      opacity: withTiming(visible ? 1 : 0, { duration: 200 }),
     };
   }, [visible]);
 
@@ -113,7 +113,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
       opacity: interpolate(
         translateY.value,
         [MAX_TRANSLATE_Y, 0],
-        [0.7, 0],
+        [0.5, 0],
         Extrapolate.CLAMP
       ),
     };
@@ -126,7 +126,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   };
 
   const handleContentSizeChange = (contentWidth: number, contentHeight: number) => {
-    const containerHeight = initialHeight - 100;
+    const containerHeight = initialHeight - 80;
     setShowChevron(contentHeight > containerHeight);
   };
 
@@ -136,7 +136,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="none"
       onRequestClose={onClose}
       statusBarTranslucent
     >
@@ -169,11 +169,35 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
 
         {showScrollIndicator && showChevron && (
           <View style={styles.chevronContainer}>
-            <ChevronDown size={24} color="#9CA3AF" />
+            <ChevronDown size={20} color="#7A7A7A" strokeWidth={2.5} />
           </View>
         )}
       </Animated.View>
     </Modal>
+  );
+};
+
+interface BottomSheetOptionProps {
+  label: string;
+  selected?: boolean;
+  onPress: () => void;
+}
+
+export const BottomSheetOption: React.FC<BottomSheetOptionProps> = ({
+  label,
+  selected = false,
+  onPress,
+}) => {
+  return (
+    <TouchableOpacity
+      style={[styles.optionContainer, selected && styles.optionSelected]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <Text style={[styles.optionText, selected && styles.optionTextSelected]}>
+        {label}
+      </Text>
+    </TouchableOpacity>
   );
 };
 
@@ -188,38 +212,39 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: SCREEN_HEIGHT,
-    backgroundColor: '#1F1F1F',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: 'rgba(0, 0, 0, 0.92)',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
+        shadowOffset: { width: 0, height: -8 },
+        shadowOpacity: 0.4,
+        shadowRadius: 20,
       },
       android: {
-        elevation: 16,
+        elevation: 24,
       },
     }),
   },
   handleContainer: {
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingTop: 10,
+    paddingVertical: 8,
+    paddingTop: 8,
   },
   handle: {
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#4A4A4A',
+    backgroundColor: '#CCCCCC',
   },
   contentContainer: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingBottom: 50,
   },
   chevronContainer: {
     position: 'absolute',
@@ -229,5 +254,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     pointerEvents: 'none',
+  },
+  optionContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    marginBottom: 16,
+    minHeight: 44,
+    borderRadius: 22,
+  },
+  optionSelected: {
+    backgroundColor: '#2C124D',
+    paddingVertical: 11,
+  },
+  optionText: {
+    fontSize: 16,
+    fontWeight: '500',
+    letterSpacing: -0.2,
+    lineHeight: 22,
+    color: '#E0E0E0',
+    textAlign: 'center',
+  },
+  optionTextSelected: {
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 });
