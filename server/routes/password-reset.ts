@@ -69,10 +69,21 @@ router.post('/verify-reset-otp', async (req: Request, res: Response) => {
       });
     }
     
-    await supabaseAdmin
+    // Mark OTP as used
+    const { error: updateError } = await supabaseAdmin
       .from('password_reset_otps')
       .update({ is_used: true })
       .eq('id', data.id);
+    
+    if (updateError) {
+      console.error('Failed to mark OTP as used:', updateError);
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Failed to verify code' 
+      });
+    }
+    
+    console.log('✅ OTP verified and marked as used for:', email);
       
     return res.json({ success: true, message: 'Verification code verified successfully' });
   } catch (error: any) {
@@ -93,7 +104,7 @@ router.post('/reset-password-with-otp', async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Password must be at least 8 characters' });
     }
     
-    const { data: otpData } = await supabaseAdmin
+    const { data: otpData, error: otpCheckError } = await supabaseAdmin
       .from('password_reset_otps')
       .select('*')
       .eq('email', email)
@@ -104,9 +115,13 @@ router.post('/reset-password-with-otp', async (req: Request, res: Response) => {
       .limit(1)
       .single();
       
-    if (!otpData) {
+    if (otpCheckError || !otpData) {
+      console.error('OTP verification check failed:', otpCheckError);
+      console.log('Looking for:', { email, otp, is_used: true, expires_at: `>= ${new Date().toISOString()}` });
       return res.status(400).json({ success: false, message: 'Invalid or expired session' });
     }
+    
+    console.log('✅ OTP session verified for password reset:', email);
     
     // Look up user by email using RPC function
     // This function must be created in Supabase (see SUPABASE_SETUP.md)
