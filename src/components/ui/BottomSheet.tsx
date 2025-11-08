@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Modal, Dimensions, TouchableOpacity, Platform } from 'react-native';
+import React, { useEffect, useCallback, useState } from 'react';
+import { View, Text, StyleSheet, Modal, Dimensions, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -10,6 +10,7 @@ import Animated, {
   interpolate,
   Extrapolate,
 } from 'react-native-reanimated';
+import { ChevronDown } from '@tamagui/lucide-icons';
 import { authDesign } from '@constants/theme/authDesign';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -21,6 +22,7 @@ interface BottomSheetProps {
   title?: string;
   children: React.ReactNode;
   snapPoints?: number[];
+  showScrollIndicator?: boolean;
 }
 
 export const BottomSheet: React.FC<BottomSheetProps> = ({
@@ -28,11 +30,13 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   onClose,
   title,
   children,
-  snapPoints = [0.4, 0.7, 0.95],
+  snapPoints = [0.5],
+  showScrollIndicator = true,
 }) => {
   const translateY = useSharedValue(0);
   const context = useSharedValue({ y: 0 });
   const active = useSharedValue(false);
+  const [showChevron, setShowChevron] = useState(false);
 
   const initialHeight = SCREEN_HEIGHT * snapPoints[0];
 
@@ -115,6 +119,17 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     };
   });
 
+  const handleScroll = (event: any) => {
+    const { layoutMeasurement, contentSize, contentOffset } = event.nativeEvent;
+    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
+    setShowChevron(!isCloseToBottom && contentSize.height > layoutMeasurement.height);
+  };
+
+  const handleContentSizeChange = (contentWidth: number, contentHeight: number) => {
+    const containerHeight = initialHeight - 100;
+    setShowChevron(contentHeight > containerHeight);
+  };
+
   if (!visible) return null;
 
   return (
@@ -140,15 +155,23 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
           </View>
         </GestureDetector>
 
-        {title && (
-          <View style={styles.headerContainer}>
-            <Text style={styles.title}>{title}</Text>
+        <ScrollView
+          style={styles.contentContainer}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+          onScroll={showScrollIndicator ? handleScroll : undefined}
+          onContentSizeChange={showScrollIndicator ? handleContentSizeChange : undefined}
+          scrollEventThrottle={16}
+        >
+          {children}
+        </ScrollView>
+
+        {showScrollIndicator && showChevron && (
+          <View style={styles.chevronContainer}>
+            <ChevronDown size={24} color="#9CA3AF" />
           </View>
         )}
-
-        <View style={styles.contentContainer}>
-          {children}
-        </View>
       </Animated.View>
     </Modal>
   );
@@ -165,46 +188,46 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: SCREEN_HEIGHT,
-    backgroundColor: authDesign.colors.background,
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    backgroundColor: '#1F1F1F',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 16,
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
       },
       android: {
-        elevation: 20,
+        elevation: 16,
       },
     }),
   },
   handleContainer: {
     alignItems: 'center',
-    paddingVertical: 16,
-    paddingTop: 12,
+    paddingVertical: 12,
+    paddingTop: 10,
   },
   handle: {
-    width: 48,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: authDesign.colors.border,
-  },
-  headerContainer: {
-    paddingHorizontal: 24,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: authDesign.colors.divider,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: authDesign.colors.textPrimary,
-    textAlign: 'center',
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#4A4A4A',
   },
   contentContainer: {
     flex: 1,
-    paddingTop: 8,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+  chevronContainer: {
+    position: 'absolute',
+    bottom: 12,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    pointerEvents: 'none',
   },
 });
