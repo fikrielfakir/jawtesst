@@ -76,7 +76,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     }
   }, [visible, initialHeight, scrollTo]);
 
-  const gesture = Gesture.Pan()
+  const handleGesture = Gesture.Pan()
     .onStart(() => {
       context.value = { y: translateY.value };
     })
@@ -133,23 +133,23 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
         />
       </Animated.View>
 
-      <GestureDetector gesture={gesture}>
-        <Animated.View style={[styles.bottomSheetContainer, rBottomSheetStyle]}>
+      <Animated.View style={[styles.bottomSheetContainer, rBottomSheetStyle]}>
+        <GestureDetector gesture={handleGesture}>
           <View style={styles.handleContainer}>
             <View style={styles.handle} />
           </View>
+        </GestureDetector>
 
-          {title && (
-            <View style={styles.headerContainer}>
-              <Text style={styles.title}>{title}</Text>
-            </View>
-          )}
-
-          <View style={styles.contentContainer}>
-            {children}
+        {title && (
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>{title}</Text>
           </View>
-        </Animated.View>
-      </GestureDetector>
+        )}
+
+        <View style={styles.contentContainer}>
+          {children}
+        </View>
+      </Animated.View>
     </Modal>
   );
 };
