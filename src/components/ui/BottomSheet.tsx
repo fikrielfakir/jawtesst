@@ -1,15 +1,6 @@
-import React, { useEffect, useCallback, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  Dimensions,
-  TouchableOpacity,
-  Platform,
-  ScrollView,
-} from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import React, { useEffect, useCallback, useState } from 'react';
+import { View, Text, StyleSheet, Modal, Dimensions, TouchableOpacity, Platform, ScrollView } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -18,10 +9,10 @@ import Animated, {
   runOnJS,
   interpolate,
   Extrapolate,
-} from "react-native-reanimated";
-import { ChevronDown } from "@tamagui/lucide-icons";
+} from 'react-native-reanimated';
+import { ChevronDown } from '@tamagui/lucide-icons';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 100;
 
 interface BottomSheetProps {
@@ -49,7 +40,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   const initialHeight = SCREEN_HEIGHT * snapPoints[0];
 
   const scrollTo = useCallback((destination: number) => {
-    "worklet";
+    'worklet';
     active.value = destination !== 0;
     translateY.value = withSpring(destination, {
       damping: 50,
@@ -58,33 +49,28 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     });
   }, []);
 
-  const snapToPoint = useCallback(
-    (currentY: number) => {
-      "worklet";
-      const snapPositions = snapPoints.map(
-        (point) => -(SCREEN_HEIGHT * point - 100),
-      );
-      snapPositions.push(0);
+  const snapToPoint = useCallback((currentY: number) => {
+    'worklet';
+    const snapPositions = snapPoints.map(point => -(SCREEN_HEIGHT * point - 100));
+    snapPositions.push(0);
 
-      let closestSnap = snapPositions[0];
-      let minDistance = Math.abs(currentY - closestSnap);
+    let closestSnap = snapPositions[0];
+    let minDistance = Math.abs(currentY - closestSnap);
 
-      snapPositions.forEach((snap) => {
-        const distance = Math.abs(currentY - snap);
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestSnap = snap;
-        }
-      });
-
-      if (closestSnap === 0) {
-        runOnJS(onClose)();
-      } else {
-        scrollTo(closestSnap);
+    snapPositions.forEach(snap => {
+      const distance = Math.abs(currentY - snap);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestSnap = snap;
       }
-    },
-    [snapPoints, onClose, scrollTo],
-  );
+    });
+
+    if (closestSnap === 0) {
+      runOnJS(onClose)();
+    } else {
+      scrollTo(closestSnap);
+    }
+  }, [snapPoints, onClose, scrollTo]);
 
   useEffect(() => {
     if (visible) {
@@ -128,25 +114,19 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
         translateY.value,
         [MAX_TRANSLATE_Y, 0],
         [0.5, 0],
-        Extrapolate.CLAMP,
+        Extrapolate.CLAMP
       ),
     };
   });
 
   const handleScroll = (event: any) => {
     const { layoutMeasurement, contentSize, contentOffset } = event.nativeEvent;
-    const isCloseToBottom =
-      layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
-    setShowChevron(
-      !isCloseToBottom && contentSize.height > layoutMeasurement.height,
-    );
+    const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 40;
+    setShowChevron(!isCloseToBottom && contentSize.height > layoutMeasurement.height);
   };
 
-  const handleContentSizeChange = (
-    contentWidth: number,
-    contentHeight: number,
-  ) => {
-    const containerHeight = initialHeight - 80;
+  const handleContentSizeChange = (contentWidth: number, contentHeight: number) => {
+    const containerHeight = initialHeight - 100;
     setShowChevron(contentHeight > containerHeight);
   };
 
@@ -160,9 +140,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <Animated.View
-        style={[styles.backdrop, rBackdropStyle, rBackdropOpacity]}
-      >
+      <Animated.View style={[styles.backdrop, rBackdropStyle, rBackdropOpacity]}>
         <TouchableOpacity
           style={StyleSheet.absoluteFill}
           activeOpacity={1}
@@ -183,9 +161,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
           showsVerticalScrollIndicator={false}
           bounces={false}
           onScroll={showScrollIndicator ? handleScroll : undefined}
-          onContentSizeChange={
-            showScrollIndicator ? handleContentSizeChange : undefined
-          }
+          onContentSizeChange={showScrollIndicator ? handleContentSizeChange : undefined}
           scrollEventThrottle={16}
         >
           {children}
@@ -193,7 +169,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
 
         {showScrollIndicator && showChevron && (
           <View style={styles.chevronContainer}>
-            <ChevronDown size={22} color="#7A7A7A" strokeWidth={2.5} />
+            <View style={styles.chevronBackground}>
+              <ChevronDown size={22} color="#7A7A7A" strokeWidth={2.5} />
+            </View>
           </View>
         )}
       </Animated.View>
@@ -214,7 +192,10 @@ export const BottomSheetOption: React.FC<BottomSheetOptionProps> = ({
 }) => {
   return (
     <TouchableOpacity
-      style={[styles.optionContainer, selected && styles.optionSelected]}
+      style={[
+        styles.optionContainer, 
+        selected && styles.optionSelected
+      ]}
       onPress={onPress}
       activeOpacity={0.8}
     >
@@ -228,21 +209,21 @@ export const BottomSheetOption: React.FC<BottomSheetOptionProps> = ({
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   bottomSheetContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: SCREEN_HEIGHT,
     left: 0,
     right: 0,
     height: SCREEN_HEIGHT,
-    backgroundColor: "rgba(0, 0, 0, 0.94)",
+    backgroundColor: 'rgba(0, 0, 0, 0.94)',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    overflow: "hidden",
+    overflow: 'hidden',
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: -8 },
         shadowOpacity: 0.3,
         shadowRadius: 20,
@@ -253,55 +234,64 @@ const styles = StyleSheet.create({
     }),
   },
   handleContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: 10,
   },
   handle: {
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#CCCCCC",
+    backgroundColor: '#CCCCCC',
     opacity: 0.8,
   },
   contentContainer: {
     flex: 1,
   },
   scrollContent: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingHorizontal: 24,
     paddingTop: 20,
     paddingBottom: 60,
   },
   optionContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 12,
     paddingHorizontal: 28,
     marginBottom: 14,
     minHeight: 44,
     borderRadius: 22,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   optionSelected: {
-    backgroundColor: "#2C124D",
+    backgroundColor: '#2C124D',
+    borderColor: '#4A2870',
   },
   optionText: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
     letterSpacing: -0.2,
     lineHeight: 22,
-    color: "#E0E0E0",
-    textAlign: "center",
+    color: '#E0E0E0',
+    textAlign: 'center',
   },
   optionTextSelected: {
-    color: "#FFFFFF",
-    fontWeight: "600",
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   chevronContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 14,
     left: 0,
     right: 0,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
+    pointerEvents: 'none',
+  },
+  chevronBackground: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 20,
+    padding: 8,
   },
 });
