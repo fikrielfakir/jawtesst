@@ -33,11 +33,17 @@ export default function VerifyEmailScreen() {
 
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      router.push({
-        pathname: '/(auth)/enter-new-password',
-        params: { email, code }
-      });
+      const { authService } = await import('@services/auth/auth.service');
+      const result = await authService.verifyResetOtp(email, code);
+      
+      if (result.success) {
+        router.push({
+          pathname: '/(auth)/enter-new-password',
+          params: { email, code }
+        });
+      } else {
+        Alert.alert('Error', result.message || 'Invalid verification code');
+      }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Invalid verification code');
     } finally {
@@ -49,10 +55,20 @@ export default function VerifyEmailScreen() {
     if (resendTimer > 0) return;
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      Alert.alert('Success', 'Verification code has been resent to your email');
-      setResendTimer(60);
-      setCode('');
+      const { authService } = await import('@services/auth/auth.service');
+      const result = await authService.resetPassword(email);
+      
+      if (result.success && result.otp) {
+        Alert.alert(
+          'New Verification Code',
+          `Your new 6-digit code is: ${result.otp}\n\n(This is for testing only. In production, this will be sent to your email.)`,
+          [{ text: 'OK' }]
+        );
+        setResendTimer(60);
+        setCode('');
+      } else {
+        Alert.alert('Error', result.message || 'Failed to resend code');
+      }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to resend code');
     }
