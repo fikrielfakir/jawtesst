@@ -1,11 +1,26 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { gradients } from '@constants/theme/colors';
 import { Check } from '@tamagui/lucide-icons';
+import { useRouter } from 'expo-router';
 
 export default function RegistrationSuccessScreen() {
+  const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  useEffect(() => {
+    const redirectTimer = setTimeout(() => {
+      setIsRedirecting(true);
+      setTimeout(() => {
+        router.replace('/(auth)/sign-in');
+      }, 500);
+    }, 2000);
+
+    return () => clearTimeout(redirectTimer);
+  }, [router]);
+
   return (
     <LinearGradient
       colors={[...gradients.auth]}
@@ -31,6 +46,13 @@ export default function RegistrationSuccessScreen() {
             <Text style={styles.message}>
               Your request is being studied,{'\n'}we will contact you soon.
             </Text>
+
+            {isRedirecting && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#FFFFFF" />
+                <Text style={styles.loadingText}>Redirecting to sign in...</Text>
+              </View>
+            )}
           </View>
         </View>
       </SafeAreaView>
@@ -78,5 +100,16 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     textAlign: 'center',
     lineHeight: 28,
+  },
+  loadingContainer: {
+    marginTop: 40,
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: '#FFFFFF',
+    textAlign: 'center',
   },
 });
