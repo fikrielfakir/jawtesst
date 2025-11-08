@@ -31,16 +31,10 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await authService.resetPassword(email);
-      Alert.alert(
-        'Success',
-        'Password reset link has been sent to your email. Please check your inbox.',
-        [
-          {
-            text: 'OK',
-            onPress: () => router.replace('/(auth)/sign-in')
-          }
-        ]
-      );
+      router.push({
+        pathname: '/(auth)/verify-email',
+        params: { email }
+      });
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to send password reset email');
     } finally {
