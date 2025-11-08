@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { authDesign } from '@constants/theme/authDesign';
-import { ChevronDown } from '@tamagui/lucide-icons';
+import { ChevronDown, Check } from '@tamagui/lucide-icons';
+import { BottomSheet } from '@components/ui/BottomSheet';
 
 interface CustomSelectProps {
   label: string;
@@ -26,6 +27,17 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   const handleSelect = (option: string) => {
     onSelect(option);
     setIsVisible(false);
+    setIsFocused(false);
+  };
+
+  const handleOpen = () => {
+    setIsVisible(true);
+    setIsFocused(true);
+  };
+
+  const handleClose = () => {
+    setIsVisible(false);
+    setIsFocused(false);
   };
 
   return (
@@ -37,10 +49,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           isFocused && styles.selectContainerFocused,
           error && styles.selectContainerError,
         ]}
-        onPress={() => {
-          setIsVisible(true);
-          setIsFocused(true);
-        }}
+        onPress={handleOpen}
         activeOpacity={0.7}
       >
         <Text style={[styles.selectText, !value && styles.placeholderText]}>
@@ -50,55 +59,48 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       </TouchableOpacity>
       {error && <Text style={styles.errorText}>{error}</Text>}
 
-      <Modal
+      <BottomSheet
         visible={isVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => {
-          setIsVisible(false);
-          setIsFocused(false);
-        }}
+        onClose={handleClose}
+        title={label}
       >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => {
-            setIsVisible(false);
-            setIsFocused(false);
-          }}
+        <ScrollView 
+          style={styles.scrollView}
+          contentContainerStyle={styles.optionsContainer}
+          showsVerticalScrollIndicator={false}
         >
-          <TouchableOpacity activeOpacity={1} style={styles.modalContent}>
-            <View style={styles.modalHandle}>
-              <View style={styles.modalHandleLine} />
-            </View>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{label}</Text>
-            </View>
-            <FlatList
-              data={options}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[
-                    styles.optionItem,
-                    item === value && styles.optionItemSelected,
-                  ]}
-                  onPress={() => handleSelect(item)}
-                >
+          <View style={styles.optionsWrapper}>
+            {options.map((option, index) => (
+              <TouchableOpacity
+                key={option}
+                style={[
+                  styles.optionButton,
+                  option === value && styles.optionButtonSelected,
+                  index === options.length - 1 && styles.optionButtonLast,
+                ]}
+                onPress={() => handleSelect(option)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.optionContent}>
                   <Text
                     style={[
                       styles.optionText,
-                      item === value && styles.optionTextSelected,
+                      option === value && styles.optionTextSelected,
                     ]}
                   >
-                    {item}
+                    {option}
                   </Text>
-                </TouchableOpacity>
-              )}
-            />
-          </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
+                  {option === value && (
+                    <View style={styles.checkIconContainer}>
+                      <Check size={22} color={authDesign.colors.primary} strokeWidth={3} />
+                    </View>
+                  )}
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
+      </BottomSheet>
     </View>
   );
 };
@@ -145,53 +147,61 @@ const styles = StyleSheet.create({
     color: authDesign.colors.error,
     marginTop: 4,
   },
-  modalOverlay: {
+  scrollView: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
   },
-  modalContent: {
-    backgroundColor: authDesign.colors.background,
-    borderTopLeftRadius: authDesign.sizes.cornerRadius * 3,
-    borderTopRightRadius: authDesign.sizes.cornerRadius * 3,
-    width: '100%',
-    maxHeight: '70%',
-    overflow: 'hidden',
+  optionsContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
   },
-  modalHandle: {
-    alignItems: 'center',
-    paddingVertical: 12,
+  optionsWrapper: {
+    gap: 12,
   },
-  modalHandleLine: {
-    width: 40,
-    height: 4,
-    backgroundColor: authDesign.colors.border,
-    borderRadius: 2,
-  },
-  modalHeader: {
-    padding: authDesign.spacing.paddingHorizontal,
-    borderBottomWidth: 1,
-    borderBottomColor: authDesign.colors.border,
-  },
-  modalTitle: {
-    fontSize: authDesign.typography.heading.size,
-    fontWeight: authDesign.typography.heading.weight,
-    color: authDesign.colors.textPrimary,
-  },
-  optionItem: {
-    padding: authDesign.spacing.paddingHorizontal,
-    borderBottomWidth: 1,
-    borderBottomColor: authDesign.colors.border,
-  },
-  optionItemSelected: {
+  optionButton: {
     backgroundColor: authDesign.colors.inputBackground,
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderWidth: 2,
+    borderColor: authDesign.colors.border,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  optionButtonSelected: {
+    backgroundColor: `${authDesign.colors.primary}15`,
+    borderColor: authDesign.colors.primary,
+    borderWidth: 2,
+  },
+  optionButtonLast: {
+    marginBottom: 0,
+  },
+  optionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
   },
   optionText: {
-    fontSize: authDesign.typography.input.size,
+    fontSize: 17,
+    fontWeight: '600',
     color: authDesign.colors.textPrimary,
+    textAlign: 'center',
   },
   optionTextSelected: {
     color: authDesign.colors.primary,
-    fontWeight: '600',
+    fontWeight: '700',
+  },
+  checkIconContainer: {
+    position: 'absolute',
+    right: 0,
   },
 });
