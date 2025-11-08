@@ -9,6 +9,7 @@ import { CustomInput } from '@components/auth/CustomInput';
 import { CustomButton } from '@components/auth/CustomButton';
 import { CustomSelect } from '@components/auth/CustomSelect';
 import { ChevronLeft } from '@tamagui/lucide-icons';
+import { supabase } from '@/lib/supabaseClient';
 
 const RESTAURANT_TYPES = [
   'Fine Dining',
@@ -19,13 +20,6 @@ const RESTAURANT_TYPES = [
   'Bakery',
   'Bar & Grill',
 ];
-
-const getApiUrl = () => {
-  if (typeof window !== 'undefined' && window.location) {
-    return `${window.location.protocol}//${window.location.host}`;
-  }
-  return 'http://localhost:5000';
-};
 
 export default function RegisterRestaurantScreen() {
   const [restaurantName, setRestaurantName] = useState('');
@@ -56,29 +50,59 @@ export default function RegisterRestaurantScreen() {
 
     setLoading(true);
     try {
-      const API_URL = getApiUrl();
-      const response = await fetch(`${API_URL}/api/restaurants/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          },
         },
-        body: JSON.stringify({
-          restaurantName,
-          email,
-          phone,
-          address,
-          type,
-          cuisineType,
-          about,
-          password,
-          firstName,
-          lastName,
-        }),
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to submit registration');
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      if (!authData.user) {
+        throw new Error('Failed to create user account');
+      }
+
+      const { error: userError } = await supabase
+        .from('users')
+        .insert({
+          id: authData.user.id,
+          first_name: firstName,
+          last_name: lastName,
+          phone: phone,
+          user_type: 'restaurant_owner',
+          is_verified: false,
+        });
+
+      if (userError) {
+        console.error('User profile creation error:', userError);
+        throw new Error('Failed to create user profile');
+      }
+
+      const { error: restaurantError } = await supabase
+        .from('restaurants')
+        .insert({
+          owner_id: authData.user.id,
+          name: restaurantName,
+          description: about,
+          address: address,
+          city: 'Unknown',
+          country: 'Unknown',
+          phone,
+          email,
+          category: type,
+          is_active: false,
+        });
+
+      if (restaurantError) {
+        console.error('Restaurant creation error:', restaurantError);
+        throw new Error('Failed to submit restaurant registration');
       }
 
       router.replace('/(auth)/registration-success');

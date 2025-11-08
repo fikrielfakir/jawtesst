@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { authService, User } from '@services/auth/auth.service';
+import { supabase } from '@/lib/supabaseClient';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -7,6 +8,23 @@ export function useAuth() {
 
   useEffect(() => {
     checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session?.user) {
+            const currentUser = await authService.getUser();
+            setUser(currentUser);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const checkUser = async () => {

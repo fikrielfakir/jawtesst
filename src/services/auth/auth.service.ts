@@ -1,4 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '@/lib/supabaseClient';
+import { AuthError } from '@supabase/supabase-js';
 
 export interface User {
   id: string;
@@ -16,54 +17,57 @@ interface SignUpOptions {
   password: string;
   firstName: string;
   lastName: string;
-  userType?: 'customer' | 'owner';
+  userType?: 'customer' | 'restaurant_owner';
   phone?: string;
 }
-
-const TOKEN_KEY = 'auth_token';
-
-const getApiUrl = () => {
-  if (typeof window !== 'undefined' && window.location) {
-    return `${window.location.protocol}//${window.location.host}`;
-  }
-  return 'http://localhost:5000';
-};
 
 export const authService = {
   async signUp(options: SignUpOptions): Promise<{ user: User }> {
     try {
-      const { email, password, firstName, lastName } = options;
+      const { email, password, firstName, lastName, userType = 'customer', phone } = options;
 
-      const API_URL = getApiUrl();
-      const response = await fetch(`${API_URL}/api/auth/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          },
         },
-        body: JSON.stringify({
-          email,
-          password,
-          firstName,
-          lastName,
-        }),
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to sign up');
+      if (signUpError) {
+        throw signUpError;
       }
 
-      const data = await response.json();
-      
-      await AsyncStorage.setItem(TOKEN_KEY, data.token);
+      if (!authData.user) {
+        throw new Error('Failed to create user');
+      }
+
+      const { error: profileError } = await supabase
+        .from('users')
+        .insert({
+          id: authData.user.id,
+          first_name: firstName,
+          last_name: lastName,
+          phone: phone || null,
+          user_type: userType,
+          is_verified: false,
+        });
+
+      if (profileError) {
+        console.error('Profile creation error:', profileError);
+        throw new Error('Failed to create user profile');
+      }
 
       const user: User = {
-        id: data.user.id,
-        email: data.user.email,
-        firstName: data.user.firstName,
-        lastName: data.user.lastName,
-        userType: data.user.userType,
-        phone: null,
+        id: authData.user.id,
+        email: authData.user.email!,
+        firstName,
+        lastName,
+        userType,
+        phone: phone || null,
         profileImage: null,
         isVerified: false,
       };
@@ -71,140 +75,151 @@ export const authService = {
       return { user };
     } catch (error) {
       console.error('Signup error:', error);
+      if (error instanceof AuthError) {
+        throw new Error(error.message);
+      }
       throw error;
     }
   },
 
   async signIn(email: string, password: string): Promise<{ user: User }> {
     try {
-      const API_URL = getApiUrl();
-      const response = await fetch(`${API_URL}/api/auth/signin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to sign in');
+      if (signInError) {
+        throw signInError;
       }
 
-      const data = await response.json();
-      
-      await AsyncStorage.setItem(TOKEN_KEY, data.token);
+      if (!authData.user) {
+        throw new Error('Failed to sign in');
+      }
+
+      const { data: profileData, error: profileError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', authData.user.id)
+        .single();
+
+      if (profileError || !profileData) {
+        console.error('Profile fetch error:', profileError);
+        throw new Error('Failed to fetch user profile');
+      }
 
       const user: User = {
-        id: data.user.id,
-        email: data.user.email,
-        firstName: data.user.firstName,
-        lastName: data.user.lastName,
-        userType: data.user.userType,
-        phone: null,
-        profileImage: null,
-        isVerified: false,
+        id: authData.user.id,
+        email: authData.user.email!,
+        firstName: profileData.first_name,
+        lastName: profileData.last_name,
+        userType: profileData.user_type,
+        phone: profileData.phone,
+        profileImage: profileData.profile_image,
+        isVerified: profileData.is_verified,
       };
 
       return { user };
     } catch (error) {
       console.error('Signin error:', error);
+      if (error instanceof AuthError) {
+        throw new Error(error.message);
+      }
       throw error;
     }
   },
 
   async signOut(): Promise<void> {
     try {
-      await AsyncStorage.removeItem(TOKEN_KEY);
-      
-      const API_URL = getApiUrl();
-      await fetch(`${API_URL}/api/auth/signout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw error;
+      }
     } catch (error) {
       console.error('Signout error:', error);
+      if (error instanceof AuthError) {
+        throw new Error(error.message);
+      }
       throw error;
     }
   },
 
   async resetPassword(email: string): Promise<void> {
     try {
-      const API_URL = getApiUrl();
-      const response = await fetch(`${API_URL}/api/auth/reset-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to reset password');
+      if (error) {
+        throw error;
       }
     } catch (error) {
       console.error('Reset password error:', error);
+      if (error instanceof AuthError) {
+        throw new Error(error.message);
+      }
       throw error;
     }
   },
 
   async updatePassword(newPassword: string): Promise<void> {
     try {
-      const token = await AsyncStorage.getItem(TOKEN_KEY);
-      
-      if (!token) {
-        throw new Error('Not authenticated');
-      }
-
-      const API_URL = getApiUrl();
-      const response = await fetch(`${API_URL}/api/auth/update-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token,
-          newPassword,
-        }),
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to update password');
+      if (error) {
+        throw error;
       }
     } catch (error) {
       console.error('Update password error:', error);
+      if (error instanceof AuthError) {
+        throw new Error(error.message);
+      }
       throw error;
+    }
+  },
+
+  async getSession() {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        throw error;
+      }
+      return session;
+    } catch (error) {
+      console.error('Get session error:', error);
+      return null;
     }
   },
 
   async getUser(): Promise<User | null> {
     try {
-      const token = await AsyncStorage.getItem(TOKEN_KEY);
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (!token) {
+      if (sessionError || !session) {
         return null;
       }
 
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const userId = payload.userId;
-      const email = payload.email;
+      const { data: profileData, error: profileError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profileError || !profileData) {
+        return null;
+      }
 
       const user: User = {
-        id: userId,
-        email: email,
-        firstName: null,
-        lastName: null,
-        userType: 'customer',
-        phone: null,
-        profileImage: null,
-        isVerified: false,
+        id: session.user.id,
+        email: session.user.email!,
+        firstName: profileData.first_name,
+        lastName: profileData.last_name,
+        userType: profileData.user_type,
+        phone: profileData.phone,
+        profileImage: profileData.profile_image,
+        isVerified: profileData.is_verified,
       };
 
       return user;

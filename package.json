@@ -33,7 +33,7 @@
     "cors": "^2.8.5",
     "drizzle-kit": "^0.31.6",
     "drizzle-orm": "^0.44.7",
-    "expo": "~54.0.22",
+    "expo": "^54.0.23",
     "expo-constants": "~18.0.10",
     "expo-image-picker": "~17.0.8",
     "expo-linear-gradient": "^15.0.7",
