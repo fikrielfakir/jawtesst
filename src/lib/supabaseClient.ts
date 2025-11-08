@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
 // Get Supabase credentials from environment
-const supabaseUrl = Constants.expoConfig?.extra?.SUPABASE_URL || '';
+const supabaseUrl = Constants.expoConfig?.extra?.SUPABASE_URL || 'https://sfrqfesobuvbondzwfjj.supabase.co';
 const supabaseAnonKey = Constants.expoConfig?.extra?.SUPABASE_ANON_KEY || '';
 
 // Validate credentials
