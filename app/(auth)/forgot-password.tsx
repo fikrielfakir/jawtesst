@@ -30,13 +30,29 @@ export default function ForgotPasswordScreen() {
 
     setLoading(true);
     try {
-      await authService.resetPassword(email);
-      router.push({
-        pathname: '/(auth)/verify-email',
-        params: { email }
-      });
+      const result = await authService.resetPassword(email);
+      if (result.success && result.otp) {
+        // For testing: Show OTP in alert (in production, this would be sent via email)
+        Alert.alert(
+          'Verification Code',
+          `Your 6-digit code is: ${result.otp}\n\n(This is for testing only. In production, this will be sent to your email.)`,
+          [
+            {
+              text: 'Continue',
+              onPress: () => {
+                router.push({
+                  pathname: '/(auth)/verify-email',
+                  params: { email }
+                });
+              }
+            }
+          ]
+        );
+      } else if (!result.success) {
+        Alert.alert('Error', result.message || 'Failed to generate verification code');
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to send password reset email');
+      Alert.alert('Error', error.message || 'Failed to generate verification code');
     } finally {
       setLoading(false);
     }

@@ -37,18 +37,23 @@ export default function EnterNewPasswordScreen() {
 
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { authService } = await import('@services/auth/auth.service');
+      const result = await authService.resetPasswordWithOtp(email, code, newPassword);
       
-      Alert.alert(
-        'Success',
-        'Your password has been reset successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => router.replace('/(auth)/sign-in')
-          }
-        ]
-      );
+      if (result.success) {
+        Alert.alert(
+          'Success',
+          'Your password reset is complete! You can now sign in with your new password.',
+          [
+            {
+              text: 'OK',
+              onPress: () => router.replace('/(auth)/sign-in')
+            }
+          ]
+        );
+      } else {
+        Alert.alert('Error', result.message || 'Failed to reset password');
+      }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to reset password');
     } finally {

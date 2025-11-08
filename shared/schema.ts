@@ -106,3 +106,12 @@ export const menuItems = pgTable('menu_items', {
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });
+
+export const passwordResetOtps = pgTable('password_reset_otps', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  email: text('email').notNull(),
+  otp: text('otp').notNull(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  isUsed: boolean('is_used').default(false),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+});
