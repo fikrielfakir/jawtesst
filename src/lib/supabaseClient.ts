@@ -3,53 +3,38 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
 // Get Supabase credentials from environment
-const supabaseUrl = Constants.expoConfig?.extra?.SUPABASE_URL || process.env.EXPO_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = Constants.expoConfig?.extra?.SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseUrl = Constants.expoConfig?.extra?.SUPABASE_URL || '';
+const supabaseAnonKey = Constants.expoConfig?.extra?.SUPABASE_ANON_KEY || '';
 
-// Check if credentials are configured
-const isConfigured = !!(supabaseUrl && supabaseAnonKey);
-
-if (!isConfigured) {
-  console.warn('⚠️  Supabase Configuration Missing:');
-  console.warn('URL:', supabaseUrl ? '✅ Present' : '❌ Missing');
-  console.warn('Anon Key:', supabaseAnonKey ? '✅ Present' : '❌ Missing');
-  console.warn('\nTo enable Supabase features:');
-  console.warn('1. Create a .env file in project root');
-  console.warn('2. Add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY');
-  console.warn('3. Restart the dev server');
-  console.warn('\nApp will continue without Supabase features.');
-} else {
-  console.log('✅ Supabase Configuration Loaded:');
-  console.log('   URL:', supabaseUrl);
-  console.log('   Key:', supabaseAnonKey.substring(0, 20) + '...');
+// Validate credentials
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Supabase Configuration Error:');
+  console.error('URL:', supabaseUrl ? '✅ Present' : '❌ Missing');
+  console.error('Anon Key:', supabaseAnonKey ? '✅ Present' : '❌ Missing');
+  console.error('\nPlease check:');
+  console.error('1. .env file exists in project root');
+  console.error('2. Variables start with EXPO_PUBLIC_ prefix');
+  console.error('3. Restart the dev server after creating .env');
+  throw new Error('Missing Supabase environment variables. Check console for details.');
 }
 
-// Create a dummy client if not configured, or real client if configured
-export const supabase = isConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        storage: AsyncStorage,
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: false,
-      },
-      global: {
-        headers: {
-          'x-client-info': 'supabase-js-react-native',
-        },
-      },
-    })
-  : createClient('https://placeholder.supabase.co', 'placeholder-key', {
-      auth: {
-        storage: AsyncStorage,
-        autoRefreshToken: false,
-        persistSession: false,
-        detectSessionInUrl: false,
-      },
-    });
+console.log('✅ Supabase Configuration Loaded:');
+console.log('   URL:', supabaseUrl);
+console.log('   Key:', supabaseAnonKey.substring(0, 20) + '...');
 
-// Export configuration status
-export const isSupabaseConfigured = isConfigured;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+  global: {
+    headers: {
+      'x-client-info': 'supabase-js-react-native',
+    },
+  },
+});
 
 export type Database = {
   public: {
