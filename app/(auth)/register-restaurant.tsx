@@ -81,16 +81,7 @@ export default function RegisterRestaurantScreen() {
         throw new Error(error.error || 'Failed to submit registration');
       }
 
-      Alert.alert(
-        'Success',
-        'Your restaurant registration request has been submitted! We will review it and get back to you soon.',
-        [
-          {
-            text: 'OK',
-            onPress: () => router.replace('/(auth)/sign-in'),
-          },
-        ]
-      );
+      router.replace('/(auth)/registration-success');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to submit registration');
     } finally {

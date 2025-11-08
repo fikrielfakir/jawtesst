@@ -6,19 +6,21 @@ const supabaseUrl = Constants.expoConfig?.extra?.SUPABASE_URL || '';
 const supabaseAnonKey = Constants.expoConfig?.extra?.SUPABASE_ANON_KEY || '';
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase URL:', supabaseUrl ? 'present' : 'missing');
-  console.error('Supabase Anon Key:', supabaseAnonKey ? 'present' : 'missing');
-  throw new Error('Missing Supabase environment variables');
+  console.warn('Supabase URL:', supabaseUrl ? 'present' : 'missing');
+  console.warn('Supabase Anon Key:', supabaseAnonKey ? 'present' : 'missing');
+  console.warn('Supabase not configured - using custom backend API instead');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-});
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storage: AsyncStorage,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+    })
+  : null as any;
 
 export type Database = {
   public: {
