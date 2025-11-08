@@ -31,7 +31,7 @@
     "concurrently": "^9.2.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "drizzle-kit": "^0.31.6",
+    "drizzle-kit": "^0.18.1",
     "drizzle-orm": "^0.44.7",
     "expo": "^54.0.23",
     "expo-constants": "~18.0.10",

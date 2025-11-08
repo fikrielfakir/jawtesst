@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { authDesign } from '@constants/theme/authDesign';
-import { ChevronDown, Check } from '@tamagui/lucide-icons';
-import { BottomSheet } from '@components/ui/BottomSheet';
+import { BottomSheet, BottomSheetOption } from '@components/ui/BottomSheet';
+import { ChevronDown } from '@tamagui/lucide-icons';
 
 interface CustomSelectProps {
-  label: string;
+  label?: string;
   placeholder: string;
   value: string;
   onSelect: (value: string) => void;
@@ -21,28 +21,31 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
   error,
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
   const handleSelect = (option: string) => {
     onSelect(option);
-    setIsVisible(false);
+    setIsBottomSheetVisible(false);
     setIsFocused(false);
   };
 
   const handleOpen = () => {
-    setIsVisible(true);
+    setIsBottomSheetVisible(true);
     setIsFocused(true);
   };
 
   const handleClose = () => {
-    setIsVisible(false);
+    setIsBottomSheetVisible(false);
     setIsFocused(false);
   };
 
+  // Find the index of the currently selected option
+  const selectedIndex = value ? options.findIndex(opt => opt === value) : -1;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      {label && <Text style={styles.label}>{label}</Text>}
       <TouchableOpacity
         style={[
           styles.selectContainer,
@@ -52,54 +55,39 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         onPress={handleOpen}
         activeOpacity={0.7}
       >
-        <Text style={[styles.selectText, !value && styles.placeholderText]}>
+        <Text
+          style={[
+            styles.selectText,
+            !value && styles.selectPlaceholder,
+          ]}
+        >
           {value || placeholder}
         </Text>
-        <ChevronDown size={authDesign.sizes.iconSize} color={authDesign.colors.iconGray} />
+        <ChevronDown 
+          size={20} 
+          color={authDesign.colors.iconGray} 
+          style={styles.chevronIcon}
+        />
       </TouchableOpacity>
       {error && <Text style={styles.errorText}>{error}</Text>}
 
       <BottomSheet
-        visible={isVisible}
+        visible={isBottomSheetVisible}
         onClose={handleClose}
-        title={label}
+        snapPoints={[0.55]}
+        showScrollIndicator={true}
+        selectedIndex={selectedIndex}
       >
-        <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.optionsContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.optionsWrapper}>
-            {options.map((option, index) => (
-              <TouchableOpacity
-                key={option}
-                style={[
-                  styles.optionButton,
-                  option === value && styles.optionButtonSelected,
-                  index === options.length - 1 && styles.optionButtonLast,
-                ]}
-                onPress={() => handleSelect(option)}
-                activeOpacity={0.7}
-              >
-                <View style={styles.optionContent}>
-                  <Text
-                    style={[
-                      styles.optionText,
-                      option === value && styles.optionTextSelected,
-                    ]}
-                  >
-                    {option}
-                  </Text>
-                  {option === value && (
-                    <View style={styles.checkIconContainer}>
-                      <Check size={22} color={authDesign.colors.primary} strokeWidth={3} />
-                    </View>
-                  )}
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
+        <View style={styles.optionsContainer}>
+          {options.map((option) => (
+            <BottomSheetOption
+              key={option}
+              label={option}
+              selected={value === option}
+              onPress={() => handleSelect(option)}
+            />
+          ))}
+        </View>
       </BottomSheet>
     </View>
   );
@@ -137,9 +125,13 @@ const styles = StyleSheet.create({
     fontSize: authDesign.typography.input.size,
     fontWeight: authDesign.typography.input.weight,
     color: authDesign.colors.textPrimary,
+    flex: 1,
   },
-  placeholderText: {
+  selectPlaceholder: {
     color: authDesign.colors.textPlaceholder,
+  },
+  chevronIcon: {
+    marginLeft: 8,
   },
   errorText: {
     fontSize: authDesign.typography.error.size,
@@ -147,61 +139,8 @@ const styles = StyleSheet.create({
     color: authDesign.colors.error,
     marginTop: 4,
   },
-  scrollView: {
-    flex: 1,
-  },
   optionsContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-  },
-  optionsWrapper: {
-    gap: 12,
-  },
-  optionButton: {
-    backgroundColor: authDesign.colors.inputBackground,
-    borderRadius: 16,
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    borderWidth: 2,
-    borderColor: authDesign.colors.border,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  optionButtonSelected: {
-    backgroundColor: `${authDesign.colors.primary}15`,
-    borderColor: authDesign.colors.primary,
-    borderWidth: 2,
-  },
-  optionButtonLast: {
-    marginBottom: 0,
-  },
-  optionContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  optionText: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: authDesign.colors.textPrimary,
-    textAlign: 'center',
-  },
-  optionTextSelected: {
-    color: authDesign.colors.primary,
-    fontWeight: '700',
-  },
-  checkIconContainer: {
-    position: 'absolute',
-    right: 0,
+    width: '100%',
+    paddingHorizontal: 0,
   },
 });
