@@ -9,7 +9,7 @@ import { CustomInput } from '@components/auth/CustomInput';
 import { CustomButton } from '@components/auth/CustomButton';
 import { SocialButton } from '@components/auth/SocialButton';
 import { ChevronLeft } from '@tamagui/lucide-icons';
-import { useAuth } from '@hooks/useAuth';
+import { authService } from '@services/auth/auth.service';
 
 export default function SignUpScreen() {
   const [firstName, setFirstName] = useState('');
@@ -17,36 +17,69 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
   const router = useRouter();
 
   const handleSignUp = async () => {
     Keyboard.dismiss();
     
+    // Client-side validation
     if (!firstName || !lastName || !email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert('Missing Information', 'Please fill in all fields to continue.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
     }
 
     if (password.length < 8) {
-      Alert.alert('Error', 'Password must be at least 8 characters');
+      Alert.alert('Weak Password', 'Password must be at least 8 characters long.');
       return;
     }
 
     setLoading(true);
+    
     try {
-      await signUp(email, password, firstName, lastName);
-      Alert.alert('Success', 'Account created! Please check your email for verification.');
-      router.replace('/(auth)/sign-in');
+      const response = await authService.signUp({
+        email: email.toLowerCase().trim(),
+        password,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        userType: 'customer',
+      });
+
+      if (response.success) {
+        // Show success message and navigate to sign-in
+        Alert.alert(
+          'Account Created! 🎉',
+          response.message,
+          [
+            {
+              text: 'Continue to Sign In',
+              onPress: () => router.replace('/(auth)/sign-in'),
+            },
+          ],
+          { cancelable: false }
+        );
+      } else {
+        // Show error message
+        Alert.alert('Sign Up Failed', response.message);
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to sign up');
+      console.error('Sign up error:', error);
+      Alert.alert(
+        'Error',
+        error.message || 'An unexpected error occurred. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleSocialSignUp = (provider: 'google' | 'facebook') => {
-    Alert.alert('Coming Soon', `${provider} sign up will be available soon`);
+    Alert.alert('Coming Soon', `Sign up with ${provider} will be available soon!`);
   };
 
   return (
@@ -81,7 +114,6 @@ export default function SignUpScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-
           <View style={styles.headerContainer}>
             <Text style={styles.title}>Sign Up Account</Text>
             <Text style={styles.subtitle}>Enter your personal data to create your account.</Text>
@@ -108,6 +140,7 @@ export default function SignUpScreen() {
                   value={firstName}
                   onChangeText={setFirstName}
                   autoCapitalize="words"
+                  editable={!loading}
                 />
               </View>
               <View style={styles.nameFieldSpacer} />
@@ -118,6 +151,7 @@ export default function SignUpScreen() {
                   value={lastName}
                   onChangeText={setLastName}
                   autoCapitalize="words"
+                  editable={!loading}
                 />
               </View>
             </View>
@@ -129,6 +163,7 @@ export default function SignUpScreen() {
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
+              editable={!loading}
             />
 
             <CustomInput
@@ -138,12 +173,14 @@ export default function SignUpScreen() {
               onChangeText={setPassword}
               secureTextEntry
               icon="password"
+              autoCapitalize="none"
+              editable={!loading}
             />
 
             <Text style={styles.passwordHint}>Must be at least 8 characters</Text>
 
             <CustomButton
-              title="Sign Up"
+              title={loading ? "Creating Account..." : "Sign Up"}
               onPress={handleSignUp}
               loading={loading}
               disabled={loading}
@@ -153,7 +190,7 @@ export default function SignUpScreen() {
           <View style={styles.footerContainer}>
             <Text style={styles.footerText}>Already have an account ? </Text>
             <Link href="/(auth)/sign-in" asChild>
-              <TouchableOpacity>
+              <TouchableOpacity disabled={loading}>
                 <Text style={styles.footerLink}>Sign In</Text>
               </TouchableOpacity>
             </Link>
@@ -196,11 +233,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: authDesign.spacing.paddingHorizontal,
     paddingBottom: authDesign.spacing.paddingVertical,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginTop: 32,
-    marginBottom: 32,
   },
   logo: {
     width: 100,

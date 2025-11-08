@@ -6,7 +6,7 @@ export interface User {
   email: string;
   firstName: string | null;
   lastName: string | null;
-  userType: 'customer' | 'restaurant_owner' | 'admin';
+  userType: 'customer' | 'owner' | 'admin';
   phone: string | null;
   profileImage: string | null;
   isVerified: boolean;
@@ -17,15 +17,50 @@ interface SignUpOptions {
   password: string;
   firstName: string;
   lastName: string;
-  userType?: 'customer' | 'restaurant_owner';
+  userType?: 'customer' | 'owner';
   phone?: string;
 }
 
-export const authService = {
-  async signUp(options: SignUpOptions): Promise<{ user: User }> {
+interface AuthResponse {
+  success: boolean;
+  message: string;
+  user?: User;
+}
+
+class AuthService {
+  /**
+   * Sign up a new user
+   */
+  async signUp(options: SignUpOptions): Promise<AuthResponse> {
     try {
       const { email, password, firstName, lastName, userType = 'customer', phone } = options;
 
+      // Validate inputs
+      if (!email || !password || !firstName || !lastName) {
+        return {
+          success: false,
+          message: 'Please fill in all required fields',
+        };
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return {
+          success: false,
+          message: 'Please enter a valid email address',
+        };
+      }
+
+      // Validate password length
+      if (password.length < 8) {
+        return {
+          success: false,
+          message: 'Password must be at least 8 characters long',
+        };
+      }
+
+      // Sign up with Supabase Auth
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -38,13 +73,27 @@ export const authService = {
       });
 
       if (signUpError) {
-        throw signUpError;
+        // Handle specific Supabase errors
+        if (signUpError.message.includes('already registered')) {
+          return {
+            success: false,
+            message: 'This email is already registered. Please sign in instead.',
+          };
+        }
+        return {
+          success: false,
+          message: signUpError.message || 'Failed to create account',
+        };
       }
 
       if (!authData.user) {
-        throw new Error('Failed to create user');
+        return {
+          success: false,
+          message: 'Failed to create account. Please try again.',
+        };
       }
 
+      // Create user profile in public.users table
       const { error: profileError } = await supabase
         .from('users')
         .insert({
@@ -58,7 +107,10 @@ export const authService = {
 
       if (profileError) {
         console.error('Profile creation error:', profileError);
-        throw new Error('Failed to create user profile');
+        return {
+          success: false,
+          message: 'Account created but failed to create profile. Please contact support.',
+        };
       }
 
       const user: User = {
@@ -72,31 +124,67 @@ export const authService = {
         isVerified: false,
       };
 
-      return { user };
-    } catch (error) {
+      return {
+        success: true,
+        message: 'Account created successfully! Please check your email to verify your account.',
+        user,
+      };
+    } catch (error: any) {
       console.error('Signup error:', error);
-      if (error instanceof AuthError) {
-        throw new Error(error.message);
-      }
-      throw error;
+      return {
+        success: false,
+        message: error.message || 'An unexpected error occurred. Please try again.',
+      };
     }
-  },
+  }
 
-  async signIn(email: string, password: string): Promise<{ user: User }> {
+  /**
+   * Sign in an existing user
+   */
+  async signIn(email: string, password: string): Promise<AuthResponse> {
     try {
+      // Validate inputs
+      if (!email || !password) {
+        return {
+          success: false,
+          message: 'Please enter your email and password',
+        };
+      }
+
+      // Sign in with Supabase Auth
       const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
-        throw signInError;
+        // Handle specific Supabase errors
+        if (signInError.message.includes('Invalid login credentials')) {
+          return {
+            success: false,
+            message: 'Invalid email or password. Please try again.',
+          };
+        }
+        if (signInError.message.includes('Email not confirmed')) {
+          return {
+            success: false,
+            message: 'Please verify your email before signing in.',
+          };
+        }
+        return {
+          success: false,
+          message: signInError.message || 'Failed to sign in',
+        };
       }
 
       if (!authData.user) {
-        throw new Error('Failed to sign in');
+        return {
+          success: false,
+          message: 'Failed to sign in. Please try again.',
+        };
       }
 
+      // Fetch user profile from public.users table
       const { data: profileData, error: profileError } = await supabase
         .from('users')
         .select('*')
@@ -105,7 +193,10 @@ export const authService = {
 
       if (profileError || !profileData) {
         console.error('Profile fetch error:', profileError);
-        throw new Error('Failed to fetch user profile');
+        return {
+          success: false,
+          message: 'Account found but failed to load profile. Please try again.',
+        };
       }
 
       const user: User = {
@@ -119,67 +210,138 @@ export const authService = {
         isVerified: profileData.is_verified,
       };
 
-      return { user };
-    } catch (error) {
+      return {
+        success: true,
+        message: 'Signed in successfully!',
+        user,
+      };
+    } catch (error: any) {
       console.error('Signin error:', error);
-      if (error instanceof AuthError) {
-        throw new Error(error.message);
-      }
-      throw error;
+      return {
+        success: false,
+        message: error.message || 'An unexpected error occurred. Please try again.',
+      };
     }
-  },
+  }
 
-  async signOut(): Promise<void> {
+  /**
+   * Sign out the current user
+   */
+  async signOut(): Promise<AuthResponse> {
     try {
       const { error } = await supabase.auth.signOut();
+      
       if (error) {
-        throw error;
+        return {
+          success: false,
+          message: error.message || 'Failed to sign out',
+        };
       }
-    } catch (error) {
-      console.error('Signout error:', error);
-      if (error instanceof AuthError) {
-        throw new Error(error.message);
-      }
-      throw error;
-    }
-  },
 
-  async resetPassword(email: string): Promise<void> {
+      return {
+        success: true,
+        message: 'Signed out successfully',
+      };
+    } catch (error: any) {
+      console.error('Signout error:', error);
+      return {
+        success: false,
+        message: error.message || 'Failed to sign out',
+      };
+    }
+  }
+
+  /**
+   * Send password reset email
+   */
+  async resetPassword(email: string): Promise<AuthResponse> {
     try {
+      if (!email) {
+        return {
+          success: false,
+          message: 'Please enter your email address',
+        };
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return {
+          success: false,
+          message: 'Please enter a valid email address',
+        };
+      }
+
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: 'jaw://reset-password',
       });
 
       if (error) {
-        throw error;
+        return {
+          success: false,
+          message: error.message || 'Failed to send reset email',
+        };
       }
-    } catch (error) {
-      console.error('Reset password error:', error);
-      if (error instanceof AuthError) {
-        throw new Error(error.message);
-      }
-      throw error;
-    }
-  },
 
-  async updatePassword(newPassword: string): Promise<void> {
+      return {
+        success: true,
+        message: 'If an account exists with this email, you will receive a password reset link shortly.',
+      };
+    } catch (error: any) {
+      console.error('Reset password error:', error);
+      return {
+        success: false,
+        message: error.message || 'Failed to send reset email',
+      };
+    }
+  }
+
+  /**
+   * Update user password
+   */
+  async updatePassword(newPassword: string): Promise<AuthResponse> {
     try {
+      if (!newPassword) {
+        return {
+          success: false,
+          message: 'Please enter a new password',
+        };
+      }
+
+      if (newPassword.length < 8) {
+        return {
+          success: false,
+          message: 'Password must be at least 8 characters long',
+        };
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: newPassword,
       });
 
       if (error) {
-        throw error;
+        return {
+          success: false,
+          message: error.message || 'Failed to update password',
+        };
       }
-    } catch (error) {
-      console.error('Update password error:', error);
-      if (error instanceof AuthError) {
-        throw new Error(error.message);
-      }
-      throw error;
-    }
-  },
 
+      return {
+        success: true,
+        message: 'Password updated successfully!',
+      };
+    } catch (error: any) {
+      console.error('Update password error:', error);
+      return {
+        success: false,
+        message: error.message || 'Failed to update password',
+      };
+    }
+  }
+
+  /**
+   * Get current session
+   */
   async getSession() {
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
@@ -191,8 +353,11 @@ export const authService = {
       console.error('Get session error:', error);
       return null;
     }
-  },
+  }
 
+  /**
+   * Get current user
+   */
   async getUser(): Promise<User | null> {
     try {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -227,5 +392,7 @@ export const authService = {
       console.error('Get user error:', error);
       return null;
     }
-  },
-};
+  }
+}
+
+export const authService = new AuthService();

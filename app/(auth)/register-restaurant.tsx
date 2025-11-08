@@ -50,6 +50,7 @@ export default function RegisterRestaurantScreen() {
 
     setLoading(true);
     try {
+      // Step 1: Sign up with Supabase Auth
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -69,6 +70,7 @@ export default function RegisterRestaurantScreen() {
         throw new Error('Failed to create user account');
       }
 
+      // Step 2: Create user profile in public.users table
       const { error: userError } = await supabase
         .from('users')
         .insert({
@@ -76,7 +78,7 @@ export default function RegisterRestaurantScreen() {
           first_name: firstName,
           last_name: lastName,
           phone: phone,
-          user_type: 'restaurant_owner',
+          user_type: 'owner',
           is_verified: false,
         });
 
@@ -85,26 +87,27 @@ export default function RegisterRestaurantScreen() {
         throw new Error('Failed to create user profile');
       }
 
-      const { error: restaurantError } = await supabase
-        .from('restaurants')
+      // Step 3: Create venue (restaurant) entry
+      const { error: venueError } = await supabase
+        .from('venues')
         .insert({
           owner_id: authData.user.id,
           name: restaurantName,
           description: about,
           address: address,
-          city: 'Unknown',
-          country: 'Unknown',
+          city: 'Unknown', // You can add a city field later
+          country: 'Unknown', // You can add a country field later
           phone,
           email,
-          category: type,
-          is_active: false,
+          is_active: false, // Restaurant needs approval
         });
 
-      if (restaurantError) {
-        console.error('Restaurant creation error:', restaurantError);
+      if (venueError) {
+        console.error('Restaurant creation error:', venueError);
         throw new Error('Failed to submit restaurant registration');
       }
 
+      // Success! Navigate to success screen
       router.replace('/(auth)/registration-success');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to submit registration');

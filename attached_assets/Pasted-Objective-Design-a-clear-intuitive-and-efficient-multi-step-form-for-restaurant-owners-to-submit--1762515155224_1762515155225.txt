@@ -1,3 +1,4 @@
+
 Objective: Design a clear, intuitive, and efficient multi-step form for restaurant owners to submit a registration request. The form must guide the user through providing essential business information with minimal friction.
 
 Overall Aesthetic:

@@ -9,42 +9,64 @@ import { CustomInput } from '@components/auth/CustomInput';
 import { CustomButton } from '@components/auth/CustomButton';
 import { SocialButton } from '@components/auth/SocialButton';
 import { ChevronLeft } from '@tamagui/lucide-icons';
-import { useAuth } from '@hooks/useAuth';
+import { authService } from '@services/auth/auth.service';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
   const router = useRouter();
 
   const handleSignIn = async () => {
     Keyboard.dismiss();
     
+    // Client-side validation
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert('Missing Information', 'Please enter your email and password.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
     }
 
     if (password.length < 8) {
-      Alert.alert('Error', 'Password must be at least 8 characters');
+      Alert.alert('Invalid Password', 'Password must be at least 8 characters long.');
       return;
     }
 
     setLoading(true);
+    
     try {
-      await signIn(email, password);
-      router.replace('/(tabs)');
+      const response = await authService.signIn(
+        email.toLowerCase().trim(),
+        password
+      );
+
+      if (response.success) {
+        // Success! Navigate to main app
+        // No alert needed - smooth transition
+        router.replace('/(tabs)');
+      } else {
+        // Show error message
+        Alert.alert('Sign In Failed', response.message);
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to sign in');
+      console.error('Sign in error:', error);
+      Alert.alert(
+        'Error',
+        error.message || 'An unexpected error occurred. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleSocialLogin = (provider: 'google' | 'facebook') => {
-    Alert.alert('Coming Soon', `${provider} login will be available soon`);
+    Alert.alert('Coming Soon', `Sign in with ${provider} will be available soon!`);
   };
 
   return (
@@ -60,6 +82,7 @@ export default function SignInScreen() {
             style={styles.backButton}
             onPress={() => router.back()}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            disabled={loading}
           >
             <ChevronLeft size={28} color={authDesign.colors.textPrimary} />
           </TouchableOpacity>
@@ -79,7 +102,6 @@ export default function SignInScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-
           <View style={styles.headerContainer}>
             <Text style={styles.title}>Sign In</Text>
             <Text style={styles.subtitle}>Sign in to continue</Text>
@@ -106,6 +128,7 @@ export default function SignInScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
               icon="email"
+              editable={!loading}
             />
 
             <CustomInput
@@ -115,6 +138,8 @@ export default function SignInScreen() {
               onChangeText={setPassword}
               secureTextEntry
               icon="password"
+              autoCapitalize="none"
+              editable={!loading}
             />
 
             <Text style={styles.passwordHint}>Must be at least 8 characters</Text>
@@ -127,6 +152,7 @@ export default function SignInScreen() {
                 accessibilityRole="checkbox"
                 accessibilityLabel="Remember me"
                 accessibilityState={{ checked: rememberMe }}
+                disabled={loading}
               >
                 <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
                   {rememberMe && <Text style={styles.checkmark}>✓</Text>}
@@ -135,14 +161,14 @@ export default function SignInScreen() {
               </TouchableOpacity>
 
               <Link href="/(auth)/forgot-password" asChild>
-                <TouchableOpacity>
+                <TouchableOpacity disabled={loading}>
                   <Text style={styles.forgotPassword}>Forget Password?</Text>
                 </TouchableOpacity>
               </Link>
             </View>
 
             <CustomButton
-              title="Sign In"
+              title={loading ? "Signing In..." : "Sign In"}
               onPress={handleSignIn}
               loading={loading}
               disabled={loading}
@@ -152,7 +178,7 @@ export default function SignInScreen() {
           <View style={styles.footerContainer}>
             <Text style={styles.footerText}>Don't have an account ? </Text>
             <Link href="/(auth)/sign-up" asChild>
-              <TouchableOpacity>
+              <TouchableOpacity disabled={loading}>
                 <Text style={styles.footerLink}>Sign Up</Text>
               </TouchableOpacity>
             </Link>
@@ -195,11 +221,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: authDesign.spacing.paddingHorizontal,
     paddingBottom: authDesign.spacing.paddingVertical,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginTop: 32,
-    marginBottom: 32,
   },
   logo: {
     width: 100,

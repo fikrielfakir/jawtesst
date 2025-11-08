@@ -5,32 +5,43 @@ module.exports = {
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
-    userInterfaceStyle: "light",
+    userInterfaceStyle: "automatic",
+    scheme: "jaw",
     splash: {
-      image: "./assets/splash.png",
+      image: "./assets/splash-icon.png",
       resizeMode: "contain",
-      backgroundColor: "#ffffff"
+      backgroundColor: "#5B4A8C"
     },
     assetBundlePatterns: [
       "**/*"
     ],
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      bundleIdentifier: "com.jaw.restaurant"
     },
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
-        backgroundColor: "#ffffff"
-      }
+        backgroundColor: "#5B4A8C"
+      },
+      package: "com.jaw.restaurant"
     },
     web: {
       favicon: "./assets/favicon.png",
       bundler: "metro"
     },
     extra: {
-      SUPABASE_URL: process.env.SUPABASE_URL,
-      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+      SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
+      SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
     },
-    plugins: []
+    plugins: [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow JAW to access your photos for uploading restaurant and review images."
+        }
+      ]
+    ]
   }
 };
