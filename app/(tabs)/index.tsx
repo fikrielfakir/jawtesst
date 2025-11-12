@@ -4,12 +4,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SlidersHorizontal, MapPin, ChevronDown } from '@tamagui/lucide-icons';
 
-const CafeImg = require('../../assets/home/coffee_cup_cafe_latt_38a3b15f.jpg');
-const MoroccoWayImg = require('../../assets/home/moroccan_tagine_food_784bfa11.jpg');
-const FineDiningImg = require('../../assets/home/fine_dining_elegant__246bdcc1.jpg');
-const DanceImg = require('../../assets/home/nightclub_dance_floo_110473b2.jpg');
-const LoungePubImg = require('../../assets/home/bar_pub_beer_taps_lo_b72fe35e.jpg');
-const ChiringuitoImg = require('../../assets/home/beach_bar_chiringuit_9200470e.jpg');
+const CafeImg = require('@assets/home/coffee_cup_cafe_latt_38a3b15f.jpg');
+const MoroccoWayImg = require('@assets/home/moroccan_tagine_food_784bfa11.jpg');
+const FineDiningImg = require('@assets/home/fine_dining_elegant__246bdcc1.jpg');
+const DanceImg = require('@assets/home/nightclub_dance_floo_110473b2.jpg');
+const LoungePubImg = require('@assets/home/bar_pub_beer_taps_lo_b72fe35e.jpg');
+const ChiringuitoImg = require('@assets/home/beach_bar_chiringuit_9200470e.jpg');
 
 const categories = [
   { 
@@ -83,7 +83,7 @@ export default function HomeScreen() {
         activeOpacity={0.8}
       >
         <LinearGradient
-          colors={['rgba(139, 92, 246, 0.5)', 'rgba(139, 92, 246, 0.1)']}
+          colors={['rgba(156, 108, 255, 0.8)', 'rgba(156, 108, 255, 0.3)', 'rgba(156, 108, 255, 0)']}
           style={styles.categoryGlow}
         >
           <View style={styles.categoryImageContainer}>
@@ -101,7 +101,7 @@ export default function HomeScreen() {
 
   return (
     <LinearGradient
-      colors={['#47306F', '#2E214D', '#0A050F']}
+      colors={['#2C124D', '#1F0D35', '#12071E']}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={styles.container}
@@ -113,7 +113,7 @@ export default function HomeScreen() {
             onPress={handleFilterPress}
             activeOpacity={0.7}
           >
-            <SlidersHorizontal size={20} color="#FFFFFF" />
+            <SlidersHorizontal size={18} color="rgba(255, 255, 255, 0.9)" />
             <Text style={styles.filterText}>Filter Distance</Text>
           </TouchableOpacity>
 
@@ -128,9 +128,9 @@ export default function HomeScreen() {
             onPress={handleLocationPress}
             activeOpacity={0.7}
           >
-            <MapPin size={16} color="#FFFFFF" />
+            <MapPin size={16} color="rgba(255, 255, 255, 0.9)" />
             <Text style={styles.locationText}>{selectedLocation}</Text>
-            <ChevronDown size={16} color="#FFFFFF" />
+            <ChevronDown size={14} color="rgba(255, 255, 255, 0.9)" />
           </TouchableOpacity>
         </View>
 
@@ -141,11 +141,11 @@ export default function HomeScreen() {
             <View style={styles.centerBottle}>
               <LinearGradient
                 colors={[
-                  'rgba(139, 92, 246, 0.4)', 
-                  'rgba(139, 92, 246, 0.2)', 
-                  'rgba(139, 92, 246, 0)', 
-                  'rgba(139, 92, 246, 0.2)', 
-                  'rgba(139, 92, 246, 0.4)'
+                  'rgba(156, 108, 255, 0.5)', 
+                  'rgba(156, 108, 255, 0.3)', 
+                  'rgba(156, 108, 255, 0.1)', 
+                  'rgba(156, 108, 255, 0.3)', 
+                  'rgba(156, 108, 255, 0.5)'
                 ]}
                 start={{ x: 0.5, y: 0 }}
                 end={{ x: 0.5, y: 1 }}
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 12,
   },
   filterButton: {
@@ -185,29 +185,33 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   filterText: {
-    color: '#FFFFFF',
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 12,
     fontWeight: '500',
   },
   logo: {
-    width: 80,
-    height: 40,
+    width: 85,
+    height: 42,
   },
   locationButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     paddingVertical: 8,
-    paddingHorizontal: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 8,
+    paddingHorizontal: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   locationText: {
-    color: '#FFFFFF',
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 11,
     fontWeight: '500',
     maxWidth: 100,
@@ -215,13 +219,14 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 24,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: '#FFFFFF',
     marginBottom: 40,
+    letterSpacing: 0.5,
   },
   categoriesContainer: {
     position: 'relative',
@@ -243,31 +248,43 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   bottleNeck: {
-    width: 15,
-    height: 40,
-    backgroundColor: 'rgba(139, 92, 246, 0.4)',
+    width: 16,
+    height: 42,
+    backgroundColor: 'rgba(156, 108, 255, 0.5)',
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: 'rgba(156, 108, 255, 0.6)',
     marginBottom: -1,
+    shadowColor: '#9C6CFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 10,
   },
   bottleBody: {
-    width: 45,
-    height: 120,
-    backgroundColor: 'rgba(139, 92, 246, 0.5)',
+    width: 46,
+    height: 118,
+    backgroundColor: 'rgba(156, 108, 255, 0.6)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: 'rgba(156, 108, 255, 0.7)',
     marginBottom: -1,
+    shadowColor: '#9C6CFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.7,
+    shadowRadius: 15,
   },
   bottleBase: {
     width: 50,
     height: 40,
-    backgroundColor: 'rgba(139, 92, 246, 0.4)',
+    backgroundColor: 'rgba(156, 108, 255, 0.5)',
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: 'rgba(156, 108, 255, 0.6)',
+    shadowColor: '#9C6CFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 10,
   },
   categoryButton: {
     position: 'absolute',
@@ -276,20 +293,24 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   categoryGlow: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
+    shadowColor: '#9C6CFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 20,
   },
   categoryImageContainer: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: '#2D2640',
+    width: 92,
+    height: 92,
+    borderRadius: 46,
+    backgroundColor: '#1A0F2E',
     borderWidth: 3,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: 'rgba(255, 255, 255, 0.4)',
     overflow: 'hidden',
   },
   categoryImage: {
@@ -298,11 +319,12 @@ const styles = StyleSheet.create({
   },
   categoryName: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+    letterSpacing: 0.3,
   },
 });

@@ -1,0 +1,115 @@
+Recreate the Home Screen for the JAW mobile app with the same layout, design, font, and component positioning as in the provided reference image.
+
+🧭 General Layout
+
+Screen Type: Mobile (1080×2400px)
+
+Theme: Modern, elegant, and minimal
+
+Color Scheme: Vertical gradient background — deep purple (#2C124D) at the top to dark purple/black (#12071E) at the bottom.
+
+Alignment: Centered vertically and horizontally
+
+Padding: Safe area 24px on left and right
+
+🔝 Header Section
+
+Top bar:
+
+Left: “Filter Distance” button with filter icon (outlined style, white with 60% opacity)
+
+Right: Location selector “Tanger, Morocco” with location icon (outlined, same opacity)
+
+Both elements horizontally aligned at the top under status bar.
+
+App logo (JAW): Centered at the top between the two buttons.
+
+Font: Custom logo typography (white)
+
+Size: Large enough to balance horizontally (approx. 80px height visual balance)
+
+🗂 Main Content
+
+Section Title:
+
+Text: “Choose Category”
+
+Font: Bold, sans-serif (e.g., Poppins Bold or Montserrat SemiBold)
+
+Font size: 22–24px
+
+Color: White (#FFFFFF)
+
+Center aligned
+
+☕ Category Icons Section
+
+Each category represented as a circular image with a soft purple glow shadow behind it (neon effect).
+
+Spacing between items: even and symmetrical.
+
+Use subtle scale animation when hovered/tapped.
+
+Categories:
+
+Center Top:
+
+Icon: Coffee cup
+
+Label: “Cafe”
+
+Font: Poppins Medium, size 16px, color white
+
+Middle Row (left → right):
+
+Left: “Morocco Way” (traditional food image)
+
+Right: “Fine Dining” (elegant restaurant image)
+
+Bottom Row (left → right):
+
+Left: “Dance” (club scene)
+
+Center: “Chiringuito” (beach bar)
+
+Right: “Lounge & Pub” (bar counter)
+
+Between “Cafe” and the bottom rows, include a bottle silhouette glowing purple (#9C6CFF gradient) — used as a visual divider.
+
+⚙️ Bottom Navigation Bar
+
+Background: solid black (#0A0613) with subtle top shadow.
+
+Height: 80px, rounded top corners (12px).
+
+Icons centered horizontally, spaced equally.
+
+Icons (white with purple accent on active one):
+
+Home (active, purple glow)
+
+Search
+
+Heart (Favorites)
+
+Ticket or card (Booking)
+
+User Profile
+
+🖋 Typography
+
+Font Family: Poppins or Sora (modern, geometric)
+
+Font Weights: Regular (400), Medium (500), Bold (700)
+
+Color: White or soft gray for inactive text (#B9B3C6)
+
+Shadow: subtle outer glow for category labels
+
+✨ Effects & Animations
+
+Soft glow (blur radius 20–30px) behind selected icons
+
+Smooth fade-in for all categories on screen load
+
+Bottom nav transitions (active icon glows purple)
