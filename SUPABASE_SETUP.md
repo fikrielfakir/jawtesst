@@ -1,63 +1,44 @@
-# Supabase Setup Guide for OTP Password Reset
+# Supabase Setup Guide for 6-Digit OTP Password Reset
 
-This guide explains how to set up the database and functions required for the OTP-based password reset system.
+This guide explains how to configure Supabase's built-in password recovery system to send 6-digit OTP codes via email.
 
 ## Prerequisites
 
 1. A Supabase project
 2. Supabase URL and Anon Key configured in your environment
+3. Access to Supabase Dashboard
 
-## Step 1: Create the Password Reset OTP Table
+## Step 1: Configure Email Template
 
-Run this SQL in your Supabase SQL Editor:
+The most important step is configuring Supabase's password recovery email template to display the 6-digit OTP code.
 
-```sql
--- Create the password_reset_otps table
-CREATE TABLE IF NOT EXISTS public.password_reset_otps (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email TEXT NOT NULL,
-  otp TEXT NOT NULL,
-  expires_at TIMESTAMPTZ NOT NULL,
-  is_used BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+1. Go to your **Supabase Dashboard**
+2. Navigate to **Authentication** → **Email Templates**
+3. Select **Reset Password** (or **Password Recovery**)
+4. Update the email template to include the `{{ .Token }}` placeholder
 
--- Create index for faster lookups
-CREATE INDEX idx_password_reset_otps_email ON public.password_reset_otps(email);
-CREATE INDEX idx_password_reset_otps_otp ON public.password_reset_otps(otp);
-CREATE INDEX idx_password_reset_otps_expires_at ON public.password_reset_otps(expires_at);
+### Example Email Template
 
--- Enable Row Level Security
-ALTER TABLE public.password_reset_otps ENABLE ROW LEVEL SECURITY;
+Replace the default template with something like this:
 
--- IMPORTANT: NO public policies! This table should ONLY be accessed via
--- secure backend functions or service-role authenticated connections.
--- All policies deny public access for security.
+```html
+<h2>Reset Your Password</h2>
+<p>Hi there,</p>
+<p>You requested to reset your password. Use the verification code below:</p>
+
+<div style="font-size: 32px; font-weight: bold; letter-spacing: 5px; margin: 20px 0; text-align: center; background: #f4f4f4; padding: 20px; border-radius: 8px;">
+  {{ .Token }}
+</div>
+
+<p><strong>This code will expire in 60 minutes.</strong></p>
+<p>If you didn't request this password reset, please ignore this email or contact support if you have concerns.</p>
+
+<p>Thanks,<br>Your App Team</p>
 ```
 
-## Step 2: Create Helper Functions
+**Important**: The `{{ .Token }}` placeholder is what displays the 6-digit code.
 
-Run these SQL functions in your Supabase SQL Editor:
-
-```sql
--- Function to get user ID by email
-CREATE OR REPLACE FUNCTION public.get_user_id_by_email(user_email TEXT)
-RETURNS uuid
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
-  user_id uuid;
-BEGIN
-  SELECT id INTO user_id FROM auth.users WHERE email = user_email LIMIT 1;
-  RETURN user_id;
-END;
-$$;
-```
-
-**Note**: The password update is now handled by the backend using Supabase's admin API (`admin.updateUserById`), so we don't need a separate database function for that.
-
-## Step 3: Set Up Environment Variables
+## Step 2: Set Up Environment Variables
 
 Create a `.env` file in your project root with:
 
@@ -66,55 +47,97 @@ EXPO_PUBLIC_SUPABASE_URL=your_supabase_url_here
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
-## Step 4: Restart the Development Server
+## Step 3: Restart the Development Server
 
-After setting up the environment variables, restart your development server:
+After setting up the environment variables and email template, restart your development server:
 
 ```bash
 npm run web
 ```
 
-## How the OTP Flow Works
+## How the Password Reset Flow Works
 
-1. **User requests password reset**: Enters email on forgot password screen
-2. **System generates OTP**: 6-digit code is generated and stored in database
-3. **User sees OTP**: For testing, OTP is shown in alert (in production, send via email)
-4. **User enters OTP**: Validates against database and marks as used
-5. **User sets new password**: Calls `reset_user_password` function to update password securely
-6. **OTP is deleted**: All OTPs for the email are removed to prevent reuse
+This implementation uses **Supabase's built-in password recovery system**:
+
+1. **User requests password reset** → `forgot-password.tsx`
+   - User enters their email address
+   - Calls `authService.resetPassword(email)` 
+   - Triggers `supabase.auth.resetPasswordForEmail(email)`
+
+2. **Supabase sends email with 6-digit code**
+   - Supabase generates a 6-digit OTP token
+   - Email template displays the code using `{{ .Token }}`
+   - Code expires in 60 minutes
+
+3. **User enters OTP** → `verify-otp.tsx`
+   - User inputs the 6-digit code from email
+   - Calls `authService.verifyResetOtp(email, otp)`
+   - Triggers `supabase.auth.verifyOtp({ email, token, type: 'recovery' })`
+
+4. **User sets new password** → `enter-new-password.tsx`
+   - After OTP verification, user enters new password
+   - Calls `authService.resetPasswordWithOtp(email, otp, newPassword)`
+   - First verifies OTP again, then calls `supabase.auth.updateUser({ password })`
+
+5. **Password updated successfully**
+   - User can now sign in with the new password
+   - All sessions are revoked for security
 
 ## Security Features
 
-- ✅ OTP expires after 10 minutes
-- ✅ OTP can only be used once (marked as `is_used`)
-- ✅ Password update uses database function with SECURITY DEFINER
-- ✅ All OTPs deleted after successful password reset
-- ✅ Expiration checked before password update
+- ✅ OTP expires after 60 minutes (Supabase default)
+- ✅ OTP can only be used once (handled by Supabase)
+- ✅ Rate limiting on password reset requests (Supabase enforced)
+- ✅ Secure password updates via Supabase Auth API
+- ✅ All previous sessions revoked after password change
 
-## Testing Without Email
+## No Custom Database Tables Required
 
-For development and testing, the OTP is displayed in an alert dialog. In production, you would integrate an email service like:
-
-- SendGrid
-- AWS SES
-- Resend
-- Postmark
-
-Replace the alert with your email sending logic in `src/services/auth/auth.service.ts`.
+Unlike custom OTP implementations, this approach uses **Supabase's built-in authentication system**, so:
+- ❌ No custom database tables needed
+- ❌ No custom SQL functions required
+- ✅ Only email template configuration needed
+- ✅ Supabase handles all OTP generation, storage, and validation
 
 ## Troubleshooting
 
-### "Failed to generate verification code"
-- Check that the `password_reset_otps` table exists in Supabase
-- Verify RLS policies are set correctly
-- Check Supabase connection credentials
+### Code not appearing in email
+- **Verify email template configuration**: Make sure `{{ .Token }}` is in the template
+- **Check Supabase email logs**: Go to Authentication → Logs in Supabase Dashboard
+- **Verify SMTP settings**: Ensure Supabase email service is properly configured
+- **Check spam folder**: The email might be filtered as spam
 
-### "Failed to update password"
-- Ensure `reset_user_password` function is created in Supabase
-- Check that the function has SECURITY DEFINER permission
-- Verify the user exists in auth.users table
+### "Invalid verification code" error
+- **Code expired**: Codes expire after 60 minutes - request a new one
+- **Wrong code**: Double-check you entered all 6 digits correctly
+- **Multiple requests**: If you requested multiple codes, use the most recent one
+- **Email mismatch**: Ensure the email matches exactly (case-sensitive)
 
-### "Invalid or expired verification code"
-- OTP expires after 10 minutes
-- Check system time is synchronized
-- Ensure OTP hasn't been used already
+### "Failed to send verification code"
+- **Email doesn't exist**: User must be registered in the system
+- **Rate limiting**: Supabase enforces rate limits - wait before retrying
+- **Connection issues**: Check your internet connection and Supabase status
+
+### Rate Limiting
+- Supabase enforces rate limits on password reset requests
+- Users can resend code after 60 seconds in the app
+- If hitting rate limits frequently, consider implementing additional client-side throttling
+
+## Testing the Flow
+
+1. Navigate to the Forgot Password screen
+2. Enter a valid email address (user must exist in your auth.users)
+3. Check your email for the 6-digit code
+4. Enter the code on the verification screen
+5. Set your new password (minimum 8 characters)
+6. Sign in with the new password
+
+## Production Considerations
+
+Before deploying to production:
+
+1. ✅ **Email template configured** with branded design and `{{ .Token }}`
+2. ✅ **SMTP properly configured** in Supabase (or use Supabase's default email service)
+3. ✅ **Test the full flow** with real email addresses
+4. ✅ **Monitor rate limits** and adjust as needed
+5. ✅ **Consider adding analytics** to track password reset funnel

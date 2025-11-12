@@ -32,21 +32,15 @@ export default function ForgotPasswordScreen() {
     try {
       const result = await authService.resetPassword(email);
       if (result.success) {
-        Alert.alert(
-          'Check Your Email',
-          'We\'ve sent you a password reset link. Please check your email and follow the instructions to reset your password.',
-          [
-            {
-              text: 'OK',
-              onPress: () => router.replace('/(auth)/sign-in')
-            }
-          ]
-        );
+        router.push({
+          pathname: '/(auth)/verify-otp',
+          params: { email }
+        });
       } else {
-        Alert.alert('Error', result.message || 'Failed to send password reset email');
+        Alert.alert('Error', result.message || 'Failed to send verification code');
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to send password reset email');
+      Alert.alert('Error', error.message || 'Failed to send verification code');
     } finally {
       setLoading(false);
     }
