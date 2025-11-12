@@ -252,7 +252,11 @@ class AuthService {
   }
 
   /**
-   * Request password reset via Supabase Auth (sends magic link to email)
+   * Request password reset via 6-digit OTP sent to email
+   * 
+   * IMPORTANT: This requires Supabase email template configuration.
+   * In your Supabase dashboard, go to Authentication → Email Templates → Password Recovery
+   * and ensure the template includes {{ .Token }} to display the 6-digit code.
    */
   async resetPassword(email: string): Promise<AuthResponse & { otp?: string }> {
     try {
@@ -272,25 +276,28 @@ class AuthService {
         };
       }
 
-      // Use Supabase's built-in password reset with magic link
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      // Use Supabase's password recovery flow which sends a 6-digit OTP
+      // The email template should be configured to show the token
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: undefined,
+      });
 
       if (error) {
         return {
           success: false,
-          message: error.message || 'Failed to send password reset email',
+          message: error.message || 'Failed to send verification code',
         };
       }
 
       return {
         success: true,
-        message: 'Password reset link sent to your email',
+        message: 'A 6-digit verification code has been sent to your email',
       };
     } catch (error: any) {
       console.error('Reset password error:', error);
       return {
         success: false,
-        message: error.message || 'Failed to send password reset email',
+        message: error.message || 'Failed to send verification code',
       };
     }
   }
@@ -329,6 +336,8 @@ class AuthService {
 
   /**
    * Reset password with OTP verification
+   * NOTE: The OTP should already be verified before calling this method.
+   * This method updates the password using the established recovery session.
    */
   async resetPasswordWithOtp(email: string, otp: string, newPassword: string): Promise<AuthResponse> {
     try {
@@ -339,21 +348,9 @@ class AuthService {
         };
       }
 
-      // First verify the OTP
-      const { error: verifyError } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: 'recovery',
-      });
-
-      if (verifyError) {
-        return {
-          success: false,
-          message: verifyError.message || 'Invalid or expired verification code',
-        };
-      }
-
-      // Then update the password
+      // The OTP was already verified in verify-otp.tsx, which established a recovery session.
+      // We don't need to verify it again (it would fail since OTPs are single-use).
+      // Just update the password using the recovery session.
       const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
       });
