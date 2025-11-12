@@ -42,7 +42,7 @@ export function OnboardingScreen({
 
         <YStack alignItems="center" marginTop={spacing.l}>
           <Image
-            source={require('../../attached_assets/Profile Restaurent Booking_1762514069783.png')}
+            source={require('../../assets/jwa-logo.png')}
             width={120}
             height={60}
             resizeMode="contain"
