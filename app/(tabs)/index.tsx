@@ -15,37 +15,37 @@ const categories = [
   { 
     id: 'cafe', 
     name: 'Cafe', 
-    angle: 0, 
+    angle: 270, 
     image: CafeImg
   },
   { 
     id: 'morocco-way', 
     name: 'Morocco Way', 
-    angle: 240, 
+    angle: 210, 
     image: MoroccoWayImg
   },
   { 
     id: 'fine-dining', 
     name: 'Fine Dining', 
-    angle: 120, 
+    angle: 330, 
     image: FineDiningImg
   },
   { 
     id: 'dance', 
     name: 'Dance', 
-    angle: 300, 
+    angle: 150, 
     image: DanceImg
   },
   { 
     id: 'lounge-pub', 
     name: 'Loung & Pub', 
-    angle: 60, 
+    angle: 30, 
     image: LoungePubImg
   },
   { 
     id: 'chiringuito', 
     name: 'Chiringuito', 
-    angle: 180, 
+    angle: 90, 
     image: ChiringuitoImg
   },
 ];
