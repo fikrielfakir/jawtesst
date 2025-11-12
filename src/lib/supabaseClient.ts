@@ -16,33 +16,44 @@ const supabaseAnonKey =
 
 // Validate credentials
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('❌ Supabase Configuration Error:');
-  console.error('URL:', supabaseUrl ? '✅ Present' : '❌ Missing');
-  console.error('Anon Key:', supabaseAnonKey ? '✅ Present' : '❌ Missing');
-  console.error('\nPlease check:');
-  console.error('1. Variables are set in Replit Secrets');
-  console.error('2. Variables start with EXPO_PUBLIC_ prefix');
-  console.error('3. Restart the dev server after adding secrets');
-  throw new Error('Missing Supabase environment variables. Check console for details.');
+  console.warn('⚠️  Supabase Configuration Warning:');
+  console.warn('URL:', supabaseUrl ? '✅ Present' : '❌ Missing');
+  console.warn('Anon Key:', supabaseAnonKey ? '✅ Present' : '❌ Missing');
+  console.warn('\nNote: Add Supabase credentials to enable authentication features');
+  console.warn('1. Add EXPO_PUBLIC_SUPABASE_URL to environment');
+  console.warn('2. Add EXPO_PUBLIC_SUPABASE_ANON_KEY to environment');
+  console.warn('3. Restart the dev server after adding secrets');
 }
 
-console.log('✅ Supabase Configuration Loaded:');
-console.log('   URL:', supabaseUrl);
-console.log('   Key:', supabaseAnonKey.substring(0, 20) + '...');
+if (supabaseUrl && supabaseAnonKey) {
+  console.log('✅ Supabase Configuration Loaded:');
+  console.log('   URL:', supabaseUrl);
+  console.log('   Key:', supabaseAnonKey.substring(0, 20) + '...');
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-  global: {
-    headers: {
-      'x-client-info': 'supabase-js-react-native',
-    },
-  },
-});
+// Create a mock client if credentials are missing to prevent app crashes
+export const supabase = (supabaseUrl && supabaseAnonKey) 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storage: AsyncStorage,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+      global: {
+        headers: {
+          'x-client-info': 'supabase-js-react-native',
+        },
+      },
+    })
+  : createClient('https://placeholder.supabase.co', 'placeholder-key', {
+      auth: {
+        storage: AsyncStorage,
+        autoRefreshToken: false,
+        persistSession: false,
+        detectSessionInUrl: false,
+      },
+    });
 
 export type Database = {
   public: {
