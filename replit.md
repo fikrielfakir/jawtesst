@@ -107,7 +107,29 @@ Features ready to be built:
 None recorded yet.
 
 ## Recent Changes
-- **2025-11-12 (Latest - 6-Digit OTP Password Reset)**:
+- **2025-11-12 (Latest - Home Screen Redesign)**:
+  - **Home Screen Implementation:**
+    - Redesigned home screen with circular category layout matching reference design
+    - Implemented 6 restaurant categories in a circular arrangement (Cafe, Morocco Way, Fine Dining, Dance, Lounge & Pub, Chiringuito)
+    - Added header with JAW logo, Filter Distance button, and Tanger, Morocco location dropdown
+    - Created center bottle graphic using three-part design (neck, body, base)
+    - Purple gradient background ['#47306F', '#2E214D', '#0A050F'] matching auth screens
+    - Responsive layout using useWindowDimensions for all screen sizes
+  - **Image Loading Fix:**
+    - Fixed category images not loading on Expo Web
+    - Issue: Alias-based JPEG requires (`@assets/home/...jpg`) don't resolve on Expo Web
+    - Solution: Changed to static relative imports (`require('../../assets/home/...')`)
+    - All 6 category images now load correctly with proper circular cropping
+  - **Technical Details:**
+    - Category positions calculated using responsive radius and angles
+    - Purple glow effects around each category button
+    - Images use `resizeMode="cover"` for proper cropping in circular containers
+    - Bottom navigation bar integrated with existing tab structure
+  - **Files Modified:**
+    - `app/(tabs)/index.tsx` - Complete home screen redesign
+    - `assets/home/` - Added 6 category images (cafe, morocco way, fine dining, dance, lounge & pub, chiringuito)
+
+- **2025-11-12 (Earlier - 6-Digit OTP Password Reset)**:
   - **Password Reset Enhancement:**
     - Implemented 6-digit OTP verification for password reset instead of email links
     - Uses Supabase's built-in recovery OTP system (requires email template configuration)
