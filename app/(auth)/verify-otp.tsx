@@ -8,7 +8,7 @@ import { IconContainer } from '@components/auth/IconContainer';
 import { ShieldCheck, ArrowLeft } from '@tamagui/lucide-icons';
 import { authService } from '@services/auth/auth.service';
 
-const OTP_LENGTH = 8; // Supabase sends 8-digit codes for recovery
+const OTP_LENGTH = 6; // Supabase sends 8-digit codes for recovery
 
 export default function VerifyOtpScreen() {
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));

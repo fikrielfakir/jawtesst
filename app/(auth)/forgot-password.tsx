@@ -28,25 +28,15 @@ export default function ForgotPasswordScreen() {
       return;
     }
 
-    setLoading(true);
+     setLoading(true);
     try {
-      const result = await authService.resetPassword(email);
-      if (result.success) {
-        Alert.alert(
-          'Check Your Email',
-          'We\'ve sent you a password reset link. Please check your email and follow the instructions to reset your password.',
-          [
-            {
-              text: 'OK',
-              onPress: () => router.replace('/(auth)/sign-in')
-            }
-          ]
-        );
-      } else {
-        Alert.alert('Error', result.message || 'Failed to send password reset email');
-      }
+      await authService.resetPassword(email);
+      router.push({
+        pathname: '/(auth)/verify-email',
+        params: { email }
+      });
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to send verification code');
+      Alert.alert('Error', error.message || 'Failed to generate verification code');
     } finally {
       setLoading(false);
     }
