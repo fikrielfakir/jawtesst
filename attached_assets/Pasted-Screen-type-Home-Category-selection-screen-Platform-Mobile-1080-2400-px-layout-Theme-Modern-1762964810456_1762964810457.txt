@@ -1,0 +1,156 @@
+Screen type: Home / Category selection screen
+Platform: Mobile (1080 × 2400 px layout)
+Theme: Modern, elegant nightlife & leisure discovery
+Style: Minimal, clean, neon purple-glow aesthetic
+
+🟣 Background
+
+Gradient: Vertical gradient background from deep violet (#2C124D) at the top → to dark purple-black (#12071E) at the bottom.
+
+Vibe: Elegant nightlife ambiance with subtle glow and contrast.
+
+🧭 Header Section
+
+Alignment: Top area inside SafeAreaView
+Layout: Horizontal row with three elements equally spaced
+
+Left Button — “Filter Distance”
+
+Rounded pill button with translucent purple background (rgba(255,255,255,0.08))
+
+Border: 1px solid rgba(255,255,255,0.15)
+
+Icon: SlidersHorizontal (Lucide icon)
+
+Text: “Filter Distance” — white #FFFFFF 80% opacity
+
+Font: Inter / Medium / 12px
+
+Center Logo
+
+App logo (“JAW”) centered between the two buttons
+
+Size: Width 85px, Height 42px
+
+Color: White
+
+Right Button — Location Selector
+
+Rounded pill button matching left button style
+
+Icon: MapPin (Lucide icon), followed by text and ChevronDown icon
+
+Text: “Tanger, Morocco”
+
+Font: Inter / Medium / 11px
+
+Max width: 100px (truncated if too long)
+
+🏷 Title Section
+
+Text: “Choose Category”
+
+Font: Inter / Bold / 24px
+
+Color: White #FFFFFF
+
+Alignment: Centered
+
+Margin-top: 16px below header
+
+Margin-bottom: 20–24px
+
+🪄 Category Selection Area
+
+Layout: Circular orbit layout with center glowing bottle illustration.
+All categories are evenly positioned around a virtual circle centered vertically on the screen.
+
+Center Element — Bottle Glow
+
+Positioned exactly at screen center.
+
+Gradient vertical bottle shape (height: 200px, width: 50px).
+
+Gradient colors: from rgba(156,108,255,0.5) (top) → rgba(156,108,255,0.1) → back to rgba(156,108,255,0.5) (bottom).
+
+Contains neck, body, and base with soft purple glow and border.
+
+Subtle neon glow shadow (shadowColor: '#9C6CFF').
+
+🍸 Category Buttons (Circular Orbit)
+
+Each category button is a circular image with glowing purple outline.
+Arranged evenly around the bottle in a circular pattern.
+Each button includes:
+
+Circular gradient glow ring (rgba(156,108,255,0.8) to transparent).
+
+Image background (category photo).
+
+Label text centered below the image.
+
+On press → active glow effect (slightly larger scale + brighter shadow).
+
+Categories (6 total):
+
+Cafe — Image of a coffee cup on a table
+
+Morocco Way — Moroccan traditional meal
+
+Fine Dining — Elegant restaurant setting
+
+Dance — Nightclub dance floor
+
+Lounge & Pub — Bar/pub interior with beer taps
+
+Chiringuito — Beach bar with cocktails
+
+Visual Specs:
+
+Button size: 92px image inside 110px glow container
+
+Border: 3px white with 40% opacity
+
+Text color: White #FFFFFF, font size 15px, weight 600
+
+Text shadow: rgba(0, 0, 0, 0.7) offset (0, 2), radius 4
+
+⚫ Bottom Navigation Bar
+
+Fixed at bottom with white background.
+Rounded top corners (borderTopLeftRadius: 20, borderTopRightRadius: 20).
+Icons evenly spaced with labels below.
+
+Icons (from left to right):
+
+Home (active, purple highlight)
+
+Search
+
+Bookings
+
+Favorites (heart icon)
+
+Profile
+
+Typography: Inter / Regular / 12px
+Active color: #6D3AFF
+Inactive color: #A5A5A5
+
+✨ Interactions
+
+Smooth fade/scale animation when pressing category button
+
+Active category glows more intensely
+
+Subtle background gradient animation possible on scroll
+
+💡 Design Notes
+
+Maintain equal horizontal spacing between orbiting buttons.
+
+Bottle remains visually central even on smaller screens.
+
+Ensure vertical centering is consistent across different aspect ratios using justifyContent: 'center' and alignItems: 'center'.
+
+Text and glow intensity balanced to preserve readability.
