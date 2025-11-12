@@ -107,7 +107,37 @@ Features ready to be built:
 None recorded yet.
 
 ## Recent Changes
-- **2025-11-12 (Latest - Home Screen Redesign)**:
+- **2025-11-12 (Latest - Home Screen Design Optimization)**:
+  - **Visual Enhancements:**
+    - Reduced header padding (8px top/bottom, down from 16px) for more compact layout
+    - Tightened control gaps (8px, down from 12px) in filter/location buttons
+    - Reduced logo size to 90x45px for better proportions
+    - Decreased "Choose Category" title size to 22px with reduced bottom margin (20px)
+    - Category label font size reduced to 13px with semi-bold (600) weight
+  - **Color & Styling Updates:**
+    - Updated all header icons and text to lighter #d0d0d0 color
+    - Enhanced background gradient with deeper contrast ['#5A3D7C', '#3D2657', '#1A0E2E', '#0A050F']
+    - Filter and location button text now 12px with semi-bold (600) weight
+  - **Interactive States:**
+    - Added selected category state (defaults to "Cafe")
+    - Active category shows stronger glow with intensified gradient colors
+    - Active category border increased to 3px with brighter white (0.6 opacity)
+    - Inactive categories have subtle glow with lighter gradient
+  - **Bottom Navigation:**
+    - Compacted tab bar height to 60px with adjusted padding (8px)
+    - Tab labels reduced to 11px with semi-bold (600) weight
+    - Active tab icons scale to 26px, inactive to 22px
+    - Active tab color changed to #B9A2E1 (purple), inactive to #8B8B8B
+    - Tab bar background set to #1A0E2E with #3D2657 border
+  - **Technical Improvements:**
+    - Fixed web deprecation warnings by replacing shadow props with CSS filter: drop-shadow()
+    - Replaced textShadowColor/Offset/Radius with standard textShadow
+    - All shadow effects now use web-compatible syntax
+  - **Files Modified:**
+    - `app/(tabs)/index.tsx` - Complete Home screen visual optimization
+    - `app/(tabs)/_layout.tsx` - Bottom navigation bar styling improvements
+  
+- **2025-11-12 (Earlier - Home Screen Redesign)**:
   - **Home Screen Implementation:**
     - Redesigned home screen with circular category layout matching reference design
     - Implemented 6 restaurant categories in a circular arrangement (Cafe, Morocco Way, Fine Dining, Dance, Lounge & Pub, Chiringuito)
