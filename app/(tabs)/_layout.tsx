@@ -6,43 +6,58 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#5B4A8C',
-        tabBarInactiveTintColor: '#999999',
+        tabBarActiveTintColor: '#B9A2E1',
+        tabBarInactiveTintColor: '#8B8B8B',
+        tabBarStyle: {
+          backgroundColor: '#1A0E2E',
+          borderTopColor: '#3D2657',
+          borderTopWidth: 1,
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
+        tabBarIconStyle: {
+          marginTop: 2,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <Home size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => <Home size={focused ? 26 : 22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="search"
         options={{
           title: 'Search',
-          tabBarIcon: ({ color }) => <Search size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => <Search size={focused ? 26 : 22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="bookings"
         options={{
           title: 'Bookings',
-          tabBarIcon: ({ color}) => <Calendar size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => <Calendar size={focused ? 26 : 22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="favorites"
         options={{
           title: 'Favorites',
-          tabBarIcon: ({ color }) => <Heart size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => <Heart size={focused ? 26 : 22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <User size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => <User size={focused ? 26 : 22} color={color} />,
         }}
       />
     </Tabs>

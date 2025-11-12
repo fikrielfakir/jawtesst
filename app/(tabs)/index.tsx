@@ -96,8 +96,10 @@ const categories = [
 export default function HomeScreen() {
   const { width, height } = useWindowDimensions();
   const [selectedLocation, setSelectedLocation] = useState("Tanger, Morocco");
+  const [selectedCategory, setSelectedCategory] = useState("cafe");
 
   const handleCategoryPress = (categoryId: string) => {
+    setSelectedCategory(categoryId);
     console.log("Category pressed:", categoryId);
   };
 
@@ -116,6 +118,7 @@ export default function HomeScreen() {
     const angleInRadians = (category.angle * Math.PI) / 180;
     const x = containerSize / 2 + radius * Math.cos(angleInRadians) - 50;
     const y = containerSize / 2 + radius * Math.sin(angleInRadians) - 50;
+    const isSelected = selectedCategory === category.id;
 
     return (
       <TouchableOpacity
@@ -125,14 +128,30 @@ export default function HomeScreen() {
         activeOpacity={0.8}
       >
         <LinearGradient
-          colors={[
-            `${authDesign.colors.primaryicon}CC`,
-            `${authDesign.colors.primaryicon}4D`,
-            `${authDesign.colors.primaryicon}00`,
+          colors={
+            isSelected
+              ? [
+                  `${authDesign.colors.primaryicon}FF`,
+                  `${authDesign.colors.primaryicon}CC`,
+                  `${authDesign.colors.primaryicon}66`,
+                ]
+              : [
+                  `${authDesign.colors.primaryicon}99`,
+                  `${authDesign.colors.primaryicon}33`,
+                  `${authDesign.colors.primaryicon}00`,
+                ]
+          }
+          style={[
+            styles.categoryGlow,
+            isSelected && styles.categoryGlowActive,
           ]}
-          style={styles.categoryGlow}
         >
-          <View style={styles.categoryImageContainer}>
+          <View
+            style={[
+              styles.categoryImageContainer,
+              isSelected && styles.categoryImageContainerActive,
+            ]}
+          >
             <Image
               source={category.image}
               style={styles.categoryImage}
@@ -147,7 +166,7 @@ export default function HomeScreen() {
 
   return (
     <LinearGradient
-      colors={[...gradients.auth]}
+      colors={['#5A3D7C', '#3D2657', '#1A0E2E', '#0A050F']}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={styles.container}
@@ -167,8 +186,8 @@ export default function HomeScreen() {
               activeOpacity={0.7}
             >
               <SlidersHorizontal
-                size={authDesign.sizes.iconSize}
-                color={authDesign.colors.textPrimary}
+                size={18}
+                color="#d0d0d0"
               />
               <Text style={styles.filterText}>Filter Distance</Text>
             </TouchableOpacity>
@@ -179,11 +198,11 @@ export default function HomeScreen() {
               activeOpacity={0.7}
             >
               <MapPin
-                size={authDesign.sizes.iconSize}
-                color={authDesign.colors.textPrimary}
+                size={18}
+                color="#d0d0d0"
               />
               <Text style={styles.locationText}>{selectedLocation}</Text>
-              <ChevronDown size={14} color={authDesign.colors.textPrimary} />
+              <ChevronDown size={14} color="#d0d0d0" />
             </TouchableOpacity>
           </View>
         </View>
@@ -223,50 +242,51 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     paddingHorizontal: authDesign.spacing.paddingHorizontal,
-    paddingVertical: authDesign.spacing.sectionGap,
-    gap: 12,
+    paddingTop: 8,
+    paddingBottom: 8,
+    gap: 8,
   },
   controlsRow: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 12,
+    gap: 8,
   },
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    paddingVertical: 8,
-    paddingHorizontal: authDesign.spacing.inputPaddingHorizontal,
+    gap: 5,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
     backgroundColor: "rgba(255, 255, 255, 0.08)",
     borderRadius: authDesign.sizes.cornerRadius,
     borderWidth: authDesign.sizes.borderWidth,
     borderColor: authDesign.colors.border,
   },
   filterText: {
-    color: authDesign.colors.textPrimary,
-    fontSize: authDesign.typography.caption.size,
-    fontWeight: authDesign.typography.caption.weight,
+    color: "#d0d0d0",
+    fontSize: 12,
+    fontWeight: "600",
   },
   logo: {
-    width: 100,
-    height: 50,
+    width: 90,
+    height: 45,
   },
   locationButton: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    paddingVertical: 8,
-    paddingHorizontal: authDesign.spacing.inputPaddingHorizontal,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
     backgroundColor: "rgba(255, 255, 255, 0.08)",
     borderRadius: authDesign.sizes.cornerRadius,
     borderWidth: authDesign.sizes.borderWidth,
     borderColor: authDesign.colors.border,
   },
   locationText: {
-    color: authDesign.colors.textPrimary,
-    fontSize: authDesign.typography.caption.size - 2,
-    fontWeight: authDesign.typography.label.weight,
+    color: "#d0d0d0",
+    fontSize: 12,
+    fontWeight: "600",
     maxWidth: 100,
   },
   content: {
@@ -275,10 +295,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    fontSize: authDesign.typography.title.size,
-    fontWeight: authDesign.typography.title.weight,
+    fontSize: 22,
+    fontWeight: "700",
     color: authDesign.colors.textPrimary,
-    marginBottom: 30,
+    marginBottom: 20,
     letterSpacing: 0.5,
     textAlign: "center",
   },
@@ -294,7 +314,7 @@ const styles = StyleSheet.create({
     marginTop: -69,
     marginLeft: -20,
     zIndex: 1,
-    boxShadow: `0 0 20px ${authDesign.colors.primaryicon}CC`,
+    filter: `drop-shadow(0px 0px 30px ${authDesign.colors.primaryicon})`,
   },
   categoryButton: {
     position: "absolute",
@@ -308,17 +328,24 @@ const styles = StyleSheet.create({
     borderRadius: 55,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 8,
-    boxShadow: `0 0 20px ${authDesign.colors.primaryicon}CC`,
+    marginBottom: 6,
+    filter: `drop-shadow(0px 0px 15px ${authDesign.colors.primaryicon}66)`,
+  },
+  categoryGlowActive: {
+    filter: `drop-shadow(0px 0px 35px ${authDesign.colors.primaryicon})`,
   },
   categoryImageContainer: {
     width: 92,
     height: 92,
     borderRadius: 46,
     backgroundColor: authDesign.colors.backgroundDark,
-    borderWidth: authDesign.sizes.borderWidthFocus,
-    borderColor: "rgba(255, 255, 255, 0.4)",
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.3)",
     overflow: "hidden",
+  },
+  categoryImageContainerActive: {
+    borderWidth: 3,
+    borderColor: "rgba(255, 255, 255, 0.6)",
   },
   categoryImage: {
     width: "100%",
@@ -326,10 +353,10 @@ const styles = StyleSheet.create({
   },
   categoryName: {
     color: authDesign.colors.textPrimary,
-    fontSize: authDesign.typography.label.size,
-    fontWeight: authDesign.typography.label.weight,
+    fontSize: 13,
+    fontWeight: "600",
     textAlign: "center",
-    textShadow: "0 2px 4px rgba(0, 0, 0, 0.7)",
+    textShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
     letterSpacing: 0.3,
   },
 });
