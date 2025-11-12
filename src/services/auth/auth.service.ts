@@ -259,7 +259,7 @@ class AuthService {
   }
 
   /**
-   * Request password reset via custom 6-digit OTP sent to email
+   * Request password reset via Supabase's built-in 6-digit OTP system
    */
   async resetPassword(email: string): Promise<AuthResponse & { otp?: string }> {
     try {
@@ -279,57 +279,20 @@ class AuthService {
         };
       }
 
-      // Generate 6-digit OTP
-      // We don't check if user exists here for security (don't reveal valid emails)
-      // The database function will validate when resetting the password
-      const otp = this.generateOtp();
-      const expiresAt = new Date();
-      expiresAt.setMinutes(expiresAt.getMinutes() + 10); // OTP expires in 10 minutes
+      // Use Supabase's built-in password recovery system
+      // This automatically generates and sends a 6-digit OTP code
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: undefined, // We'll handle OTP verification in-app
+      });
 
-      // Delete any existing OTPs for this email
-      await supabase
-        .from('password_reset_otps')
-        .delete()
-        .eq('email', email);
-
-      // Store OTP in database
-      const { error: insertError } = await supabase
-        .from('password_reset_otps')
-        .insert({
-          email,
-          otp,
-          expires_at: expiresAt.toISOString(),
-          is_used: false,
-        });
-
-      if (insertError) {
-        console.error('Failed to store OTP:', insertError);
+      if (error) {
+        console.error('Reset password error:', error);
         return {
           success: false,
-          message: 'Failed to generate verification code',
+          message: 'Failed to send verification code',
         };
       }
 
-      // TODO: INTEGRATE EMAIL SERVICE TO SEND OTP
-      // Use Resend, SendGrid, or another email service to send the OTP code
-      // Example with Resend:
-      // await fetch('https://api.resend.com/emails', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     from: 'noreply@yourdomain.com',
-      //     to: email,
-      //     subject: 'Password Reset Verification Code',
-      //     html: `Your password reset code is: <strong>${otp}</strong><br>Expires in 10 minutes.`,
-      //   }),
-      // });
-
-      // SECURITY WARNING: OTP must ONLY be sent via email, never logged or returned to client!
-      // For development, integrate a real email service to test the flow securely.
-      
       return {
         success: true,
         message: 'A 6-digit verification code has been sent to your email',
@@ -344,34 +307,38 @@ class AuthService {
   }
 
   /**
-   * Verify password reset OTP (custom implementation)
+   * Verify password reset OTP using Supabase's built-in system
    */
   async verifyResetOtp(email: string, otp: string): Promise<AuthResponse> {
     try {
-      // Fetch OTP from database
-      const { data: otpData, error: fetchError } = await supabase
-        .from('password_reset_otps')
-        .select('*')
-        .eq('email', email)
-        .eq('otp', otp)
-        .eq('is_used', false)
-        .single();
+      // Use Supabase's built-in OTP verification for password recovery
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'recovery',
+      });
 
-      if (fetchError || !otpData) {
+      if (error) {
+        console.error('Verify OTP error:', error);
+        
+        // Provide user-friendly error messages
+        if (error.message.includes('expired')) {
+          return {
+            success: false,
+            message: 'Verification code has expired. Please request a new one',
+          };
+        }
+        
         return {
           success: false,
           message: 'Invalid verification code',
         };
       }
 
-      // Check if OTP has expired
-      const now = new Date();
-      const expiresAt = new Date(otpData.expires_at);
-
-      if (now > expiresAt) {
+      if (!data.session) {
         return {
           success: false,
-          message: 'Verification code has expired. Please request a new one',
+          message: 'Invalid verification code',
         };
       }
 
@@ -389,7 +356,7 @@ class AuthService {
   }
 
   /**
-   * Reset password with OTP verification (custom implementation)
+   * Reset password with OTP verification using Supabase's built-in system
    */
   async resetPasswordWithOtp(email: string, otp: string, newPassword: string): Promise<AuthResponse> {
     try {
@@ -400,38 +367,39 @@ class AuthService {
         };
       }
 
-      // Verify OTP again before password update
-      const { data: otpData, error: fetchError } = await supabase
-        .from('password_reset_otps')
-        .select('*')
-        .eq('email', email)
-        .eq('otp', otp)
-        .eq('is_used', false)
-        .single();
+      // Verify OTP and update password in one step
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'recovery',
+      });
 
-      if (fetchError || !otpData) {
+      if (error) {
+        console.error('OTP verification error:', error);
+        
+        if (error.message.includes('expired')) {
+          return {
+            success: false,
+            message: 'Verification code has expired',
+          };
+        }
+        
         return {
           success: false,
           message: 'Invalid verification code',
         };
       }
 
-      // Check if OTP has expired
-      const now = new Date();
-      const expiresAt = new Date(otpData.expires_at);
-
-      if (now > expiresAt) {
+      if (!data.session) {
         return {
           success: false,
-          message: 'Verification code has expired',
+          message: 'Invalid verification code',
         };
       }
 
-      // Update password using database function
-      // The function will validate if the user exists and return false if not
-      const { data: success, error: updateError } = await supabase.rpc('reset_user_password', {
-        user_email: email,
-        new_password: newPassword,
+      // Update the password using the verified session
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
       });
 
       if (updateError) {
@@ -441,25 +409,6 @@ class AuthService {
           message: 'Failed to update password. Please try again',
         };
       }
-
-      if (!success) {
-        return {
-          success: false,
-          message: 'User not found',
-        };
-      }
-
-      // Mark OTP as used
-      await supabase
-        .from('password_reset_otps')
-        .update({ is_used: true })
-        .eq('id', otpData.id);
-
-      // Delete all OTPs for this email
-      await supabase
-        .from('password_reset_otps')
-        .delete()
-        .eq('email', email);
 
       return {
         success: true,
