@@ -252,7 +252,7 @@ class AuthService {
   }
 
   /**
-   * Generate and store password reset OTP via backend API
+   * Request password reset via Supabase Auth (sends magic link to email)
    */
   async resetPassword(email: string): Promise<AuthResponse & { otp?: string }> {
     try {
@@ -272,60 +272,51 @@ class AuthService {
         };
       }
 
-      const API_URL = this.getApiUrl();
-      const response = await fetch(`${API_URL}/api/auth/request-password-reset`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
+      // Use Supabase's built-in password reset with magic link
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
 
-      const result = await response.json();
-      
-      if (!response.ok || !result.success) {
+      if (error) {
         return {
           success: false,
-          message: result.message || 'Failed to generate verification code',
+          message: error.message || 'Failed to send password reset email',
         };
       }
 
       return {
         success: true,
-        message: result.message,
-        otp: result.otp,
+        message: 'Password reset link sent to your email',
       };
     } catch (error: any) {
       console.error('Reset password error:', error);
       return {
         success: false,
-        message: error.message || 'Failed to generate verification code',
+        message: error.message || 'Failed to send password reset email',
       };
     }
   }
 
   /**
-   * Verify password reset OTP via backend API
+   * Verify password reset OTP (for Supabase auth flow)
    */
   async verifyResetOtp(email: string, otp: string): Promise<AuthResponse> {
     try {
-      const API_URL = this.getApiUrl();
-      const response = await fetch(`${API_URL}/api/auth/verify-reset-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp }),
+      // Use Supabase's verifyOtp for email OTP
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'recovery',
       });
 
-      const result = await response.json();
-      
-      if (!response.ok || !result.success) {
+      if (error) {
         return {
           success: false,
-          message: result.message || 'Invalid or expired verification code',
+          message: error.message || 'Invalid or expired verification code',
         };
       }
 
       return {
         success: true,
-        message: result.message,
+        message: 'Verification successful',
       };
     } catch (error: any) {
       console.error('Verify OTP error:', error);
@@ -337,7 +328,7 @@ class AuthService {
   }
 
   /**
-   * Reset password with new password via backend API (after OTP verification)
+   * Reset password with OTP verification
    */
   async resetPasswordWithOtp(email: string, otp: string, newPassword: string): Promise<AuthResponse> {
     try {
@@ -348,25 +339,35 @@ class AuthService {
         };
       }
 
-      const API_URL = this.getApiUrl();
-      const response = await fetch(`${API_URL}/api/auth/reset-password-with-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp, newPassword }),
+      // First verify the OTP
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'recovery',
       });
 
-      const result = await response.json();
-      
-      if (!response.ok || !result.success) {
+      if (verifyError) {
         return {
           success: false,
-          message: result.message || 'Failed to reset password',
+          message: verifyError.message || 'Invalid or expired verification code',
+        };
+      }
+
+      // Then update the password
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateError) {
+        return {
+          success: false,
+          message: updateError.message || 'Failed to update password',
         };
       }
 
       return {
         success: true,
-        message: result.message,
+        message: 'Password updated successfully!',
       };
     } catch (error: any) {
       console.error('Reset password with OTP error:', error);
@@ -375,18 +376,6 @@ class AuthService {
         message: error.message || 'Failed to reset password',
       };
     }
-  }
-  
-  /**
-   * Get the API URL based on environment
-   */
-  private getApiUrl(): string {
-    // In Replit, use the domain for backend API
-    if (typeof process !== 'undefined' && process.env.REPLIT_DEV_DOMAIN) {
-      return `https://${process.env.REPLIT_DEV_DOMAIN}`;
-    }
-    // Fallback for local development
-    return 'http://localhost:3000';
   }
 
   /**

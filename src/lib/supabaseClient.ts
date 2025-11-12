@@ -3,8 +3,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
 // Get Supabase credentials from environment
-const supabaseUrl = Constants.expoConfig?.extra?.SUPABASE_URL || 'https://sfrqfesobuvbondzwfjj.supabase.co';
-const supabaseAnonKey = Constants.expoConfig?.extra?.SUPABASE_ANON_KEY || '';
+// Try multiple sources for environment variables
+const supabaseUrl = 
+  Constants.expoConfig?.extra?.SUPABASE_URL || 
+  process.env.EXPO_PUBLIC_SUPABASE_URL || 
+  'https://sfrqfesobuvbondzwfjj.supabase.co';
+
+const supabaseAnonKey = 
+  Constants.expoConfig?.extra?.SUPABASE_ANON_KEY || 
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 
+  '';
 
 // Validate credentials
 if (!supabaseUrl || !supabaseAnonKey) {
@@ -12,9 +20,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('URL:', supabaseUrl ? '✅ Present' : '❌ Missing');
   console.error('Anon Key:', supabaseAnonKey ? '✅ Present' : '❌ Missing');
   console.error('\nPlease check:');
-  console.error('1. .env file exists in project root');
+  console.error('1. Variables are set in Replit Secrets');
   console.error('2. Variables start with EXPO_PUBLIC_ prefix');
-  console.error('3. Restart the dev server after creating .env');
+  console.error('3. Restart the dev server after adding secrets');
   throw new Error('Missing Supabase environment variables. Check console for details.');
 }
 
