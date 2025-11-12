@@ -30,13 +30,6 @@ export default function IndexScreen() {
     );
   }
 
-  if (!hasSeenOnboarding) {
-    return <Redirect href="/(auth)/onboarding" />;
-  }
-
-  if (user) {
-    return <Redirect href="/(tabs)" />;
-  }
-
-  return <Redirect href="/(auth)/welcome" />;
+  // Temporarily skip onboarding for final testing
+  return <Redirect href="/(tabs)" />;
 }
