@@ -30,13 +30,6 @@ export default function ForgotPasswordScreen() {
 
     setLoading(true);
     try {
-<<<<<<< HEAD
-      await authService.resetPassword(email);
-      router.push({
-        pathname: '/(auth)/verify-email',
-        params: { email }
-      });
-=======
       const result = await authService.resetPassword(email);
       if (result.success && result.otp) {
         // For testing: Show OTP in alert (in production, this would be sent via email)
@@ -58,7 +51,6 @@ export default function ForgotPasswordScreen() {
       } else if (!result.success) {
         Alert.alert('Error', result.message || 'Failed to generate verification code');
       }
->>>>>>> 2bd98e0768bb14cdf443727b766b3997febbac8a
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to generate verification code');
     } finally {

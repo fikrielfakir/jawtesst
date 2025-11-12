@@ -1,5 +1,8 @@
 import { Router, Request, Response } from 'express';
-import { supabaseAdmin } from '../supabaseAdmin';
+import { db } from '../db';
+import { passwordResetOtps, users } from '@shared/schema';
+import { eq, and, gte, desc } from 'drizzle-orm';
+import * as bcrypt from 'bcryptjs';
 
 const router = Router();
 
@@ -15,19 +18,12 @@ router.post('/request-password-reset', async (req: Request, res: Response) => {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10);
     
-    const { error } = await supabaseAdmin
-      .from('password_reset_otps')
-      .insert({
-        email,
-        otp,
-        expires_at: expiresAt.toISOString(),
-        is_used: false
-      });
-      
-    if (error) {
-      console.error('OTP storage error:', error);
-      return res.status(500).json({ success: false, message: 'Failed to generate OTP' });
-    }
+    await db.insert(passwordResetOtps).values({
+      email,
+      otp,
+      expiresAt,
+      isUsed: false
+    });
     
     console.log('🔐 Password Reset OTP for', email, ':', otp);
     console.log('⏰ Expires at:', expiresAt);
@@ -51,18 +47,21 @@ router.post('/verify-reset-otp', async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Email and OTP are required' });
     }
     
-    const { data, error } = await supabaseAdmin
-      .from('password_reset_otps')
-      .select('*')
-      .eq('email', email)
-      .eq('otp', otp)
-      .eq('is_used', false)
-      .gte('expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+    const [otpRecord] = await db
+      .select()
+      .from(passwordResetOtps)
+      .where(
+        and(
+          eq(passwordResetOtps.email, email),
+          eq(passwordResetOtps.otp, otp),
+          eq(passwordResetOtps.isUsed, false),
+          gte(passwordResetOtps.expiresAt, new Date())
+        )
+      )
+      .orderBy(desc(passwordResetOtps.createdAt))
+      .limit(1);
       
-    if (error || !data) {
+    if (!otpRecord) {
       return res.status(400).json({ 
         success: false, 
         message: 'Invalid or expired verification code' 
@@ -70,18 +69,10 @@ router.post('/verify-reset-otp', async (req: Request, res: Response) => {
     }
     
     // Mark OTP as used
-    const { error: updateError } = await supabaseAdmin
-      .from('password_reset_otps')
-      .update({ is_used: true })
-      .eq('id', data.id);
-    
-    if (updateError) {
-      console.error('Failed to mark OTP as used:', updateError);
-      return res.status(500).json({ 
-        success: false, 
-        message: 'Failed to verify code' 
-      });
-    }
+    await db
+      .update(passwordResetOtps)
+      .set({ isUsed: true })
+      .where(eq(passwordResetOtps.id, otpRecord.id));
     
     console.log('✅ OTP verified and marked as used for:', email);
       
@@ -104,52 +95,52 @@ router.post('/reset-password-with-otp', async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Password must be at least 8 characters' });
     }
     
-    const { data: otpData, error: otpCheckError } = await supabaseAdmin
-      .from('password_reset_otps')
-      .select('*')
-      .eq('email', email)
-      .eq('otp', otp)
-      .eq('is_used', true)
-      .gte('expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+    const [otpRecord] = await db
+      .select()
+      .from(passwordResetOtps)
+      .where(
+        and(
+          eq(passwordResetOtps.email, email),
+          eq(passwordResetOtps.otp, otp),
+          eq(passwordResetOtps.isUsed, true),
+          gte(passwordResetOtps.expiresAt, new Date())
+        )
+      )
+      .orderBy(desc(passwordResetOtps.createdAt))
+      .limit(1);
       
-    if (otpCheckError || !otpData) {
-      console.error('OTP verification check failed:', otpCheckError);
-      console.log('Looking for:', { email, otp, is_used: true, expires_at: `>= ${new Date().toISOString()}` });
+    if (!otpRecord) {
+      console.error('OTP verification check failed');
       return res.status(400).json({ success: false, message: 'Invalid or expired session' });
     }
     
     console.log('✅ OTP session verified for password reset:', email);
     
-    // Look up user by email using RPC function
-    // This function must be created in Supabase (see SUPABASE_SETUP.md)
-    const { data: userData, error: userError } = await supabaseAdmin.rpc('get_user_id_by_email', {
-      user_email: email
-    });
+    // Look up user by email
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
     
-    if (userError || !userData) {
-      console.error('User lookup error:', userError);
+    if (!user) {
+      console.error('User not found:', email);
       return res.status(404).json({ success: false, message: 'User not found' });
     }
     
-    const userId = userData;
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     
-    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-      userId,
-      { password: newPassword }
-    );
+    // Update user's password
+    await db
+      .update(users)
+      .set({ password: hashedPassword })
+      .where(eq(users.id, user.id));
     
-    if (updateError) {
-      console.error('Password update error:', updateError);
-      return res.status(500).json({ success: false, message: 'Failed to update password' });
-    }
-    
-    await supabaseAdmin
-      .from('password_reset_otps')
-      .delete()
-      .eq('email', email);
+    // Delete used OTP
+    await db
+      .delete(passwordResetOtps)
+      .where(eq(passwordResetOtps.email, email));
       
     console.log('✅ Password updated successfully for:', email);
     
