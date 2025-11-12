@@ -63,7 +63,7 @@ export default function ForgotPasswordScreen() {
 
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Forgot Your Password{'\n'}and Continue</Text>
-          <Text style={styles.subtitle}>Enter your email to receive a verification code</Text>
+          <Text style={styles.subtitle}>Enter your email to receive an 8-digit verification code</Text>
         </View>
 
         <View style={styles.formContainer}>

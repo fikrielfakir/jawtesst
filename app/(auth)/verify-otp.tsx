@@ -8,8 +8,10 @@ import { IconContainer } from '@components/auth/IconContainer';
 import { ShieldCheck, ArrowLeft } from '@tamagui/lucide-icons';
 import { authService } from '@services/auth/auth.service';
 
+const OTP_LENGTH = 8; // Supabase sends 8-digit codes for recovery
+
 export default function VerifyOtpScreen() {
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [timer, setTimer] = useState(60);
@@ -40,7 +42,7 @@ export default function VerifyOtpScreen() {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    if (value && index < 5) {
+    if (value && index < OTP_LENGTH - 1) {
       inputRefs.current[index + 1]?.focus();
     }
   };
@@ -55,8 +57,8 @@ export default function VerifyOtpScreen() {
     Keyboard.dismiss();
 
     const otpCode = otp.join('');
-    if (otpCode.length !== 6) {
-      Alert.alert('Error', 'Please enter the complete 6-digit code');
+    if (otpCode.length !== OTP_LENGTH) {
+      Alert.alert('Error', `Please enter the complete ${OTP_LENGTH}-digit code`);
       return;
     }
 
@@ -71,12 +73,12 @@ export default function VerifyOtpScreen() {
         });
       } else {
         Alert.alert('Error', result.message || 'Invalid verification code');
-        setOtp(['', '', '', '', '', '']);
+        setOtp(Array(OTP_LENGTH).fill(''));
         inputRefs.current[0]?.focus();
       }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to verify code');
-      setOtp(['', '', '', '', '', '']);
+      setOtp(Array(OTP_LENGTH).fill(''));
       inputRefs.current[0]?.focus();
     } finally {
       setLoading(false);
@@ -92,7 +94,7 @@ export default function VerifyOtpScreen() {
       if (result.success) {
         Alert.alert('Success', 'A new verification code has been sent to your email');
         setTimer(60);
-        setOtp(['', '', '', '', '', '']);
+        setOtp(Array(OTP_LENGTH).fill(''));
         inputRefs.current[0]?.focus();
       } else {
         Alert.alert('Error', result.message || 'Failed to resend code');
@@ -123,7 +125,7 @@ export default function VerifyOtpScreen() {
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Verify Your Email</Text>
           <Text style={styles.subtitle}>
-            We sent a 6-digit code to{'\n'}
+            We sent a {OTP_LENGTH}-digit code to{'\n'}
             <Text style={styles.email}>{email}</Text>
           </Text>
         </View>
@@ -167,7 +169,7 @@ export default function VerifyOtpScreen() {
           title="Verify & Continue"
           onPress={handleVerify}
           loading={loading}
-          disabled={loading || otp.join('').length !== 6}
+          disabled={loading || otp.join('').length !== OTP_LENGTH}
           style={styles.verifyButton}
         />
       </View>
@@ -215,16 +217,17 @@ const styles = StyleSheet.create({
   otpContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 12,
+    gap: 8,
     marginBottom: 24,
+    flexWrap: 'wrap',
   },
   otpInput: {
-    width: 48,
-    height: 56,
+    width: 38,
+    height: 50,
     borderWidth: 1.5,
     borderColor: authDesign.colors.inputBorder,
     borderRadius: 12,
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '600',
     color: authDesign.colors.textPrimary,
     textAlign: 'center',
