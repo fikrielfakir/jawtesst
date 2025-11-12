@@ -5,17 +5,17 @@ import { authDesign } from '@constants/theme/authDesign';
 import { CustomButton } from '@components/auth/CustomButton';
 import { AuthScreenWrapper } from '@components/auth/AuthScreenWrapper';
 import { IconContainer } from '@components/auth/IconContainer';
-import { ShieldCheck, ArrowLeft } from '@tamagui/lucide-icons';
+import { ShieldCheck, ArrowLeft, Mail } from '@tamagui/lucide-icons';
 import { authService } from '@services/auth/auth.service';
+import { OTPInput } from '@components/auth/OTPInput';
 
-const OTP_LENGTH = 6; // Custom 6-digit OTP system
+const OTP_LENGTH = 6;
 
 export default function VerifyOtpScreen() {
-  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
+  const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [timer, setTimer] = useState(60);
-  const inputRefs = useRef<(TextInput | null)[]>([]);
   const router = useRouter();
   const params = useLocalSearchParams();
   const email = params.email as string;
@@ -29,57 +29,30 @@ export default function VerifyOtpScreen() {
     }
   }, [timer]);
 
-  const handleOtpChange = (value: string, index: number) => {
-    if (value.length > 1) {
-      value = value[value.length - 1];
-    }
-
-    if (!/^\d*$/.test(value)) {
-      return;
-    }
-
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-
-    if (value && index < OTP_LENGTH - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyPress = (e: any, index: number) => {
-    if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
   const handleVerify = async () => {
     Keyboard.dismiss();
 
-    const otpCode = otp.join('');
-    if (otpCode.length !== OTP_LENGTH) {
+    if (code.length !== OTP_LENGTH) {
       Alert.alert('Error', `Please enter the complete ${OTP_LENGTH}-digit code`);
       return;
     }
 
     setLoading(true);
     try {
-      const result = await authService.verifyResetOtp(email, otpCode);
+      const result = await authService.verifyResetOtp(email, code);
       
       if (result.success) {
         router.push({
           pathname: '/(auth)/enter-new-password',
-          params: { email, code: otpCode }
+          params: { email, code }
         });
       } else {
         Alert.alert('Error', result.message || 'Invalid verification code');
-        setOtp(Array(OTP_LENGTH).fill(''));
-        inputRefs.current[0]?.focus();
+        setCode('');
       }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to verify code');
-      setOtp(Array(OTP_LENGTH).fill(''));
-      inputRefs.current[0]?.focus();
+      setCode('');
     } finally {
       setLoading(false);
     }
@@ -94,8 +67,7 @@ export default function VerifyOtpScreen() {
       if (result.success) {
         Alert.alert('Success', 'A new verification code has been sent to your email');
         setTimer(60);
-        setOtp(Array(OTP_LENGTH).fill(''));
-        inputRefs.current[0]?.focus();
+        setCode('');
       } else {
         Alert.alert('Error', result.message || 'Failed to resend code');
       }
@@ -109,16 +81,11 @@ export default function VerifyOtpScreen() {
   return (
     <AuthScreenWrapper>
       <View style={styles.container}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <ArrowLeft size={24} color={authDesign.colors.textPrimary} />
-        </TouchableOpacity>
+       
 
         <View style={styles.iconWrapper}>
           <IconContainer>
-            <ShieldCheck size={40} color={authDesign.colors.textPrimary} strokeWidth={1.5} />
+            <Mail size={40} color={authDesign.colors.textPrimary} strokeWidth={1.5} />
           </IconContainer>
         </View>
 
@@ -131,23 +98,14 @@ export default function VerifyOtpScreen() {
         </View>
 
         <View style={styles.otpContainer}>
-          {otp.map((digit, index) => (
-            <TextInput
-              key={index}
-              ref={(ref) => (inputRefs.current[index] = ref)}
-              style={[
-                styles.otpInput,
-                digit && styles.otpInputFilled
-              ]}
-              value={digit}
-              onChangeText={(value) => handleOtpChange(value, index)}
-              onKeyPress={(e) => handleKeyPress(e, index)}
-              keyboardType="number-pad"
-              maxLength={1}
-              selectTextOnFocus
-              autoFocus={index === 0}
-            />
-          ))}
+          <OTPInput
+            length={6}
+            value={code}
+            onChangeText={setCode}
+            onComplete={(completedCode) => {
+              setCode(completedCode);
+            }}
+          />
         </View>
 
         <View style={styles.resendContainer}>
@@ -169,7 +127,7 @@ export default function VerifyOtpScreen() {
           title="Verify & Continue"
           onPress={handleVerify}
           loading={loading}
-          disabled={loading || otp.join('').length !== OTP_LENGTH}
+          disabled={loading || code.length !== OTP_LENGTH}
           style={styles.verifyButton}
         />
       </View>
@@ -215,26 +173,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   otpContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
+    alignItems: 'center',
     marginBottom: 24,
-  },
-  otpInput: {
-    width: 48,
-    height: 56,
-    borderWidth: 1.5,
-    borderColor: authDesign.colors.inputBorder,
-    borderRadius: 12,
-    fontSize: 24,
-    fontWeight: '600',
-    color: authDesign.colors.textPrimary,
-    textAlign: 'center',
-    backgroundColor: authDesign.colors.inputBackground,
-  },
-  otpInputFilled: {
-    borderColor: authDesign.colors.primary,
-    backgroundColor: authDesign.colors.background,
   },
   resendContainer: {
     flexDirection: 'row',

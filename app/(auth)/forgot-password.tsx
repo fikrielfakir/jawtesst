@@ -28,13 +28,8 @@ export default function ForgotPasswordScreen() {
       return;
     }
 
-     setLoading(true);
+    setLoading(true);
     try {
-      await authService.resetPassword(email);
-      router.push({
-        pathname: '/(auth)/verify-email',
-        params: { email }
-      });
       const result = await authService.resetPassword(email);
       if (result.success) {
         // Navigate to OTP verification screen
@@ -57,13 +52,12 @@ export default function ForgotPasswordScreen() {
       <View style={styles.container}>
         <View style={styles.iconWrapper}>
           <IconContainer>
-            <Fingerprint size={40} color={authDesign.colors.textPrimary} strokeWidth={1.5} />
+            <Fingerprint size={60} color={authDesign.colors.primaryicon} strokeWidth={1.5} />
           </IconContainer>
         </View>
 
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Forgot Your Password{'\n'}and Continue</Text>
-          <Text style={styles.subtitle}>Enter your email to receive a 6-digit verification code</Text>
         </View>
 
         <View style={styles.formContainer}>
@@ -102,7 +96,7 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     alignItems: 'center',
-    marginTop: 32,
+    marginTop: 80,
   },
   headerContainer: {
     alignItems: 'center',

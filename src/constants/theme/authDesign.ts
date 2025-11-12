@@ -7,6 +7,7 @@ export const authDesign = {
     primary: '#6C4AB6',
     primaryDark: '#6B5CE7',
     primaryPressed: '#AE90EE',
+    primaryicon: '#B9A2E1',
     
     textPrimary: '#FFFFFF',
     textSecondary: '#D1D5DB',
@@ -18,7 +19,7 @@ export const authDesign = {
     borderLight: '#D1D5DB',
     borderFocus: '#8B7FE8',
     
-    inputBackground: 'rgba(91, 82, 112, 0.3)',
+    inputBackground: '#372655',
     
     error: '#EF4444',
     disabled: '#D1D5DB',
@@ -46,17 +47,17 @@ export const authDesign = {
       lineHeight: 28,
     },
     label: {
-      size: 14,
+      size: 15,
       weight: '600' as const,
       lineHeight: 20,
     },
     input: {
-      size: 16,
+      size: 18,
       weight: '400' as const,
       lineHeight: 24,
     },
     button: {
-      size: 17,
+      size: 19,
       weight: '600' as const,
       lineHeight: 24,
     },
@@ -89,11 +90,11 @@ export const authDesign = {
   },
   
   sizes: {
-    inputHeight: 50,
+    inputHeight: 60,
     multiLineInputHeight: 100,
-    buttonHeight: 50,
+    buttonHeight: 64,
     socialButtonHeight: 48,
-    cornerRadius: 8,
+    cornerRadius: 15,
     borderWidth: 1,
     borderWidthFocus: 2,
     iconSize: 20,

@@ -9,7 +9,7 @@ interface IconContainerProps {
 
 export const IconContainer: React.FC<IconContainerProps> = ({
   children,
-  size = 80,
+  size = 100,
 }) => {
   return (
     <View style={[styles.container, { width: size, height: size }]}>
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: authDesign.colors.border,
+    borderColor: authDesign.colors.primaryicon,
     backgroundColor: 'rgba(91, 82, 112, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
