@@ -8,7 +8,11 @@ import { IconContainer } from '@components/auth/IconContainer';
 import { ShieldCheck, ArrowLeft } from '@tamagui/lucide-icons';
 import { authService } from '@services/auth/auth.service';
 
+<<<<<<< HEAD
 const OTP_LENGTH = 6; // Supabase sends 8-digit codes for recovery
+=======
+const OTP_LENGTH = 6; // Custom 6-digit OTP system
+>>>>>>> 0173960350bca1371a4f6b0b4cc9a54f60fdbf9a
 
 export default function VerifyOtpScreen() {
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
@@ -217,17 +221,16 @@ const styles = StyleSheet.create({
   otpContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 8,
+    gap: 12,
     marginBottom: 24,
-    flexWrap: 'wrap',
   },
   otpInput: {
-    width: 38,
-    height: 50,
+    width: 48,
+    height: 56,
     borderWidth: 1.5,
     borderColor: authDesign.colors.inputBorder,
     borderRadius: 12,
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '600',
     color: authDesign.colors.textPrimary,
     textAlign: 'center',

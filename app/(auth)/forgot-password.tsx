@@ -35,6 +35,16 @@ export default function ForgotPasswordScreen() {
         pathname: '/(auth)/verify-email',
         params: { email }
       });
+      const result = await authService.resetPassword(email);
+      if (result.success) {
+        // Navigate to OTP verification screen
+        router.push({
+          pathname: '/(auth)/verify-otp',
+          params: { email }
+        });
+      } else {
+        Alert.alert('Error', result.message || 'Failed to send verification code');
+      }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to generate verification code');
     } finally {
@@ -53,7 +63,7 @@ export default function ForgotPasswordScreen() {
 
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Forgot Your Password{'\n'}and Continue</Text>
-          <Text style={styles.subtitle}>Enter your email to receive an 8-digit verification code</Text>
+          <Text style={styles.subtitle}>Enter your email to receive a 6-digit verification code</Text>
         </View>
 
         <View style={styles.formContainer}>
