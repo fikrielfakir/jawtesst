@@ -107,7 +107,27 @@ Features ready to be built:
 None recorded yet.
 
 ## Recent Changes
-- **2025-11-07 (Latest - Migration to Neon PostgreSQL)**:
+- **2025-11-12 (Latest - 6-Digit OTP Password Reset)**:
+  - **Password Reset Enhancement:**
+    - Implemented 6-digit OTP verification for password reset instead of email links
+    - Uses Supabase's built-in recovery OTP system (requires email template configuration)
+    - Created new verify-otp.tsx screen with auto-focus, resend functionality, and 60s timer
+    - Updated forgot-password.tsx to navigate to OTP verification screen
+    - Fixed double verification issue - OTP verified once, then recovery session used for password update
+  - **New Screens:**
+    - `app/(auth)/verify-otp.tsx` - 6-digit code entry with real-time validation
+    - Resend code functionality with countdown timer
+    - Auto-advance between input fields
+  - **Documentation:**
+    - Updated SUPABASE_SETUP.md with email template configuration guide
+    - Documented the complete password reset flow
+    - Added troubleshooting section for common issues
+  - **Security:**
+    - OTP expires after 60 minutes (Supabase default)
+    - Single-use tokens enforced by Supabase
+    - Rate limiting on password reset requests
+
+- **2025-11-07 (Migration to Neon PostgreSQL)**:
   - **Backend Migration:**
     - Migrated from Supabase to Neon PostgreSQL with Drizzle ORM
     - Created Express.js API server with authentication routes
