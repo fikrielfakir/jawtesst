@@ -8,18 +8,33 @@ import { authDesign } from "@constants/theme/authDesign";
 import { gradients } from "@constants/theme/colors";
 import { AnimatedBottle } from "@components/home/AnimatedBottle";
 import { CategoryRing } from "@components/home/CategoryRing";
+import { categories } from "@constants/categories";
 
 export default function HomeScreen() {
   const [selectedLocation, setSelectedLocation] = useState("Tanger, Morocco");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [lastSelectedCategory, setLastSelectedCategory] = useState<string | null>(null);
 
   const handleCategoryPress = (categoryId: string) => {
     setSelectedCategory(categoryId);
+    setLastSelectedCategory(categoryId);
+  };
+
+  const handleBottlePress = () => {
+    if (selectedCategory !== null) return;
+    
+    const availableCategories = categories.filter(cat => cat.id !== lastSelectedCategory);
+    const randomCategory = availableCategories[Math.floor(Math.random() * availableCategories.length)];
+    if (randomCategory) {
+      setSelectedCategory(randomCategory.id);
+      setLastSelectedCategory(randomCategory.id);
+    }
   };
 
   const handleAnimationComplete = () => {
     if (selectedCategory) {
       router.push(`/(tabs)/categories/${selectedCategory}`);
+      setSelectedCategory(null);
     }
   };
 
@@ -70,6 +85,7 @@ export default function HomeScreen() {
               <AnimatedBottle
                 selectedCategoryId={selectedCategory}
                 onAnimationComplete={handleAnimationComplete}
+                onPress={handleBottlePress}
               />
             </View>
             <CategoryRing

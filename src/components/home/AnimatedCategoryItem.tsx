@@ -36,14 +36,13 @@ export const AnimatedCategoryItem: React.FC<AnimatedCategoryItemProps> = ({
         duration: 300,
         easing: Easing.out(Easing.back(1.2)),
       });
-      opacity.value = withTiming(1, { duration: 200 });
     } else {
       scale.value = withTiming(1, {
         duration: 300,
         easing: Easing.inOut(Easing.ease),
       });
-      opacity.value = withTiming(0.5, { duration: 200 });
     }
+    opacity.value = 1;
   }, [isSelected]);
 
   const animatedStyle = useAnimatedStyle(() => ({
