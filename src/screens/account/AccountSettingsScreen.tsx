@@ -57,7 +57,7 @@ export const AccountSettingsScreen = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Security</Text>
         <ListItem
-          title="Chnge password"
+          title="Change password"
           leftIcon={<Text style={styles.icon}>🔒</Text>}
           rightIcon={<Text style={styles.chevron}>›</Text>}
           onPress={() => {}}
