@@ -17,6 +17,7 @@ import Svg, {
   LinearGradient as SvgLinearGradient,
   Stop,
 } from "react-native-svg";
+import { useRouter } from "expo-router";
 import { authDesign } from "@constants/theme/authDesign";
 import { gradients } from "@constants/theme/colors";
 
@@ -84,6 +85,7 @@ const categories = [
 
 export default function HomeScreen() {
   const { width } = useWindowDimensions();
+  const router = useRouter();
   const [selectedLocation, setSelectedLocation] = useState("Tanger, Morocco");
   const [selectedCategory, setSelectedCategory] = useState("cafe");
   const [bottleRotation] = useState(new Animated.Value(270)); // Start pointing at cafe
@@ -104,7 +106,13 @@ export default function HomeScreen() {
         useNativeDriver: true,
         tension: 50,
         friction: 8,
-      }).start();
+      }).start(() => {
+        // Navigate to feed screen after animation completes
+        router.push({
+          pathname: '/feed',
+          params: { category: categoryId }
+        });
+      });
     }
   };
 
