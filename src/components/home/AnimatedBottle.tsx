@@ -1,109 +1,99 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet, Pressable } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withRepeat,
   withTiming,
-  withSequence,
   Easing,
   runOnJS,
 } from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
 import Svg, {
   Path,
   Defs,
   LinearGradient as SvgLinearGradient,
   Stop,
 } from "react-native-svg";
-import { authDesign } from "@constants/theme/authDesign";
 
 interface AnimatedBottleProps {
   selectedCategoryId: string | null;
+  categoryGradient: string[];
   onAnimationComplete?: () => void;
   onPress?: () => void;
 }
 
 export const AnimatedBottle: React.FC<AnimatedBottleProps> = ({
   selectedCategoryId,
+  categoryGradient,
   onAnimationComplete,
   onPress,
 }) => {
-  const breathingOpacity = useSharedValue(0.7);
-  const fillProgress = useSharedValue(0);
-  const burstScale = useSharedValue(1);
-  const burstOpacity = useSharedValue(1);
   const rotation = useSharedValue(0);
+  const [currentGradient, setCurrentGradient] = useState(categoryGradient);
+  const gradientTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fallbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const completedRef = useRef(false);
 
-  useEffect(() => {
-    breathingOpacity.value = withRepeat(
-      withTiming(1, {
-        duration: 2000,
-        easing: Easing.inOut(Easing.ease),
-      }),
-      -1,
-      true
-    );
-  }, []);
-
-  useEffect(() => {
-    if (selectedCategoryId) {
-      fillProgress.value = 0;
-      burstScale.value = 1;
-      burstOpacity.value = 1;
-
-      rotation.value = withTiming(rotation.value + 360, {
-        duration: 800,
-        easing: Easing.out(Easing.cubic),
-      });
-
-      fillProgress.value = withSequence(
-        withTiming(1, {
-          duration: 1000,
-          easing: Easing.out(Easing.cubic),
-        }),
-        withTiming(1, { duration: 300 }),
-        withTiming(1.1, {
-          duration: 150,
-          easing: Easing.out(Easing.back(1.5)),
-        }),
-        withTiming(1, {
-          duration: 150,
-        })
-      );
-
-      burstScale.value = withSequence(
-        withTiming(1, { duration: 1450 }),
-        withTiming(1.3, {
-          duration: 400,
-          easing: Easing.out(Easing.cubic),
-        })
-      );
-
-      burstOpacity.value = withSequence(
-        withTiming(1, { duration: 1450 }),
-        withTiming(0, {
-          duration: 400,
-          easing: Easing.out(Easing.cubic),
-        }, (finished) => {
-          if (finished && onAnimationComplete) {
-            runOnJS(onAnimationComplete)();
-          }
-        })
-      );
+  const clearAllTimeouts = () => {
+    if (gradientTimeoutRef.current) {
+      clearTimeout(gradientTimeoutRef.current);
+      gradientTimeoutRef.current = null;
     }
-  }, [selectedCategoryId]);
+    if (fallbackTimeoutRef.current) {
+      clearTimeout(fallbackTimeoutRef.current);
+      fallbackTimeoutRef.current = null;
+    }
+  };
+
+  const handleAnimationComplete = () => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    
+    clearAllTimeouts();
+    
+    if (onAnimationComplete) {
+      onAnimationComplete();
+    }
+  };
+
+  useEffect(() => {
+    clearAllTimeouts();
+    completedRef.current = false;
+
+    if (selectedCategoryId) {
+      gradientTimeoutRef.current = setTimeout(() => {
+        setCurrentGradient(categoryGradient);
+      }, 200);
+
+      rotation.value = withTiming(
+        rotation.value + 360,
+        {
+          duration: 600,
+          easing: Easing.inOut(Easing.ease),
+        },
+        (finished) => {
+          if (finished && !completedRef.current) {
+            runOnJS(handleAnimationComplete)();
+          }
+        }
+      );
+
+      fallbackTimeoutRef.current = setTimeout(() => {
+        rotation.value = withTiming(rotation.value, { duration: 0 });
+        runOnJS(handleAnimationComplete)();
+      }, 1000);
+    } else {
+      setCurrentGradient(categoryGradient);
+      rotation.value = withTiming(rotation.value, { duration: 0 });
+    }
+
+    return () => {
+      clearAllTimeouts();
+      rotation.value = withTiming(rotation.value, { duration: 0 });
+    };
+  }, [selectedCategoryId, categoryGradient]);
 
   const containerStyle = useAnimatedStyle(() => ({
-    opacity: selectedCategoryId ? burstOpacity.value : breathingOpacity.value,
-    transform: [
-      { scale: burstScale.value },
-      { rotate: `${rotation.value}deg` },
-    ],
-  }));
-
-  const fillStyle = useAnimatedStyle(() => ({
-    height: 120 * fillProgress.value,
+    transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
   return (
@@ -112,9 +102,9 @@ export const AnimatedBottle: React.FC<AnimatedBottleProps> = ({
         <Svg width="40" height="138" viewBox="0 0 40 138" fill="none">
           <Defs>
             <SvgLinearGradient id="bottleGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-              <Stop offset="0%" stopColor={authDesign.colors.primary} stopOpacity="0.4" />
-              <Stop offset="50%" stopColor={authDesign.colors.primary} stopOpacity="0.6" />
-              <Stop offset="100%" stopColor={authDesign.colors.primary} stopOpacity="0.3" />
+              <Stop offset="0%" stopColor={currentGradient[2]} stopOpacity="1" />
+              <Stop offset="50%" stopColor={currentGradient[1]} stopOpacity="1" />
+              <Stop offset="100%" stopColor={currentGradient[0]} stopOpacity="1" />
             </SvgLinearGradient>
           </Defs>
           <Path
@@ -122,14 +112,6 @@ export const AnimatedBottle: React.FC<AnimatedBottleProps> = ({
             fill="url(#bottleGradient)"
           />
         </Svg>
-        <Animated.View style={[styles.fillContainer, fillStyle]}>
-          <LinearGradient
-            colors={["#A47DFF", "#8B5FE8", "#7C4DD8"]}
-            start={{ x: 0, y: 1 }}
-            end={{ x: 0, y: 0 }}
-            style={styles.fillGradient}
-          />
-        </Animated.View>
       </Animated.View>
     </Pressable>
   );
@@ -142,17 +124,5 @@ const styles = StyleSheet.create({
     position: "relative",
     width: 40,
     height: 138,
-  },
-  fillContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 6,
-    width: 28,
-    borderRadius: 14,
-    overflow: "hidden",
-  },
-  fillGradient: {
-    flex: 1,
-    width: "100%",
   },
 });

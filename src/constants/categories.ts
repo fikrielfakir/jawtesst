@@ -11,36 +11,42 @@ export const categories = [
     name: "Cafe",
     angle: 270,
     image: CafeImg,
+    bottleGradient: ["#8B6F47", "#6B4423", "#4A2E1A"],
   },
   {
     id: "morocco-way",
     name: "Morocco Way",
     angle: 210,
     image: MoroccoWayImg,
+    bottleGradient: ["#D94E3F", "#B83A2B", "#8F2817"],
   },
   {
     id: "fine-dining",
     name: "Fine Dining",
     angle: 330,
     image: FineDiningImg,
+    bottleGradient: ["#D4AF37", "#B8963D", "#9C7E2F"],
   },
   {
     id: "dance",
     name: "Dance",
     angle: 150,
     image: DanceImg,
+    bottleGradient: ["#3B82F6", "#2563EB", "#1D4ED8"],
   },
   {
     id: "lounge-pub",
     name: "Lounge & Pub",
     angle: 30,
     image: LoungePubImg,
+    bottleGradient: ["#7C3AED", "#6D28D9", "#5B21B6"],
   },
   {
     id: "chiringuito",
     name: "Chiringuito",
     angle: 90,
     image: ChiringuitoImg,
+    bottleGradient: ["#14B8A6", "#0D9488", "#0F766E"],
   },
 ];
 

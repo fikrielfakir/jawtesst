@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,22 +10,34 @@ import { AnimatedBottle } from "@components/home/AnimatedBottle";
 import { CategoryRing } from "@components/home/CategoryRing";
 import { categories } from "@constants/categories";
 
+const DEFAULT_BOTTLE_GRADIENT = ["#7C3AED", "#6D28D9", "#5B21B6"];
+
 export default function HomeScreen() {
   const [selectedLocation, setSelectedLocation] = useState("Tanger, Morocco");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [lastSelectedCategory, setLastSelectedCategory] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const bottleGradient = useMemo(() => {
+    if (!selectedCategory) return DEFAULT_BOTTLE_GRADIENT;
+    const category = categories.find(cat => cat.id === selectedCategory);
+    return category?.bottleGradient || DEFAULT_BOTTLE_GRADIENT;
+  }, [selectedCategory]);
 
   const handleCategoryPress = (categoryId: string) => {
+    if (isAnimating || selectedCategory !== null) return;
+    setIsAnimating(true);
     setSelectedCategory(categoryId);
     setLastSelectedCategory(categoryId);
   };
 
   const handleBottlePress = () => {
-    if (selectedCategory !== null) return;
+    if (isAnimating || selectedCategory !== null) return;
     
     const availableCategories = categories.filter(cat => cat.id !== lastSelectedCategory);
     const randomCategory = availableCategories[Math.floor(Math.random() * availableCategories.length)];
     if (randomCategory) {
+      setIsAnimating(true);
       setSelectedCategory(randomCategory.id);
       setLastSelectedCategory(randomCategory.id);
     }
@@ -36,6 +48,7 @@ export default function HomeScreen() {
       router.push(`/(tabs)/categories/${selectedCategory}`);
       setSelectedCategory(null);
     }
+    setIsAnimating(false);
   };
 
   const handleFilterPress = () => console.log("Filter pressed");
@@ -84,6 +97,7 @@ export default function HomeScreen() {
             <View style={styles.centerBottle}>
               <AnimatedBottle
                 selectedCategoryId={selectedCategory}
+                categoryGradient={bottleGradient}
                 onAnimationComplete={handleAnimationComplete}
                 onPress={handleBottlePress}
               />

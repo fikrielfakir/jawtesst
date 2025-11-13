@@ -28,26 +28,30 @@ export const AnimatedCategoryItem: React.FC<AnimatedCategoryItemProps> = ({
   onPress,
 }) => {
   const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
+  const textOpacity = useSharedValue(1);
 
   useEffect(() => {
     if (isSelected) {
-      scale.value = withTiming(1.15, {
+      scale.value = withTiming(1.1, {
         duration: 300,
-        easing: Easing.out(Easing.back(1.2)),
+        easing: Easing.out(Easing.ease),
       });
+      textOpacity.value = withTiming(1, { duration: 200 });
     } else {
-      scale.value = withTiming(1, {
+      scale.value = withTiming(0.9, {
         duration: 300,
         easing: Easing.inOut(Easing.ease),
       });
+      textOpacity.value = withTiming(0.6, { duration: 200 });
     }
-    opacity.value = 1;
   }, [isSelected]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
-    opacity: opacity.value,
+  }));
+
+  const textAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: textOpacity.value,
   }));
 
   const handlePress = () => {
@@ -68,11 +72,7 @@ export const AnimatedCategoryItem: React.FC<AnimatedCategoryItemProps> = ({
                 `${authDesign.colors.primaryicon}CC`,
                 `${authDesign.colors.primaryicon}66`,
               ]
-            : [
-                `${authDesign.colors.primaryicon}99`,
-                `${authDesign.colors.primaryicon}33`,
-                `${authDesign.colors.primaryicon}00`,
-              ]
+            : ["rgba(139, 92, 246, 0.2)", "rgba(139, 92, 246, 0)", "rgba(139, 92, 246, 0)"]
         }
         style={[
           styles.categoryGlow,
@@ -83,23 +83,28 @@ export const AnimatedCategoryItem: React.FC<AnimatedCategoryItemProps> = ({
           style={[
             styles.categoryImageContainer,
             isSelected && styles.categoryImageContainerActive,
+            !isSelected && styles.categoryImageContainerInactive,
           ]}
         >
           <Image
             source={category.image}
-            style={styles.categoryImage}
+            style={[
+              styles.categoryImage,
+              !isSelected && styles.categoryImageDimmed,
+            ]}
             resizeMode="cover"
           />
         </View>
       </LinearGradient>
-      <Text
+      <Animated.Text
         style={[
           styles.categoryName,
           isSelected && styles.categoryNameActive,
+          textAnimatedStyle,
         ]}
       >
         {category.name}
-      </Text>
+      </Animated.Text>
     </AnimatedTouchable>
   );
 };
@@ -118,15 +123,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 6,
-    filter: `drop-shadow(0px 0px 15px ${authDesign.colors.primaryicon}66)`,
   },
   categoryGlowActive: {
-    filter: `drop-shadow(0px 0px 35px ${authDesign.colors.primaryicon})`,
+    filter: `drop-shadow(0px 0px 40px ${authDesign.colors.primaryicon})`,
   },
   categoryImageContainer: {
     width: 100,
     height: 100,
-    borderRadius: 46,
+    borderRadius: 50,
     backgroundColor: authDesign.colors.backgroundDark,
     borderWidth: 2,
     borderColor: "rgba(255, 255, 255, 0.3)",
@@ -134,16 +138,24 @@ const styles = StyleSheet.create({
   },
   categoryImageContainerActive: {
     borderWidth: 3,
-    borderColor: "rgba(255, 255, 255, 0.6)",
+    borderColor: "rgba(255, 255, 255, 0.8)",
+    filter: "drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.3))",
+  },
+  categoryImageContainerInactive: {
+    borderWidth: 2,
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   categoryImage: {
     width: "100%",
     height: "100%",
   },
+  categoryImageDimmed: {
+    opacity: 0.7,
+  },
   categoryName: {
     color: authDesign.colors.textPrimary,
-    fontSize: 15,
-    fontWeight: "700",
+    fontSize: 13,
+    fontWeight: "600",
     textAlign: "center",
     letterSpacing: 0.3,
     marginTop: -3,
