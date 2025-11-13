@@ -35,7 +35,7 @@ The application adheres to clean architecture principles, separating concerns in
   - Composite: ListItem
 - **Implemented Screens:** All user-facing screens built with design system:
   - Account Settings, Become Partner, Bookings (Upcoming/Past)
-  - Contact Us, FAQ, Notifications
+  - Contact Us, FAQ, Feed (category-based restaurant browsing), Notifications
   - Payment Methods, Premier Plan, Profile (User/Owner variants)
   - Settings, Terms & Conditions, Side Menu drawer
 
@@ -44,6 +44,7 @@ The application adheres to clean architecture principles, separating concerns in
 - Restaurant registration for owners.
 - Main tab navigation (Home, Search, Bookings, Favorites, Profile).
 - Home screen with interactive circular category selection and animated bottle.
+- Category-based Feed screen with chef list and restaurant cards (displays after category selection from Home).
 - Complete user account management and settings.
 - Partner onboarding with document uploads.
 - Booking management with status tracking (Approved, Pending, Closed).
