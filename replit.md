@@ -25,11 +25,30 @@ The application adheres to clean architecture principles, separating concerns in
 - **Architecture:** Organized into `app/` (Expo Router), `src/components/`, `src/services/` (API integrations), `src/domain/` (business logic), `src/lib/` (utilities), `src/constants/` (theme, config), `server/` (Express API), and `shared/` (Drizzle schema).
 - **TypeScript:** Configured with path aliases and `esModuleInterop: true`.
 
+**Design System:**
+- **Global Theme Tokens:** Comprehensive design tokens in `src/constants/theme/` including:
+  - `colors.ts`: Dark theme with black background (#070709), surface layers, purple accent (#7B61E8), status colors
+  - `spacing.ts`: Standardized spacing scale (4-40px), sizing (icons, avatars, buttons), typography, elevation
+- **Reusable UI Components:** Complete component library in `src/design-system/components/`:
+  - Core: Button, Input, Card, Avatar, StatusBadge, TabBar, IconButton
+  - Layout: ScreenContainer, SectionHeader, Divider
+  - Composite: ListItem
+- **Implemented Screens:** All user-facing screens built with design system:
+  - Account Settings, Become Partner, Bookings (Upcoming/Past)
+  - Contact Us, FAQ, Notifications
+  - Payment Methods, Premier Plan, Profile (User/Owner variants)
+  - Settings, Terms & Conditions, Side Menu drawer
+
 **Core Features:**
 - Authentication flow (sign-in, sign-up, reset password with 6-digit OTP verification).
 - Restaurant registration for owners.
 - Main tab navigation (Home, Search, Bookings, Favorites, Profile).
 - Home screen with interactive circular category selection and animated bottle.
+- Complete user account management and settings.
+- Partner onboarding with document uploads.
+- Booking management with status tracking (Approved, Pending, Closed).
+- Premium subscription system.
+- Multi-payment method support.
 
 **Database Schema:**
 Managed by Drizzle ORM, defined in `shared/schema.ts`.
