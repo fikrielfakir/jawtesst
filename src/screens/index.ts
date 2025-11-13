@@ -3,6 +3,7 @@ export { BecomePartnerScreen } from './partner/BecomePartnerScreen';
 export { BookingsScreen } from './bookings/BookingsScreen';
 export { ContactUsScreen } from './contact/ContactUsScreen';
 export { FAQScreen } from './faq/FAQScreen';
+export { FeedScreen } from './feed/FeedScreen';
 export { NotificationsScreen } from './notifications/NotificationsScreen';
 export { PaymentMethodScreen } from './payment/PaymentMethodScreen';
 export { PremierPlanScreen } from './premier/PremierPlanScreen';
