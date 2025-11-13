@@ -107,7 +107,33 @@ Features ready to be built:
 None recorded yet.
 
 ## Recent Changes
-- **2025-11-12 (Latest - Home Screen Design Optimization)**:
+- **2025-11-13 (Latest - Home Screen Interaction Optimization)**:
+  - **Removed Visual Effects:**
+    - Removed opacity fade effect on unselected categories - all categories now stay at 100% opacity
+    - Only scale animation differentiates selected vs unselected categories
+  - **Interactive Bottle Feature:**
+    - Made bottle always clickable and visible
+    - Added 360-degree rotation animation when category is selected
+    - Bottle press triggers random category selection (excludes last selected)
+    - Bottle disabled during animation to prevent multiple selections
+  - **Random Category Selection:**
+    - Clicking bottle selects random category with rotation animation
+    - Tracks last selected category to prevent immediate repeats
+    - Safety check for edge cases when all categories filtered
+  - **Navigation Flow:**
+    - Category selection (manual or random) triggers bottle rotation and fill animation
+    - Navigation to category detail page occurs after animation completes
+    - State properly resets after navigation
+  - **Tab Bar Cleanup:**
+    - Categories folder hidden from bottom tab navigation
+    - Categories remain accessible via programmatic navigation (router.push)
+  - **Files Modified:**
+    - `src/components/home/AnimatedBottle.tsx` - Added Pressable wrapper, rotation animation, onPress callback
+    - `src/components/home/AnimatedCategoryItem.tsx` - Removed opacity fade effect
+    - `app/(tabs)/index.tsx` - Added random category selection logic with last-selected tracking
+    - `app/(tabs)/_layout.tsx` - Removed categories from tab bar display
+
+- **2025-11-12 (Earlier - Home Screen Design Optimization)**:
   - **Visual Enhancements:**
     - Reduced header padding (8px top/bottom, down from 16px) for more compact layout
     - Tightened control gaps (8px, down from 12px) in filter/location buttons
