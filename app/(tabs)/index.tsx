@@ -68,7 +68,7 @@ export default function HomeScreen() {
           <View style={styles.categoriesContainer}>
             <View style={styles.centerBottle}>
               <AnimatedBottle
-                isSelected={!!selectedCategory}
+                selectedCategoryId={selectedCategory}
                 onAnimationComplete={handleAnimationComplete}
               />
             </View>
