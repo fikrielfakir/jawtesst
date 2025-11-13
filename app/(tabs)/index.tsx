@@ -27,24 +27,12 @@ const LoungePubImg = require("@assets/home/bar_pub_beer_taps_lo_b72fe35e.jpg");
 const ChiringuitoImg = require("@assets/home/beach_bar_chiringuit_9200470e.jpg");
 
 const BottleIcon = () => (
-  <Svg width="40" height="138" viewBox="0 0 40 138" fill="none">
+  <Svg width="40" height="125" viewBox="0 0 40 138" fill="none">
     <Defs>
       <SvgLinearGradient id="bottleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <Stop
-          offset="0%"
-          stopColor={authDesign.colors.primaryicon}
-          stopOpacity="0.8"
-        />
-        <Stop
-          offset="50%"
-          stopColor={authDesign.colors.primaryicon}
-          stopOpacity="0.5"
-        />
-        <Stop
-          offset="100%"
-          stopColor={authDesign.colors.primaryicon}
-          stopOpacity="0.8"
-        />
+        <Stop offset="0%" stopColor={authDesign.colors.primary} stopOpacity="1" />
+        <Stop offset="50%" stopColor={authDesign.colors.primary} stopOpacity="1" />
+        <Stop offset="100%" stopColor={authDesign.colors.primary} stopOpacity="1" />
       </SvgLinearGradient>
     </Defs>
     <Path
@@ -94,7 +82,7 @@ const categories = [
 ];
 
 export default function HomeScreen() {
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const [selectedLocation, setSelectedLocation] = useState("Tanger, Morocco");
   const [selectedCategory, setSelectedCategory] = useState("cafe");
 
@@ -103,21 +91,24 @@ export default function HomeScreen() {
     console.log("Category pressed:", categoryId);
   };
 
-  const handleFilterPress = () => {
-    console.log("Filter pressed");
-  };
-
-  const handleLocationPress = () => {
-    console.log("Location pressed");
-  };
+  const handleFilterPress = () => console.log("Filter pressed");
+  const handleLocationPress = () => console.log("Location pressed");
 
   const containerSize = Math.min(width * 0.85, 400);
-  const radius = containerSize * 0.38;
+  const radius = containerSize * 0.45;
 
   const renderCategoryButton = (category: (typeof categories)[0]) => {
     const angleInRadians = (category.angle * Math.PI) / 180;
-    const x = containerSize / 2 + radius * Math.cos(angleInRadians) - 50;
-    const y = containerSize / 2 + radius * Math.sin(angleInRadians) - 50;
+
+    const customRadius =
+      category.id === "cafe"
+        ? radius * 1.2 
+        : category.id === "chiringuito"
+        ? radius * 1.02
+        : radius;
+
+    const x = containerSize / 2 + customRadius * Math.cos(angleInRadians) - 50;
+    const y = containerSize / 2 + customRadius * Math.sin(angleInRadians) - 50;
     const isSelected = selectedCategory === category.id;
 
     return (
@@ -166,7 +157,7 @@ export default function HomeScreen() {
 
   return (
     <LinearGradient
-      colors={['#5A3D7C', '#3D2657', '#1A0E2E', '#0A050F']}
+      colors={[...gradients.auth]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       style={styles.container}
@@ -178,17 +169,13 @@ export default function HomeScreen() {
             style={styles.logo}
             resizeMode="contain"
           />
-
           <View style={styles.controlsRow}>
             <TouchableOpacity
               style={styles.filterButton}
               onPress={handleFilterPress}
               activeOpacity={0.7}
             >
-              <SlidersHorizontal
-                size={18}
-                color="#d0d0d0"
-              />
+              <SlidersHorizontal size={18} color="#d0d0d0" />
               <Text style={styles.filterText}>Filter Distance</Text>
             </TouchableOpacity>
 
@@ -197,10 +184,7 @@ export default function HomeScreen() {
               onPress={handleLocationPress}
               activeOpacity={0.7}
             >
-              <MapPin
-                size={18}
-                color="#d0d0d0"
-              />
+              <MapPin size={18} color="#d0d0d0" />
               <Text style={styles.locationText}>{selectedLocation}</Text>
               <ChevronDown size={14} color="#d0d0d0" />
             </TouchableOpacity>
@@ -213,16 +197,12 @@ export default function HomeScreen() {
           <View
             style={[
               styles.categoriesContainer,
-              {
-                width: containerSize,
-                height: containerSize,
-              },
+              { width: containerSize, height: containerSize },
             ]}
           >
             <View style={styles.centerBottle}>
               <BottleIcon />
             </View>
-
             {categories.map((category) => renderCategoryButton(category))}
           </View>
         </View>
@@ -232,31 +212,29 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  header: {
+  container: { flex: 1 },
+  safeArea: { flex: 1 },
+   header: {
     flexDirection: "column",
     alignItems: "center",
     paddingHorizontal: authDesign.spacing.paddingHorizontal,
-    paddingTop: 8,
-    paddingBottom: 8,
-    gap: 8,
+    paddingTop: 10,
+    paddingBottom: 0,
   },
   controlsRow: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
-    gap: 8,
+    width: "100%",
+    paddingHorizontal: 2,
+    marginBottom: 28, // 🟩 space between controlsRow and "Choose Category"
   },
+
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    paddingVertical: 6,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     backgroundColor: "rgba(255, 255, 255, 0.08)",
     borderRadius: authDesign.sizes.cornerRadius,
@@ -268,9 +246,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-  logo: {
-    width: 90,
+logo: { 
+    width: 90, 
     height: 45,
+    marginBottom: 20, // 🟩 space between logo and controlsRow
   },
   locationButton: {
     flexDirection: "row",
@@ -289,20 +268,21 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     maxWidth: 100,
   },
-  content: {
-    flex: 1,
+  content: { 
+    flex: 1, 
     alignItems: "center",
-    justifyContent: "center",
   },
+
   title: {
-    fontSize: 22,
-    fontWeight: "700",
+    fontSize: 24,
+    fontWeight: "800",
     color: authDesign.colors.textPrimary,
-    marginBottom: 20,
     letterSpacing: 0.5,
     textAlign: "center",
+    marginBottom: 70, // 🟩 space between "Choose Category" and categoriesContainer
   },
   categoriesContainer: {
+    marginTop: 65,
     position: "relative",
     alignItems: "center",
     justifyContent: "center",
@@ -335,8 +315,8 @@ const styles = StyleSheet.create({
     filter: `drop-shadow(0px 0px 35px ${authDesign.colors.primaryicon})`,
   },
   categoryImageContainer: {
-    width: 92,
-    height: 92,
+    width: 100,
+    height: 100,
     borderRadius: 46,
     backgroundColor: authDesign.colors.backgroundDark,
     borderWidth: 2,
@@ -347,16 +327,14 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "rgba(255, 255, 255, 0.6)",
   },
-  categoryImage: {
-    width: "100%",
-    height: "100%",
-  },
+  categoryImage: { width: "100%", height: "100%" },
   categoryName: {
     color: authDesign.colors.textPrimary,
-    fontSize: 13,
-    fontWeight: "600",
+    fontSize: 15,
+    fontWeight: "700",
     textAlign: "center",
     textShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
     letterSpacing: 0.3,
+    marginTop: -3,
   },
 });
