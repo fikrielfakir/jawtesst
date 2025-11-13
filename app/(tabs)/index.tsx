@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     paddingHorizontal: 2,
-    marginBottom: 28, // 🟩 space between controlsRow and "Choose Category"
+    marginBottom: 28,
   },
 
   filterButton: {
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
 logo: { 
     width: 90, 
     height: 45,
-    marginBottom: 20, // 🟩 space between logo and controlsRow
+    marginBottom: 20,
   },
   locationButton: {
     flexDirection: "row",
@@ -279,7 +279,7 @@ logo: {
     color: authDesign.colors.textPrimary,
     letterSpacing: 0.5,
     textAlign: "center",
-    marginBottom: 70, // 🟩 space between "Choose Category" and categoriesContainer
+    marginBottom: 70,
   },
   categoriesContainer: {
     marginTop: 65,
