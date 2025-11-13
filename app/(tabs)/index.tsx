@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Image,
   useWindowDimensions,
+  Animated,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,6 +20,7 @@ import Svg, {
 } from "react-native-svg";
 import { authDesign } from "@constants/theme/authDesign";
 import { gradients } from "@constants/theme/colors";
+import { useRouter } from "expo-router";
 
 const CafeImg = require("@assets/home/coffee_cup_cafe_latt_38a3b15f.jpg");
 const MoroccoWayImg = require("@assets/home/moroccan_tagine_food_784bfa11.jpg");
@@ -82,13 +85,51 @@ const categories = [
 ];
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { width } = useWindowDimensions();
   const [selectedLocation, setSelectedLocation] = useState("Tanger, Morocco");
   const [selectedCategory, setSelectedCategory] = useState("cafe");
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [bottleRotation] = useState(new Animated.Value(270)); // Start pointing at cafe
+  const [overlayOpacity] = useState(new Animated.Value(0));
 
   const handleCategoryPress = (categoryId: string) => {
+    if (isRedirecting) return; // Prevent multiple clicks
+    
     setSelectedCategory(categoryId);
+    setIsRedirecting(true);
     console.log("Category pressed:", categoryId);
+    
+    // Find the angle of the selected category
+    const category = categories.find(cat => cat.id === categoryId);
+    if (category) {
+      // Animate bottle rotation to point at the selected category
+      const targetAngle = category.angle + 90;
+      
+      // Start rotation animation
+      Animated.spring(bottleRotation, {
+        toValue: targetAngle,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 8,
+      }).start();
+
+      // Fade in overlay
+      Animated.timing(overlayOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+
+      // Navigate after animation completes
+      setTimeout(() => {
+        // Navigate to category screen
+        // Replace with your actual navigation path
+        router.push(`/category/${categoryId}`);
+        // Or if using different navigation structure:
+        // router.push({ pathname: '/category', params: { id: categoryId, name: category.name } });
+      }, 1000); // Wait for animations to complete
+    }
   };
 
   const handleFilterPress = () => console.log("Filter pressed");
@@ -117,6 +158,7 @@ export default function HomeScreen() {
         style={[styles.categoryButton, { left: x, top: y }]}
         onPress={() => handleCategoryPress(category.id)}
         activeOpacity={0.8}
+        disabled={isRedirecting}
       >
         <LinearGradient
           colors={
@@ -174,6 +216,7 @@ export default function HomeScreen() {
               style={styles.filterButton}
               onPress={handleFilterPress}
               activeOpacity={0.7}
+              disabled={isRedirecting}
             >
               <SlidersHorizontal size={18} color="#d0d0d0" />
               <Text style={styles.filterText}>Filter Distance</Text>
@@ -183,6 +226,7 @@ export default function HomeScreen() {
               style={styles.locationButton}
               onPress={handleLocationPress}
               activeOpacity={0.7}
+              disabled={isRedirecting}
             >
               <MapPin size={18} color="#d0d0d0" />
               <Text style={styles.locationText}>{selectedLocation}</Text>
@@ -200,12 +244,48 @@ export default function HomeScreen() {
               { width: containerSize, height: containerSize },
             ]}
           >
-            <View style={styles.centerBottle}>
+            <Animated.View 
+              style={[
+                styles.centerBottle,
+                {
+                  transform: [
+                    { 
+                      rotate: bottleRotation.interpolate({
+                        inputRange: [0, 360],
+                        outputRange: ['0deg', '360deg']
+                      })
+                    }
+                  ]
+                }
+              ]}
+            >
               <BottleIcon />
-            </View>
+            </Animated.View>
             {categories.map((category) => renderCategoryButton(category))}
           </View>
         </View>
+
+        {/* Redirecting Overlay */}
+        {isRedirecting && (
+          <Animated.View 
+            style={[
+              styles.redirectOverlay,
+              {
+                opacity: overlayOpacity,
+              }
+            ]}
+          >
+            <View style={styles.redirectContent}>
+              <ActivityIndicator 
+                size="large" 
+                color={authDesign.colors.primary} 
+              />
+              <Text style={styles.redirectText}>
+                Loading {categories.find(c => c.id === selectedCategory)?.name}...
+              </Text>
+            </View>
+          </Animated.View>
+        )}
       </SafeAreaView>
     </LinearGradient>
   );
@@ -214,7 +294,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   safeArea: { flex: 1 },
-   header: {
+  header: {
     flexDirection: "column",
     alignItems: "center",
     paddingHorizontal: authDesign.spacing.paddingHorizontal,
@@ -229,7 +309,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     marginBottom: 28,
   },
-
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -246,7 +325,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-logo: { 
+  logo: { 
     width: 90, 
     height: 45,
     marginBottom: 20,
@@ -272,7 +351,6 @@ logo: {
     flex: 1, 
     alignItems: "center",
   },
-
   title: {
     fontSize: 24,
     fontWeight: "800",
@@ -336,5 +414,26 @@ logo: {
     textShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
     letterSpacing: 0.3,
     marginTop: -3,
+  },
+  redirectOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  redirectContent: {
+    alignItems: "center",
+    gap: 16,
+  },
+  redirectText: {
+    color: authDesign.colors.textPrimary,
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 8,
   },
 });
