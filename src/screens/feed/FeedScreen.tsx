@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import { Avatar } from '../../design-system/components';
 import { colors } from '../../constants/theme/colors';
 import { spacing, sizing, typography } from '../../constants/theme/spacing';
@@ -29,11 +30,11 @@ interface Restaurant {
 }
 
 const chefs: Chef[] = [
-  { id: '1', name: 'Mohamed', avatar: require('../../../assets/placeholder-avatar.png') },
-  { id: '2', name: 'Janes', avatar: require('../../../assets/placeholder-avatar.png') },
-  { id: '3', name: 'Moro', avatar: require('../../../assets/placeholder-avatar.png') },
-  { id: '4', name: 'Khaoula', avatar: require('../../../assets/placeholder-avatar.png') },
-  { id: '5', name: 'Michel', avatar: require('../../../assets/placeholder-avatar.png') },
+  { id: '1', name: 'Mohamed', avatar: require('../../../assets/onboarding/dining-experience.png') },
+  { id: '2', name: 'Janes', avatar: require('../../../assets/onboarding/restaurant-owners.png') },
+  { id: '3', name: 'Moro', avatar: require('../../../assets/onboarding/booking-table.png') },
+  { id: '4', name: 'Khaoula', avatar: require('../../../assets/onboarding/reviews-sharing.png') },
+  { id: '5', name: 'Michel', avatar: require('../../../assets/onboarding/dining-experience.png') },
 ];
 
 const restaurants: Restaurant[] = [
@@ -41,7 +42,7 @@ const restaurants: Restaurant[] = [
     id: '1',
     name: 'Restaurant name',
     location: 'Sophie, Tanger',
-    image: require('../../../assets/placeholder-restaurant.png'),
+    image: require('../../../assets/home/fine_dining_elegant__246bdcc1.jpg'),
     likes: '2k',
     photos: 23,
     rating: 4.9,
@@ -50,14 +51,26 @@ const restaurants: Restaurant[] = [
     id: '2',
     name: 'Restaurant name',
     location: 'Sophie, Tanger',
-    image: require('../../../assets/placeholder-restaurant.png'),
+    image: require('../../../assets/home/moroccan_tagine_food_784bfa11.jpg'),
     likes: '1.5k',
     photos: 18,
     rating: 4.7,
   },
 ];
 
+const categoryTitles: Record<string, string> = {
+  'cafe': 'Best Cafes',
+  'morocco-way': 'Best Morocco Way',
+  'fine-dining': 'Best Fine Dining',
+  'dance': 'Best Dance Clubs',
+  'lounge-pub': 'Best Lounges & Pubs',
+  'chiringuito': 'Best Chiringuitos',
+};
+
 export function FeedScreen() {
+  const params = useLocalSearchParams();
+  const category = (params.category as string) || 'cafe';
+  const categoryTitle = categoryTitles[category] || 'Best Chef';
   const renderChefItem = ({ item }: { item: Chef }) => (
     <TouchableOpacity style={styles.chefItem}>
       <Avatar
@@ -105,7 +118,7 @@ export function FeedScreen() {
       <View style={styles.header}>
         <TouchableOpacity>
           <Avatar
-            source={require('../../../assets/placeholder-avatar.png')}
+            source={require('../../../assets/onboarding/dining-experience.png')}
             size="md"
           />
         </TouchableOpacity>
@@ -125,7 +138,7 @@ export function FeedScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Category Title */}
-        <Text style={styles.categoryTitle}>Best Chef</Text>
+        <Text style={styles.categoryTitle}>{categoryTitle}</Text>
 
         {/* Chef List */}
         <FlatList
