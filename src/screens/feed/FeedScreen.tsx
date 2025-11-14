@@ -128,7 +128,7 @@ export function FeedScreen() {
         <View style={styles.header}>
           <TouchableOpacity>
             <Image
-              source={require('../../../assets/onboarding/dining-experience.png')}
+              source={require('../../../assets/chefs/mohamed.png')}
               style={styles.userAvatar}
             />
           </TouchableOpacity>
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: authDesign.colors.primaryicon,
+    borderColor: authDesign.colors.surface,
   },
   logo: {
     width: 90,
@@ -251,13 +251,13 @@ const styles = StyleSheet.create({
   },
   restaurantList: {
     paddingHorizontal: authDesign.spacing.paddingHorizontal,
-    gap: 20,
     paddingBottom: 100,
   },
   restaurantCard: {
-    borderRadius: authDesign.sizes.cornerRadius,
+    borderRadius: 16,
     overflow: 'hidden',
-    height: 280,
+    height: 360,
+    marginBottom: 16,
   },
   restaurantImage: {
     width: '100%',
@@ -268,13 +268,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   restaurantContent: {
-    padding: 16,
+    padding: 20,
+    paddingBottom: 16,
   },
   restaurantName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   restaurantLocation: {
     fontSize: 14,

@@ -40,12 +40,6 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="feed"
-        options={{
-          href: null, // This hides it from the tab bar
-        }}
-      />
-      <Tabs.Screen
         name="favorites"
         options={{
           title: 'Wishlist',
