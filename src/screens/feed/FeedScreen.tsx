@@ -101,18 +101,18 @@ export function FeedScreen() {
             <Text style={styles.restaurantLocation}>{restaurant.location}</Text>
             
             <View style={styles.restaurantStats}>
-              <View style={styles.statItem}>
-                <Heart size={18} color="#FFFFFF" />
+              <View style={styles.statButton}>
+                <Heart size={16} color="#FFFFFF" />
                 <Text style={styles.statText}>{restaurant.likes}</Text>
               </View>
               
-              <View style={styles.statItem}>
-                <MessageCircle size={18} color="#FFFFFF" />
+              <View style={styles.statButton}>
+                <MessageCircle size={16} color="#FFFFFF" />
                 <Text style={styles.statText}>{restaurant.comments}</Text>
               </View>
               
               <View style={styles.ratingBadge}>
-                <Star size={14} color="#000000" fill={authDesign.colors.primaryicon} />
+                <Star size={16} color="#000000" fill={authDesign.colors.primaryicon} />
                 <Text style={styles.ratingText}>{restaurant.rating}</Text>
               </View>
             </View>
@@ -182,15 +182,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: authDesign.spacing.paddingHorizontal,
-    paddingVertical: 12,
-    paddingTop: 10,
+    paddingVertical: 16,
+    backgroundColor: '#000000',
   },
   userAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: authDesign.colors.surface,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
   },
   logo: {
     width: 90,
@@ -201,24 +199,25 @@ const styles = StyleSheet.create({
   },
   notificationBadge: {
     position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: authDesign.colors.primaryicon,
-    borderRadius: 6,
-    width: 12,
-    height: 12,
+    top: 0,
+    right: 0,
+    backgroundColor: '#FF0000',
+    borderRadius: 8,
+    width: 16,
+    height: 16,
+    borderWidth: 2,
+    borderColor: '#000000',
   },
   scrollView: {
     flex: 1,
   },
   categoryTitle: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 20,
+    fontWeight: '700',
     color: authDesign.colors.textPrimary,
     marginHorizontal: authDesign.spacing.paddingHorizontal,
-    marginTop: 24,
+    marginTop: 20,
     marginBottom: 16,
-    letterSpacing: 0.5,
   },
   chefList: {
     paddingHorizontal: authDesign.spacing.paddingHorizontal,
@@ -272,29 +271,33 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   restaurantName: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   restaurantLocation: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '400',
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: 'rgba(255, 255, 255, 0.7)',
     marginBottom: 12,
   },
   restaurantStats: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 8,
   },
-  statItem: {
+  statButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
     gap: 6,
   },
   statText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: '#FFFFFF',
   },
@@ -302,14 +305,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: authDesign.colors.primaryicon,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: authDesign.sizes.cornerRadius,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
     marginLeft: 'auto',
     gap: 4,
   },
   ratingText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
     color: '#000000',
   },
