@@ -13,8 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Bell, Heart, MessageCircle, Star } from '@tamagui/lucide-icons';
-import { colors } from '@constants/theme/colors';
-import { spacing, borderRadius, sizing, typography } from '@constants/theme/spacing';
+import { authDesign } from '@constants/theme/authDesign';
+import { gradients } from '@constants/theme/colors';
 
 interface Chef {
   id: string;
@@ -34,35 +34,47 @@ interface Restaurant {
 }
 
 const chefs: Chef[] = [
-  { id: '1', name: 'Mohamed', avatar: require('../../../assets/onboarding/dining-experience.png'), borderColor: colors.accent.red },
-  { id: '2', name: 'Janes', avatar: require('../../../assets/onboarding/restaurant-owners.png'), borderColor: colors.accent.teal },
-  { id: '3', name: 'Moro', avatar: require('../../../assets/onboarding/booking-table.png'), borderColor: colors.accent.yellow },
-  { id: '4', name: 'Khaoula', avatar: require('../../../assets/onboarding/reviews-sharing.png'), borderColor: colors.accent.mint },
-  { id: '5', name: 'Michel', avatar: require('../../../assets/onboarding/dining-experience.png'), borderColor: colors.accent.pink },
+  { id: '1', name: 'Mohamed', avatar: require('../../../assets/chefs/mohamed.png'), borderColor: authDesign.colors.primaryicon },
+  { id: '2', name: 'Janes', avatar: require('../../../assets/chefs/janes.png'), borderColor: '#FF6B9D' },
+  { id: '3', name: 'Moro', avatar: require('../../../assets/chefs/moro.png'), borderColor: '#FFD93D' },
+  { id: '4', name: 'Khaoula', avatar: require('../../../assets/chefs/khaoula.png'), borderColor: '#6BCF7F' },
+  { id: '5', name: 'Michel', avatar: require('../../../assets/chefs/michel.png'), borderColor: '#9B87F5' },
 ];
 
-  const restaurants = [
-    {
-      id: '1',
-      name: 'Restaurent name',
-      location: 'Sophie, Tanger',
-      image: require('../../../assets/home/fine_dining_elegant__246bdcc1.jpg'),
-      likes: '2k',
-      comments: 23,
-      rating: 4.9,
-    },
-  ];
+const restaurants: Restaurant[] = [
+  {
+    id: '1',
+    name: 'Restaurant name',
+    location: 'Sophie, Tanger',
+    image: require('../../../assets/home/fine_dining_elegant__246bdcc1.jpg'),
+    likes: '2k',
+    comments: 23,
+    rating: 4.9,
+  },
+  {
+    id: '2',
+    name: 'Restaurant name',
+    location: 'Sophie, Tanger',
+    image: require('../../../assets/home/moroccan_tagine_food_784bfa11.jpg'),
+    likes: '1.5k',
+    comments: 18,
+    rating: 4.7,
+  },
+];
 
+const categoryTitles: Record<string, string> = {
+  'cafe': 'Best Cafes',
+  'morocco-way': 'Best Morocco Way',
+  'fine-dining': 'Best Fine Dining',
+  'dance': 'Best Dance Clubs',
+  'lounge-pub': 'Best Lounges & Pubs',
+  'chiringuito': 'Best Chiringuitos',
+};
+
+export function FeedScreen() {
   const params = useLocalSearchParams();
   const category = (params.category as string) || 'cafe';
   const categoryTitle = categoryTitles[category] || 'Best Chef';
-
-  let [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-  });
 
   const renderChefItem = ({ item }: { item: Chef }) => (
     <TouchableOpacity style={styles.chefItem}>
@@ -81,7 +93,7 @@ const chefs: Chef[] = [
         resizeMode="cover"
       >
         <LinearGradient
-          colors={['transparent', colors.overlay.black, colors.overlay.blackHeavy]}
+          colors={['transparent', 'rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.9)']}
           locations={[0, 0.5, 1]}
           style={styles.restaurantGradient}
         >
@@ -101,7 +113,7 @@ const chefs: Chef[] = [
               </View>
               
               <View style={styles.ratingBadge}>
-                <Star size={sizing.icon.xs} color={colors.rating} fill={colors.rating} />
+                <Star size={14} color="#000000" fill={authDesign.colors.primaryicon} />
                 <Text style={styles.ratingText}>{restaurant.rating}</Text>
               </View>
             </View>
@@ -111,27 +123,33 @@ const chefs: Chef[] = [
     </View>
   );
 
-  if (!fontsLoaded) {
-    return null;
-  }
-
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <TouchableOpacity>
+    <LinearGradient
+      colors={[...gradients.auth]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={styles.header}>
+          <TouchableOpacity>
+            <Image
+              source={require('../../../assets/onboarding/dining-experience.png')}
+              style={styles.userAvatar}
+            />
+          </TouchableOpacity>
+          
           <Image
-            source={require('../../../assets/onboarding/dining-experience.png')}
-            style={styles.userAvatar}
+            source={require('../../../assets/jwa-logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
           />
-        </TouchableOpacity>
-        
-        <Text style={styles.logo}>נשבר</Text>
-        
-        <TouchableOpacity style={styles.notificationButton}>
-          <Bell size={sizing.icon.md} color={colors.text} />
-          <View style={styles.notificationBadge} />
-        </TouchableOpacity>
-      </View>
+          
+          <TouchableOpacity style={styles.notificationButton}>
+            <Bell size={24} color={authDesign.colors.textPrimary} />
+            <View style={styles.notificationBadge} />
+          </TouchableOpacity>
+        </View>
 
         <ScrollView
           style={styles.scrollView}
@@ -160,16 +178,17 @@ const chefs: Chef[] = [
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+  },
+  safeArea: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.m,
-    paddingTop: spacing.xxl,
-    backgroundColor: colors.background,
+    paddingHorizontal: authDesign.spacing.paddingHorizontal,
+    paddingVertical: 12,
+    paddingTop: 10,
   },
   userAvatar: {
     width: 40,
@@ -179,51 +198,50 @@ const styles = StyleSheet.create({
     borderColor: authDesign.colors.primaryicon,
   },
   logo: {
-    fontSize: typography.title.size,
-    fontWeight: '700',
-    color: colors.text,
-    flex: 1,
-    textAlign: 'center',
+    width: 90,
+    height: 45,
   },
   notificationButton: {
     position: 'relative',
   },
   notificationBadge: {
     position: 'absolute',
-    top: -(spacing.xxs / 2),
-    right: -(spacing.xxs / 2),
-    backgroundColor: colors.error,
-    borderRadius: borderRadius.small,
-    width: spacing.s,
-    height: spacing.s,
+    top: -2,
+    right: -2,
+    backgroundColor: authDesign.colors.primaryicon,
+    borderRadius: 6,
+    width: 12,
+    height: 12,
   },
-
-  /* ---------- CATEGORY TITLE ---------- */
+  scrollView: {
+    flex: 1,
+  },
   categoryTitle: {
-    fontSize: typography.heading.size,
-    fontWeight: '700',
-    color: colors.text,
-    marginHorizontal: spacing.xl,
-    marginTop: spacing.xxl,
-    marginBottom: spacing.m,
+    fontSize: 24,
+    fontWeight: '800',
+    color: authDesign.colors.textPrimary,
+    marginHorizontal: authDesign.spacing.paddingHorizontal,
+    marginTop: 24,
+    marginBottom: 16,
+    letterSpacing: 0.5,
   },
-
-  /* ---------- CHEF STORY STYLE ---------- */
   chefList: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
+    paddingHorizontal: authDesign.spacing.paddingHorizontal,
+    paddingBottom: 24,
   },
   chefItem: {
     alignItems: 'center',
     marginRight: 16,
   },
   chefAvatarRing: {
-    width: spacing.xxxl * 2,
-    height: spacing.xxxl * 2,
-    borderRadius: borderRadius.circle,
-    borderWidth: spacing.xxs,
-    padding: spacing.xxs / 2,
-    marginBottom: spacing.xxs,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 3,
+    padding: 3,
+    marginBottom: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   chefAvatar: {
     width: 70,
@@ -231,22 +249,20 @@ const styles = StyleSheet.create({
     borderRadius: 35,
   },
   chefName: {
-    fontSize: typography.label.size,
-    fontWeight: '600',
-    color: colors.text,
+    fontSize: 14,
+    fontWeight: '700',
+    color: authDesign.colors.textPrimary,
     textAlign: 'center',
   },
-
-  /* ---------- RESTAURANT CARD ---------- */
   restaurantList: {
-    paddingHorizontal: spacing.xl,
-    gap: spacing.xl,
-    paddingBottom: spacing.xxxl * 2.5,
+    paddingHorizontal: authDesign.spacing.paddingHorizontal,
+    gap: 20,
+    paddingBottom: 100,
   },
   restaurantCard: {
     borderRadius: authDesign.sizes.cornerRadius,
     overflow: 'hidden',
-    height: spacing.xxxl * 8,
+    height: 280,
   },
   restaurantImage: {
     width: '100%',
@@ -260,18 +276,17 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   restaurantName: {
-    fontSize: typography.heading.size - 2,
+    fontSize: 20,
     fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xxs,
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
   restaurantLocation: {
-    fontSize: typography.bodyMedium.size - 1,
+    fontSize: 14,
     fontWeight: '400',
-    color: colors.textSecondary,
-    marginBottom: spacing.s,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 12,
   },
-
   restaurantStats: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -283,12 +298,10 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   statText: {
-    fontSize: typography.bodyMedium.size - 1,
-    fontWeight: '400',
-    color: colors.text,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
-
-  /* ---------- RATING BADGE ---------- */
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -300,8 +313,8 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   ratingText: {
-    fontSize: typography.bodyMedium.size - 1,
-    fontWeight: '600',
-    color: colors.background,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#000000',
   },
 });
