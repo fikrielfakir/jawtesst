@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Search, Heart, UserRound } from '@tamagui/lucide-icons';
-import { ReelsIcon } from '../../src/components/icons/ReelsIcon';
+import { Home, Search, Heart, UserRound, SquarePlay } from '@tamagui/lucide-icons';
 
 export default function TabsLayout() {
   return (
@@ -49,7 +48,7 @@ export default function TabsLayout() {
         name="reels"
         options={{
           title: 'Reels',
-          tabBarIcon: ({ color }) => <ReelsIcon size={24} color={color} />,
+          tabBarIcon: ({ color }) => <SquarePlay size={24} color={color} />,
         }}
       />
       <Tabs.Screen
