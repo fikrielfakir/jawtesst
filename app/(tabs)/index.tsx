@@ -106,13 +106,7 @@ export default function HomeScreen() {
         useNativeDriver: true,
         tension: 50,
         friction: 8,
-      }).start(() => {
-        // Navigate to feed screen after animation completes
-        router.push({
-          pathname: '/feed',
-          params: { category: categoryId }
-        });
-      });
+      }).start();
     }
   };
 
