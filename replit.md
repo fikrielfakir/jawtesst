@@ -33,6 +33,7 @@ The application adheres to clean architecture principles, separating concerns in
   - Core: Button, Input, Card, Avatar, StatusBadge, TabBar, IconButton
   - Layout: ScreenContainer, SectionHeader, Divider
   - Composite: ListItem
+  - Bottom Sheets: FilterBottomSheet (distance filter with slider control)
 - **Implemented Screens:** All user-facing screens built with design system:
   - Account Settings, Become Partner, Bookings (Upcoming/Past)
   - Contact Us, FAQ, Feed (category-based restaurant browsing), Notifications
@@ -54,6 +55,12 @@ The application adheres to clean architecture principles, separating concerns in
 - Restaurant registration for owners.
 - Main tab navigation (Home, Search, Bookings, Favorites, Profile).
 - Home screen with interactive circular category selection and animated bottle.
+- **Distance Filter Bottom Sheet (Nov 2025):** 
+  - Slide-up modal with smooth spring/timing animations
+  - Interactive slider control for distance range (1-50 km)
+  - Touch gesture handling with full track interaction
+  - Optimized header layout with improved filter/location buttons
+  - Real-time distance value display and apply functionality
 - Category-based Feed screen with chef list and restaurant cards (displays after category selection from Home).
 - Complete user account management and settings.
 - Partner onboarding with document uploads.
