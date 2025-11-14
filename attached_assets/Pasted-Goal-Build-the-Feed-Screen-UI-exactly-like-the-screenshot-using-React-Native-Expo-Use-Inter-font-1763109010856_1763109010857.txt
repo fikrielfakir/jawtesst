@@ -1,0 +1,260 @@
+Goal: Build the Feed Screen UI exactly like the screenshot using React Native + Expo.
+Use Inter font, Lucide icons, and the exact spacing rules below.
+All components and styles must follow these specifications strictly.
+
+📌 Global Layout Rules
+
+Background: #000000
+
+SafeArea horizontal padding: 24
+
+Top padding: 32
+
+Border radius global: 16
+
+Default text color: white
+
+Secondary text: #D0D0D0
+
+Use Inter font:
+
+Inter-Bold (700)
+
+Inter-SemiBold (600)
+
+Inter-Medium (500)
+
+Inter-Regular (400)
+
+All icons must use lucide-react-native
+
+Default icon size: 24
+
+📌 Feed Screen Header
+
+Layout:
+
+Row
+
+Align items center
+
+JustifyContent: space-between
+
+Horizontal gap: 16
+
+Elements:
+
+1. User Avatar
+
+Size: 44×44
+
+Circular
+
+2. App Logo
+
+Width: 90–110
+
+Center positioned between avatar and bell
+
+3. Notification Icon
+
+Icon: Bell (Lucide)
+
+Size: 24
+
+Badge:
+
+Size: 12
+
+Color: #FF3B3B
+
+Position: absolute at top-right
+
+📌 Section Label
+
+Text: “Best Chef”
+
+Font: Inter-Bold
+
+Size: 20
+
+Color: white
+
+MarginTop: 32
+
+📌 Chef Stories Row (Horizontal List)
+
+Each chef item must contain:
+
+Avatar
+
+Size: 64×64
+
+Circular
+
+Border ring: 4 px colored/gradient
+
+MarginBottom: 6
+
+Name
+
+Font: Inter-Medium
+
+Size: 12
+
+Color: white
+
+Center aligned
+
+List properties:
+
+Horizontal scroll
+
+Item spacing: 20
+
+📌 Restaurant Card
+
+Container:
+
+Width: full width minus padding
+
+Height: 320
+
+BorderRadius: 20
+
+Overflow: hidden
+
+MarginTop: 24
+
+Background:
+
+ImageBackground with resizeMode="cover"
+
+Bottom gradient overlay: Black → Transparent
+
+Bottom-Left Content
+Restaurant Name
+
+Font: Inter-Bold
+
+Size: 18
+
+Color: white
+
+Location
+
+Font: Inter-Regular
+
+Size: 14
+
+Color: #D0D0D0
+
+📌 Card Stats (Bottom Left Row)
+
+Icons:
+
+Heart (Lucide) size 18
+
+MessageCircle (Lucide) size 18
+
+Spacing between groups: 12
+
+Text:
+
+Font: Inter-Regular
+
+Size: 14
+
+Color: white
+
+📌 Rating Badge (Bottom Right Corner)
+
+Container:
+
+Background: #F8C123
+
+BorderRadius: 12
+
+Padding: 6px 12px
+
+Row layout
+
+Gap: 6
+
+Content:
+
+Icon: Lucide Star, size 16
+
+Rating text:
+
+Font: Inter-SemiBold
+
+Size: 14
+
+Color: black or very dark
+
+Position:
+
+Absolute bottom-right inside the card
+
+📌 Bottom Navigation Bar (Feed Screen)
+
+Container:
+
+Height: 72
+
+PaddingVertical: 12
+
+PaddingHorizontal: 32
+
+Background: black
+
+BorderTopLeftRadius: 24
+
+BorderTopRightRadius: 24
+
+Flex direction: row
+
+Align items: center
+
+JustifyContent: space-between
+
+Icons (Lucide):
+
+Feed → Home
+
+Messages → MessageSquare
+
+Add → PlusCircle (center, size 32)
+
+Wishlist → Heart
+
+Profile → UserRound
+
+Icon behavior:
+
+Active color: white
+
+Inactive color: #6E6E6E
+
+Default icon size: 24
+
+Horizontal spacing between icons: 38–42
+
+📌 AI Output Requirements
+
+The code AI must generate:
+
+React Native (JS/TS) using Expo
+
+Load Inter font using expo-font
+
+Use lucide-react-native icons only
+
+Use FlatList for stories
+
+Use ImageBackground + gradient overlay
+
+Implement the bottom bar manually (no external nav library)
+
+Component name: FeedScreen
