@@ -4,19 +4,22 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Image,
+  ImageBackground,
   TouchableOpacity,
   FlatList,
+  Image,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
-import { Avatar } from '../../design-system/components';
-import { colors } from '../../constants/theme/colors';
-import { spacing, sizing, typography } from '../../constants/theme/spacing';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Bell, Heart, MessageCircle, Star } from '@tamagui/lucide-icons';
+import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 
 interface Chef {
   id: string;
   name: string;
   avatar: any;
+  borderColor: string;
 }
 
 interface Restaurant {
@@ -25,16 +28,16 @@ interface Restaurant {
   location: string;
   image: any;
   likes: string;
-  photos: number;
+  comments: number;
   rating: number;
 }
 
 const chefs: Chef[] = [
-  { id: '1', name: 'Mohamed', avatar: require('../../../assets/onboarding/dining-experience.png') },
-  { id: '2', name: 'Janes', avatar: require('../../../assets/onboarding/restaurant-owners.png') },
-  { id: '3', name: 'Moro', avatar: require('../../../assets/onboarding/booking-table.png') },
-  { id: '4', name: 'Khaoula', avatar: require('../../../assets/onboarding/reviews-sharing.png') },
-  { id: '5', name: 'Michel', avatar: require('../../../assets/onboarding/dining-experience.png') },
+  { id: '1', name: 'Mohamed', avatar: require('../../../assets/onboarding/dining-experience.png'), borderColor: '#FF6B6B' },
+  { id: '2', name: 'Janes', avatar: require('../../../assets/onboarding/restaurant-owners.png'), borderColor: '#4ECDC4' },
+  { id: '3', name: 'Moro', avatar: require('../../../assets/onboarding/booking-table.png'), borderColor: '#FFE66D' },
+  { id: '4', name: 'Khaoula', avatar: require('../../../assets/onboarding/reviews-sharing.png'), borderColor: '#A8E6CF' },
+  { id: '5', name: 'Michel', avatar: require('../../../assets/onboarding/dining-experience.png'), borderColor: '#FF8B94' },
 ];
 
 const restaurants: Restaurant[] = [
@@ -44,7 +47,7 @@ const restaurants: Restaurant[] = [
     location: 'Sophie, Tanger',
     image: require('../../../assets/home/fine_dining_elegant__246bdcc1.jpg'),
     likes: '2k',
-    photos: 23,
+    comments: 23,
     rating: 4.9,
   },
   {
@@ -53,7 +56,7 @@ const restaurants: Restaurant[] = [
     location: 'Sophie, Tanger',
     image: require('../../../assets/home/moroccan_tagine_food_784bfa11.jpg'),
     likes: '1.5k',
-    photos: 18,
+    comments: 18,
     rating: 4.7,
   },
 ];
@@ -71,65 +74,79 @@ export function FeedScreen() {
   const params = useLocalSearchParams();
   const category = (params.category as string) || 'cafe';
   const categoryTitle = categoryTitles[category] || 'Best Chef';
+
+  let [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
   const renderChefItem = ({ item }: { item: Chef }) => (
     <TouchableOpacity style={styles.chefItem}>
-      <Avatar
-        source={item.avatar}
-        size="lg"
-      />
+      <View style={[styles.chefAvatarRing, { borderColor: item.borderColor }]}>
+        <Image source={item.avatar} style={styles.chefAvatar} />
+      </View>
       <Text style={styles.chefName}>{item.name}</Text>
     </TouchableOpacity>
   );
 
   const renderRestaurantCard = (restaurant: Restaurant) => (
     <View key={restaurant.id} style={styles.restaurantCard}>
-      <Image
+      <ImageBackground
         source={restaurant.image}
         style={styles.restaurantImage}
         resizeMode="cover"
-      />
-      <View style={styles.restaurantOverlay}>
-        <Text style={styles.restaurantName}>{restaurant.name}</Text>
-        <Text style={styles.restaurantLocation}>{restaurant.location}</Text>
-        
-        <View style={styles.restaurantStats}>
-          <View style={styles.statItem}>
-            <Text style={styles.statIcon}>♥</Text>
-            <Text style={styles.statText}>{restaurant.likes}</Text>
+      >
+        <LinearGradient
+          colors={['transparent', 'rgba(0, 0, 0, 0.8)']}
+          style={styles.restaurantGradient}
+        >
+          <View style={styles.restaurantContent}>
+            <Text style={styles.restaurantName}>{restaurant.name}</Text>
+            <Text style={styles.restaurantLocation}>{restaurant.location}</Text>
+            
+            <View style={styles.restaurantStats}>
+              <View style={styles.statItem}>
+                <Heart size={18} color="#FFFFFF" />
+                <Text style={styles.statText}>{restaurant.likes}</Text>
+              </View>
+              
+              <View style={styles.statItem}>
+                <MessageCircle size={18} color="#FFFFFF" />
+                <Text style={styles.statText}>{restaurant.comments}</Text>
+              </View>
+              
+              <View style={styles.ratingBadge}>
+                <Star size={16} color="#000000" fill="#000000" />
+                <Text style={styles.ratingText}>{restaurant.rating}</Text>
+              </View>
+            </View>
           </View>
-          
-          <View style={styles.statItem}>
-            <Text style={styles.statIcon}>🖼</Text>
-            <Text style={styles.statText}>{restaurant.photos}</Text>
-          </View>
-          
-          <View style={styles.ratingBadge}>
-            <Text style={styles.starIcon}>⭐</Text>
-            <Text style={styles.ratingText}>{restaurant.rating}</Text>
-          </View>
-        </View>
-      </View>
+        </LinearGradient>
+      </ImageBackground>
     </View>
   );
 
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <View style={styles.container}>
-      {/* Header */}
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity>
-          <Avatar
+          <Image
             source={require('../../../assets/onboarding/dining-experience.png')}
-            size="md"
+            style={styles.userAvatar}
           />
         </TouchableOpacity>
         
         <Text style={styles.logo}>נשבר</Text>
         
         <TouchableOpacity style={styles.notificationButton}>
-          <Text style={styles.bellIcon}>🔔</Text>
-          <View style={styles.notificationBadge}>
-            <Text style={styles.notificationBadgeText}>1</Text>
-          </View>
+          <Bell size={24} color="#FFFFFF" />
+          <View style={styles.notificationBadge} />
         </TouchableOpacity>
       </View>
 
@@ -137,10 +154,8 @@ export function FeedScreen() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        {/* Category Title */}
         <Text style={styles.categoryTitle}>{categoryTitle}</Text>
 
-        {/* Chef List */}
         <FlatList
           data={chefs}
           renderItem={renderChefItem}
@@ -150,148 +165,152 @@ export function FeedScreen() {
           contentContainerStyle={styles.chefList}
         />
 
-        {/* Restaurant Cards */}
         <View style={styles.restaurantList}>
           {restaurants.map(renderRestaurantCard)}
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#000000',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.m,
-    paddingVertical: spacing.s,
-    paddingTop: spacing.xxxl,
-    backgroundColor: colors.background,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    paddingTop: 32,
+    backgroundColor: '#000000',
+  },
+  userAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
   },
   logo: {
-    fontSize: typography.title.size,
-    fontWeight: '700',
-    color: colors.text,
+    fontSize: 24,
+    fontFamily: 'Inter_700Bold',
+    color: '#FFFFFF',
+    position: 'absolute',
+    left: '50%',
+    transform: [{ translateX: -50 }],
   },
   notificationButton: {
     position: 'relative',
   },
-  bellIcon: {
-    fontSize: 24,
-  },
   notificationBadge: {
     position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: colors.error,
-    borderRadius: 10,
-    width: 20,
-    height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  notificationBadgeText: {
-    color: colors.text,
-    fontSize: 12,
-    fontWeight: '700',
+    top: -2,
+    right: -2,
+    backgroundColor: '#FF3B3B',
+    borderRadius: 6,
+    width: 12,
+    height: 12,
   },
   scrollView: {
     flex: 1,
   },
   categoryTitle: {
-    fontSize: typography.heading.size,
-    fontWeight: '700',
-    color: colors.text,
-    marginHorizontal: spacing.m,
-    marginTop: spacing.l,
-    marginBottom: spacing.m,
+    fontSize: 20,
+    fontFamily: 'Inter_700Bold',
+    color: '#FFFFFF',
+    marginHorizontal: 24,
+    marginTop: 32,
+    marginBottom: 16,
   },
   chefList: {
-    paddingHorizontal: spacing.m,
-    paddingBottom: spacing.l,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
   },
   chefItem: {
     alignItems: 'center',
-    marginRight: spacing.m,
+    marginRight: 20,
+  },
+  chefAvatarRing: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 4,
+    padding: 2,
+    marginBottom: 6,
+  },
+  chefAvatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
   },
   chefName: {
-    fontSize: typography.caption.size,
-    color: colors.text,
-    marginTop: spacing.xs,
-    fontWeight: '500',
+    fontSize: 12,
+    fontFamily: 'Inter_500Medium',
+    color: '#FFFFFF',
+    textAlign: 'center',
   },
   restaurantList: {
-    paddingHorizontal: spacing.m,
-    gap: spacing.m,
-    paddingBottom: 80,
+    paddingHorizontal: 24,
+    gap: 24,
+    paddingBottom: 100,
   },
   restaurantCard: {
-    borderRadius: spacing.s,
+    borderRadius: 20,
     overflow: 'hidden',
-    marginBottom: spacing.m,
+    height: 320,
   },
   restaurantImage: {
     width: '100%',
-    height: 300,
+    height: '100%',
   },
-  restaurantOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    padding: spacing.m,
+  restaurantGradient: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  restaurantContent: {
+    padding: 16,
   },
   restaurantName: {
-    fontSize: typography.heading.size,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xxs,
+    fontSize: 18,
+    fontFamily: 'Inter_700Bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
   restaurantLocation: {
-    fontSize: typography.body.size,
-    color: colors.textSecondary,
-    marginBottom: spacing.s,
+    fontSize: 14,
+    fontFamily: 'Inter_400Regular',
+    color: '#D0D0D0',
+    marginBottom: 12,
   },
   restaurantStats: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.m,
+    gap: 12,
   },
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xxs,
-  },
-  statIcon: {
-    fontSize: 16,
+    gap: 6,
   },
   statText: {
-    fontSize: typography.body.size,
-    color: colors.text,
-    fontWeight: '500',
+    fontSize: 14,
+    fontFamily: 'Inter_400Regular',
+    color: '#FFFFFF',
   },
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingHorizontal: spacing.xs,
-    paddingVertical: spacing.xxs,
-    borderRadius: spacing.xs,
+    backgroundColor: '#F8C123',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
     marginLeft: 'auto',
-    gap: spacing.xxs,
-  },
-  starIcon: {
-    fontSize: 16,
+    gap: 6,
   },
   ratingText: {
-    fontSize: typography.body.size,
-    color: colors.text,
-    fontWeight: '700',
+    fontSize: 14,
+    fontFamily: 'Inter_600SemiBold',
+    color: '#000000',
   },
 });
