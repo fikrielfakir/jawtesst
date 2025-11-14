@@ -38,6 +38,15 @@ The application adheres to clean architecture principles, separating concerns in
   - Contact Us, FAQ, Feed (category-based restaurant browsing), Notifications
   - Payment Methods, Premier Plan, Profile (User/Owner variants)
   - Settings, Terms & Conditions, Side Menu drawer
+- **Feed Screen (Recently Rebuilt - Nov 2025):**
+  - **Typography:** Inter font family (Regular 400, Medium 500, SemiBold 600, Bold 700) via @expo-google-fonts/inter
+  - **Icons:** Lucide icons from @tamagui/lucide-icons (Bell, Heart, MessageCircle, Star for feed; Home, MessageSquare, PlusCircle, Heart, UserRound for tabs)
+  - **Layout:** Exact spacing per spec (24px horizontal padding, 32px top padding, 20px chef spacing, 12px stat gaps)
+  - **Header:** 44×44 user avatar, centered logo with flex layout, Bell icon with 12px red badge (#FF3B3B)
+  - **Chef Stories:** 64×64 avatars with 4px colored border rings, 12px Inter Medium names
+  - **Restaurant Cards:** 320px height, 20px border radius, ImageBackground with 3-stop gradient overlay, Inter Bold 18px titles, Inter Regular 14px locations
+  - **Rating Badge:** #F8C123 background, Star icon matching badge color, Inter SemiBold 14px text
+  - **Bottom Navigation:** Black (#000000) background, 24px top border radius, elevated center action button (56px circular white background with 32px PlusCircle icon), active tabs white, inactive #6E6E6E
 
 **Core Features:**
 - Authentication flow (sign-in, sign-up, reset password with 6-digit OTP verification).
@@ -69,6 +78,8 @@ Managed by Drizzle ORM, defined in `shared/schema.ts`.
     - Zustand 4.5
     - TanStack Query 5.90
     - React Hook Form 7.66
+    - @expo-google-fonts/inter (Inter font family)
+    - expo-font (font loading)
 - **Backend:**
     - Express.js 5.1
     - Neon PostgreSQL
