@@ -297,7 +297,9 @@ const styles = StyleSheet.create({
   statButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.8)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
