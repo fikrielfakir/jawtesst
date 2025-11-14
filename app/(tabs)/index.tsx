@@ -20,6 +20,7 @@ import Svg, {
 import { useRouter } from "expo-router";
 import { authDesign } from "@constants/theme/authDesign";
 import { gradients } from "@constants/theme/colors";
+import { FilterBottomSheet } from "@components/bottomsheets/FilterBottomSheet";
 
 const CafeImg = require("@assets/home/coffee_cup_cafe_latt_38a3b15f.jpg");
 const MoroccoWayImg = require("@assets/home/moroccan_tagine_food_784bfa11.jpg");
@@ -88,7 +89,9 @@ export default function HomeScreen() {
   const router = useRouter();
   const [selectedLocation, setSelectedLocation] = useState("Tanger, Morocco");
   const [selectedCategory, setSelectedCategory] = useState("cafe");
-  const [bottleRotation] = useState(new Animated.Value(270)); // Start pointing at cafe
+  const [bottleRotation] = useState(new Animated.Value(270));
+  const [filterVisible, setFilterVisible] = useState(false);
+  const [selectedDistance, setSelectedDistance] = useState(5);
 
   const handleCategoryPress = (categoryId: string) => {
     setSelectedCategory(categoryId);
@@ -116,7 +119,7 @@ export default function HomeScreen() {
     }
   };
 
-  const handleFilterPress = () => console.log("Filter pressed");
+  const handleFilterPress = () => setFilterVisible(true);
   const handleLocationPress = () => console.log("Location pressed");
 
   const containerSize = Math.min(width * 0.85, 400);
@@ -200,8 +203,8 @@ export default function HomeScreen() {
               onPress={handleFilterPress}
               activeOpacity={0.7}
             >
-              <SlidersHorizontal size={18} color="#d0d0d0" />
-              <Text style={styles.filterText}>Filter Distance</Text>
+              <SlidersHorizontal size={18} color={authDesign.colors.primaryicon} />
+              <Text style={styles.filterText}>{selectedDistance} km</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -246,6 +249,13 @@ export default function HomeScreen() {
           </View>
         </View>
       </SafeAreaView>
+
+      <FilterBottomSheet
+        visible={filterVisible}
+        onClose={() => setFilterVisible(false)}
+        selectedDistance={selectedDistance}
+        onDistanceChange={setSelectedDistance}
+      />
     </LinearGradient>
   );
 }
@@ -265,25 +275,27 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    paddingHorizontal: 2,
-    marginBottom: 28,
+    gap: 10,
+    marginBottom: 24,
   },
 
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
-    borderRadius: authDesign.sizes.cornerRadius,
-    borderWidth: authDesign.sizes.borderWidth,
-    borderColor: authDesign.colors.border,
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: `${authDesign.colors.primaryicon}22`,
+    borderRadius: 24,
+    borderWidth: 1.5,
+    borderColor: `${authDesign.colors.primaryicon}66`,
+    minWidth: 100,
+    justifyContent: "center",
   },
   filterText: {
-    color: "#d0d0d0",
-    fontSize: 12,
-    fontWeight: "600",
+    color: authDesign.colors.textPrimary,
+    fontSize: 14,
+    fontWeight: "700",
   },
 logo: { 
     width: 90, 
@@ -293,19 +305,20 @@ logo: {
   locationButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    backgroundColor: "rgba(255, 255, 255, 0.08)",
-    borderRadius: authDesign.sizes.cornerRadius,
-    borderWidth: authDesign.sizes.borderWidth,
-    borderColor: authDesign.colors.border,
+    gap: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderRadius: 24,
+    borderWidth: 1.5,
+    borderColor: "rgba(255, 255, 255, 0.25)",
+    flex: 1,
   },
   locationText: {
-    color: "#d0d0d0",
-    fontSize: 12,
+    color: authDesign.colors.textPrimary,
+    fontSize: 13,
     fontWeight: "600",
-    maxWidth: 100,
+    maxWidth: 120,
   },
   content: { 
     flex: 1, 
