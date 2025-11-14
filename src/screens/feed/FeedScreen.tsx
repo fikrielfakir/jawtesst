@@ -13,8 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Bell, Heart, MessageCircle, Star } from '@tamagui/lucide-icons';
-import { colors } from '@constants/theme/colors';
-import { spacing, borderRadius, sizing, typography } from '@constants/theme/spacing';
+import { authDesign } from '@constants/theme/authDesign';
+import { gradients } from '@constants/theme/colors';
 
 interface Chef {
   id: string;
@@ -34,11 +34,11 @@ interface Restaurant {
 }
 
 const chefs: Chef[] = [
-  { id: '1', name: 'Mohamed', avatar: require('../../../assets/onboarding/dining-experience.png'), borderColor: colors.accent.red },
-  { id: '2', name: 'Janes', avatar: require('../../../assets/onboarding/restaurant-owners.png'), borderColor: colors.accent.teal },
-  { id: '3', name: 'Moro', avatar: require('../../../assets/onboarding/booking-table.png'), borderColor: colors.accent.yellow },
-  { id: '4', name: 'Khaoula', avatar: require('../../../assets/onboarding/reviews-sharing.png'), borderColor: colors.accent.mint },
-  { id: '5', name: 'Michel', avatar: require('../../../assets/onboarding/dining-experience.png'), borderColor: colors.accent.pink },
+  { id: '1', name: 'Mohamed', avatar: require('../../../assets/chefs/mohamed.png'), borderColor: authDesign.colors.primaryicon },
+  { id: '2', name: 'Janes', avatar: require('../../../assets/chefs/janes.png'), borderColor: '#FF6B9D' },
+  { id: '3', name: 'Moro', avatar: require('../../../assets/chefs/moro.png'), borderColor: '#FFD93D' },
+  { id: '4', name: 'Khaoula', avatar: require('../../../assets/chefs/khaoula.png'), borderColor: '#6BCF7F' },
+  { id: '5', name: 'Michel', avatar: require('../../../assets/chefs/michel.png'), borderColor: '#9B87F5' },
 ];
 
 const restaurants: Restaurant[] = [
@@ -93,7 +93,7 @@ export function FeedScreen() {
         resizeMode="cover"
       >
         <LinearGradient
-          colors={['transparent', colors.overlay.black, colors.overlay.blackHeavy]}
+          colors={['transparent', 'rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.9)']}
           locations={[0, 0.5, 1]}
           style={styles.restaurantGradient}
         >
@@ -103,17 +103,17 @@ export function FeedScreen() {
             
             <View style={styles.restaurantStats}>
               <View style={styles.statItem}>
-                <Heart size={sizing.icon.sm} color={colors.text} />
+                <Heart size={18} color="#FFFFFF" />
                 <Text style={styles.statText}>{restaurant.likes}</Text>
               </View>
               
               <View style={styles.statItem}>
-                <MessageCircle size={sizing.icon.sm} color={colors.text} />
+                <MessageCircle size={18} color="#FFFFFF" />
                 <Text style={styles.statText}>{restaurant.comments}</Text>
               </View>
               
               <View style={styles.ratingBadge}>
-                <Star size={sizing.icon.xs} color={colors.rating} fill={colors.rating} />
+                <Star size={14} color="#000000" fill={authDesign.colors.primaryicon} />
                 <Text style={styles.ratingText}>{restaurant.rating}</Text>
               </View>
             </View>
@@ -124,131 +124,145 @@ export function FeedScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <TouchableOpacity>
+    <LinearGradient
+      colors={[...gradients.auth]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={styles.header}>
+          <TouchableOpacity>
+            <Image
+              source={require('../../../assets/chefs/mohamed.png')}
+              style={styles.userAvatar}
+            />
+          </TouchableOpacity>
+          
           <Image
-            source={require('../../../assets/onboarding/dining-experience.png')}
-            style={styles.userAvatar}
+            source={require('../../../assets/jwa-logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
           />
-        </TouchableOpacity>
-        
-        <Text style={styles.logo}>נשבר</Text>
-        
-        <TouchableOpacity style={styles.notificationButton}>
-          <Bell size={sizing.icon.md} color={colors.text} />
-          <View style={styles.notificationBadge} />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.categoryTitle}>{categoryTitle}</Text>
-
-        <FlatList
-          data={chefs}
-          renderItem={renderChefItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chefList}
-        />
-
-        <View style={styles.restaurantList}>
-          {restaurants.map(renderRestaurantCard)}
+          
+          <TouchableOpacity style={styles.notificationButton}>
+            <Bell size={24} color={authDesign.colors.textPrimary} />
+            <View style={styles.notificationBadge} />
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.categoryTitle}>{categoryTitle}</Text>
+
+          <FlatList
+            data={chefs}
+            renderItem={renderChefItem}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chefList}
+          />
+
+          <View style={styles.restaurantList}>
+            {restaurants.map(renderRestaurantCard)}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+  },
+  safeArea: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.m,
-    paddingTop: spacing.xxl,
-    backgroundColor: colors.background,
+    paddingHorizontal: authDesign.spacing.paddingHorizontal,
+    paddingVertical: 12,
+    paddingTop: 10,
   },
   userAvatar: {
-    width: sizing.avatar.sm,
-    height: sizing.avatar.sm,
-    borderRadius: borderRadius.circle,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: authDesign.colors.primaryicon,
   },
   logo: {
-    fontSize: typography.title.size,
-    fontWeight: '700',
-    color: colors.text,
-    flex: 1,
-    textAlign: 'center',
+    width: 90,
+    height: 45,
   },
   notificationButton: {
     position: 'relative',
   },
   notificationBadge: {
     position: 'absolute',
-    top: -(spacing.xxs / 2),
-    right: -(spacing.xxs / 2),
-    backgroundColor: colors.error,
-    borderRadius: borderRadius.small,
-    width: spacing.s,
-    height: spacing.s,
+    top: -2,
+    right: -2,
+    backgroundColor: authDesign.colors.primaryicon,
+    borderRadius: 6,
+    width: 12,
+    height: 12,
   },
   scrollView: {
     flex: 1,
   },
   categoryTitle: {
-    fontSize: typography.heading.size,
-    fontWeight: '700',
-    color: colors.text,
-    marginHorizontal: spacing.xl,
-    marginTop: spacing.xxl,
-    marginBottom: spacing.m,
+    fontSize: 24,
+    fontWeight: '800',
+    color: authDesign.colors.textPrimary,
+    marginHorizontal: authDesign.spacing.paddingHorizontal,
+    marginTop: 24,
+    marginBottom: 16,
+    letterSpacing: 0.5,
   },
   chefList: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
+    paddingHorizontal: authDesign.spacing.paddingHorizontal,
+    paddingBottom: 24,
   },
   chefItem: {
     alignItems: 'center',
-    marginRight: spacing.l,
+    marginRight: 16,
   },
   chefAvatarRing: {
-    width: spacing.xxxl * 2,
-    height: spacing.xxxl * 2,
-    borderRadius: borderRadius.circle,
-    borderWidth: spacing.xxs,
-    padding: spacing.xxs / 2,
-    marginBottom: spacing.xxs,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 3,
+    padding: 3,
+    marginBottom: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   chefAvatar: {
-    width: sizing.avatar.md,
-    height: sizing.avatar.md,
-    borderRadius: borderRadius.circle,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
   },
   chefName: {
-    fontSize: typography.label.size,
-    fontWeight: '600',
-    color: colors.text,
+    fontSize: 14,
+    fontWeight: '700',
+    color: authDesign.colors.textPrimary,
     textAlign: 'center',
   },
   restaurantList: {
-    paddingHorizontal: spacing.xl,
-    gap: spacing.xl,
-    paddingBottom: spacing.xxxl * 2.5,
+    paddingHorizontal: authDesign.spacing.paddingHorizontal,
+    gap: 20,
+    paddingBottom: 100,
   },
   restaurantCard: {
-    borderRadius: borderRadius.large,
+    borderRadius: authDesign.sizes.cornerRadius,
     overflow: 'hidden',
-    height: spacing.xxxl * 8,
+    height: 280,
   },
   restaurantImage: {
     width: '100%',
@@ -259,48 +273,48 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   restaurantContent: {
-    padding: spacing.m,
+    padding: 16,
   },
   restaurantName: {
-    fontSize: typography.heading.size - 2,
+    fontSize: 20,
     fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xxs,
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
   restaurantLocation: {
-    fontSize: typography.bodyMedium.size - 1,
+    fontSize: 14,
     fontWeight: '400',
-    color: colors.textSecondary,
-    marginBottom: spacing.s,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 12,
   },
   restaurantStats: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.s,
+    gap: 12,
   },
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xxs,
+    gap: 6,
   },
   statText: {
-    fontSize: typography.bodyMedium.size - 1,
-    fontWeight: '400',
-    color: colors.text,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.rating,
-    paddingHorizontal: spacing.s,
-    paddingVertical: spacing.xxs,
-    borderRadius: borderRadius.medium,
+    backgroundColor: authDesign.colors.primaryicon,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: authDesign.sizes.cornerRadius,
     marginLeft: 'auto',
-    gap: spacing.xxs,
+    gap: 4,
   },
   ratingText: {
-    fontSize: typography.bodyMedium.size - 1,
-    fontWeight: '600',
-    color: colors.background,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#000000',
   },
 });
