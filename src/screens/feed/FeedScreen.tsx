@@ -14,7 +14,6 @@ import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Bell, Heart, MessageCircle, Star } from '@tamagui/lucide-icons';
 import { authDesign } from '@constants/theme/authDesign';
-import { gradients } from '@constants/theme/colors';
 
 interface Chef {
   id: string;
@@ -124,12 +123,7 @@ export function FeedScreen() {
   );
 
   return (
-    <LinearGradient
-      colors={[...gradients.auth]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      style={styles.container}
-    >
+    <View style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity>
@@ -171,13 +165,14 @@ export function FeedScreen() {
           </View>
         </ScrollView>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000000',
   },
   safeArea: {
     flex: 1,

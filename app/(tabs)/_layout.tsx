@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { View } from 'react-native';
-import { Home, MessageSquare, PlusCircle, Heart, UserRound } from '@tamagui/lucide-icons';
+import { Home, Search, PlusCircle, Heart, UserRound, Video } from '@tamagui/lucide-icons';
 
 export default function TabsLayout() {
   return (
@@ -36,32 +36,15 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Messages',
-          tabBarIcon: ({ color }) => <MessageSquare size={24} color={color} />,
+          title: 'Search',
+          tabBarIcon: ({ color }) => <Search size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="bookings"
         options={{
-          title: 'Add',
-          tabBarIcon: ({ color }) => (
-            <View style={{
-              width: 56,
-              height: 56,
-              borderRadius: 28,
-              backgroundColor: '#FFFFFF',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: -20,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 8,
-            }}>
-              <PlusCircle size={32} color="#000000" />
-            </View>
-          ),
+          title: 'Reals',
+          tabBarIcon: ({ color }) => <Video size={24} color={color} />,
         }}
       />
       <Tabs.Screen
