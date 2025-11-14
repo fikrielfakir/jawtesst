@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
-import { Home, Search, PlusCircle, Heart, UserRound, Video } from '@tamagui/lucide-icons';
+import { Home, Search, Video, Heart, UserRound } from '@tamagui/lucide-icons';
 
 export default function TabsLayout() {
   return (
@@ -29,7 +28,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Feed',
+          title: 'Home',
           tabBarIcon: ({ color }) => <Home size={24} color={color} />,
         }}
       />
@@ -41,10 +40,9 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="bookings"
+        name="feed"
         options={{
-          title: 'Reals',
-          tabBarIcon: ({ color }) => <Video size={24} color={color} />,
+          href: null, // This hides it from the tab bar
         }}
       />
       <Tabs.Screen
