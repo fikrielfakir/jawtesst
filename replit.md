@@ -27,8 +27,8 @@ The application adheres to clean architecture principles, separating concerns in
 
 **Design System:**
 - **Global Theme Tokens:** Comprehensive design tokens in `src/constants/theme/` including:
-  - `colors.ts`: Dark theme with black background (#070709), surface layers, purple accent (#7B61E8), status colors
-  - `spacing.ts`: Standardized spacing scale (4-40px), sizing (icons, avatars, buttons), typography, elevation
+  - `colors.ts`: Dark theme with black background, surface layers, purple accent, status colors, accent colors for UI elements
+  - `spacing.ts`: Standardized spacing scale, sizing (icons, avatars, buttons), typography, border radius, elevation
 - **Reusable UI Components:** Complete component library in `src/design-system/components/`:
   - Core: Button, Input, Card, Avatar, StatusBadge, TabBar, IconButton
   - Layout: ScreenContainer, SectionHeader, Divider
@@ -38,15 +38,16 @@ The application adheres to clean architecture principles, separating concerns in
   - Contact Us, FAQ, Feed (category-based restaurant browsing), Notifications
   - Payment Methods, Premier Plan, Profile (User/Owner variants)
   - Settings, Terms & Conditions, Side Menu drawer
-- **Feed Screen (Recently Rebuilt - Nov 2025):**
-  - **Typography:** Inter font family (Regular 400, Medium 500, SemiBold 600, Bold 700) via @expo-google-fonts/inter
+- **Feed Screen (Updated Nov 2025):**
+  - **Typography:** Default system fonts with fontWeight (matching Home screen style)
   - **Icons:** Lucide icons from @tamagui/lucide-icons (Bell, Heart, MessageCircle, Star for feed; Home, MessageSquare, PlusCircle, Heart, UserRound for tabs)
-  - **Layout:** Exact spacing per spec (24px horizontal padding, 32px top padding, 20px chef spacing, 12px stat gaps)
-  - **Header:** 44×44 user avatar, centered logo with flex layout, Bell icon with 12px red badge (#FF3B3B)
-  - **Chef Stories:** 64×64 avatars with 4px colored border rings, 12px Inter Medium names
-  - **Restaurant Cards:** 320px height, 20px border radius, ImageBackground with 3-stop gradient overlay, Inter Bold 18px titles, Inter Regular 14px locations
-  - **Rating Badge:** #F8C123 background, Star icon matching badge color, Inter SemiBold 14px text
-  - **Bottom Navigation:** Black (#000000) background, 24px top border radius, elevated center action button (56px circular white background with 32px PlusCircle icon), active tabs white, inactive #6E6E6E
+  - **Theme-Driven:** Fully uses global theme tokens from colors.ts and spacing.ts (no hardcoded values)
+  - **Colors:** All colors use theme tokens (colors.text, colors.rating, colors.accent.*, colors.overlay.*)
+  - **Sizing:** All sizes use theme tokens (sizing.icon.*, sizing.avatar.*, spacing.*, borderRadius.*, typography.*)
+  - **Header:** User avatar, centered logo with flex layout, Bell icon with notification badge
+  - **Chef Stories:** Avatars with colored accent border rings from global theme
+  - **Restaurant Cards:** ImageBackground with 3-stop gradient overlay using theme tokens
+  - **Bottom Navigation:** Elevated center action button with proper icon sizing and theme colors
 
 **Core Features:**
 - Authentication flow (sign-in, sign-up, reset password with 6-digit OTP verification).
@@ -78,8 +79,6 @@ Managed by Drizzle ORM, defined in `shared/schema.ts`.
     - Zustand 4.5
     - TanStack Query 5.90
     - React Hook Form 7.66
-    - @expo-google-fonts/inter (Inter font family)
-    - expo-font (font loading)
 - **Backend:**
     - Express.js 5.1
     - Neon PostgreSQL
