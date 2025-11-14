@@ -13,7 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Bell, Heart, MessageCircle, Star } from '@tamagui/lucide-icons';
-import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
+import { colors } from '@constants/theme/colors';
+import { spacing, borderRadius, sizing, typography } from '@constants/theme/spacing';
 
 interface Chef {
   id: string;
@@ -33,11 +34,11 @@ interface Restaurant {
 }
 
 const chefs: Chef[] = [
-  { id: '1', name: 'Mohamed', avatar: require('../../../assets/onboarding/dining-experience.png'), borderColor: '#FF6B6B' },
-  { id: '2', name: 'Janes', avatar: require('../../../assets/onboarding/restaurant-owners.png'), borderColor: '#4ECDC4' },
-  { id: '3', name: 'Moro', avatar: require('../../../assets/onboarding/booking-table.png'), borderColor: '#FFE66D' },
-  { id: '4', name: 'Khaoula', avatar: require('../../../assets/onboarding/reviews-sharing.png'), borderColor: '#A8E6CF' },
-  { id: '5', name: 'Michel', avatar: require('../../../assets/onboarding/dining-experience.png'), borderColor: '#FF8B94' },
+  { id: '1', name: 'Mohamed', avatar: require('../../../assets/onboarding/dining-experience.png'), borderColor: colors.accent.red },
+  { id: '2', name: 'Janes', avatar: require('../../../assets/onboarding/restaurant-owners.png'), borderColor: colors.accent.teal },
+  { id: '3', name: 'Moro', avatar: require('../../../assets/onboarding/booking-table.png'), borderColor: colors.accent.yellow },
+  { id: '4', name: 'Khaoula', avatar: require('../../../assets/onboarding/reviews-sharing.png'), borderColor: colors.accent.mint },
+  { id: '5', name: 'Michel', avatar: require('../../../assets/onboarding/dining-experience.png'), borderColor: colors.accent.pink },
 ];
 
   const restaurants = [
@@ -80,7 +81,7 @@ const chefs: Chef[] = [
         resizeMode="cover"
       >
         <LinearGradient
-          colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.4)', 'rgba(0, 0, 0, 0.9)']}
+          colors={['transparent', colors.overlay.black, colors.overlay.blackHeavy]}
           locations={[0, 0.5, 1]}
           style={styles.restaurantGradient}
         >
@@ -100,7 +101,7 @@ const chefs: Chef[] = [
               </View>
               
               <View style={styles.ratingBadge}>
-                <Star size={16} color="#F8C123" fill="#F8C123" />
+                <Star size={sizing.icon.xs} color={colors.rating} fill={colors.rating} />
                 <Text style={styles.ratingText}>{restaurant.rating}</Text>
               </View>
             </View>
@@ -127,57 +128,60 @@ const chefs: Chef[] = [
         <Text style={styles.logo}>נשבר</Text>
         
         <TouchableOpacity style={styles.notificationButton}>
-          <Bell size={24} color="#FFFFFF" />
+          <Bell size={sizing.icon.md} color={colors.text} />
           <View style={styles.notificationBadge} />
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.categoryTitle}>{categoryTitle}</Text>
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.categoryTitle}>{categoryTitle}</Text>
 
-        <FlatList
-          data={chefs}
-          renderItem={renderChefItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chefList}
-        />
+          <FlatList
+            data={chefs}
+            renderItem={renderChefItem}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chefList}
+          />
 
-        <View style={styles.restaurantList}>
-          {restaurants.map(renderRestaurantCard)}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          <View style={styles.restaurantList}>
+            {restaurants.map(renderRestaurantCard)}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    paddingTop: 32,
-    backgroundColor: '#000000',
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.m,
+    paddingTop: spacing.xxl,
+    backgroundColor: colors.background,
   },
   userAvatar: {
-    width: sizing.avatar.sm,
-    height: sizing.avatar.sm,
-    borderRadius: borderRadius.circle,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: authDesign.colors.primaryicon,
   },
   logo: {
-    fontSize: 24,
-    fontFamily: 'Inter_700Bold',
-    color: '#FFFFFF',
+    fontSize: typography.title.size,
+    fontWeight: '700',
+    color: colors.text,
     flex: 1,
     textAlign: 'center',
   },
@@ -186,63 +190,63 @@ const styles = StyleSheet.create({
   },
   notificationBadge: {
     position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: '#FF3B3B',
-    borderRadius: 6,
-    width: 12,
-    height: 12,
+    top: -(spacing.xxs / 2),
+    right: -(spacing.xxs / 2),
+    backgroundColor: colors.error,
+    borderRadius: borderRadius.small,
+    width: spacing.s,
+    height: spacing.s,
   },
 
   /* ---------- CATEGORY TITLE ---------- */
   categoryTitle: {
-    fontSize: 20,
-    fontFamily: 'Inter_700Bold',
-    color: '#FFFFFF',
-    marginHorizontal: 24,
-    marginTop: 32,
-    marginBottom: 16,
+    fontSize: typography.heading.size,
+    fontWeight: '700',
+    color: colors.text,
+    marginHorizontal: spacing.xl,
+    marginTop: spacing.xxl,
+    marginBottom: spacing.m,
   },
 
   /* ---------- CHEF STORY STYLE ---------- */
   chefList: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xl,
   },
   chefItem: {
     alignItems: 'center',
-    marginRight: spacing.l,
+    marginRight: 16,
   },
   chefAvatarRing: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    borderWidth: 4,
-    padding: 2,
-    marginBottom: 6,
+    width: spacing.xxxl * 2,
+    height: spacing.xxxl * 2,
+    borderRadius: borderRadius.circle,
+    borderWidth: spacing.xxs,
+    padding: spacing.xxs / 2,
+    marginBottom: spacing.xxs,
   },
   chefAvatar: {
-    width: sizing.avatar.md,
-    height: sizing.avatar.md,
-    borderRadius: borderRadius.circle,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
   },
   chefName: {
-    fontSize: 12,
-    fontFamily: 'Inter_500Medium',
-    color: '#FFFFFF',
+    fontSize: typography.label.size,
+    fontWeight: '600',
+    color: colors.text,
     textAlign: 'center',
   },
 
   /* ---------- RESTAURANT CARD ---------- */
   restaurantList: {
-    paddingHorizontal: 24,
-    gap: 24,
-    paddingBottom: 100,
+    paddingHorizontal: spacing.xl,
+    gap: spacing.xl,
+    paddingBottom: spacing.xxxl * 2.5,
   },
   restaurantCard: {
-    borderRadius: borderRadius.large,
+    borderRadius: authDesign.sizes.cornerRadius,
     overflow: 'hidden',
-    height: 320,
+    height: spacing.xxxl * 8,
   },
   restaurantImage: {
     width: '100%',
@@ -253,19 +257,19 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   restaurantContent: {
-    padding: spacing.m,
+    padding: 16,
   },
   restaurantName: {
-    fontSize: 18,
-    fontFamily: 'Inter_700Bold',
-    color: '#FFFFFF',
-    marginBottom: 4,
+    fontSize: typography.heading.size - 2,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: spacing.xxs,
   },
   restaurantLocation: {
-    fontSize: 14,
-    fontFamily: 'Inter_400Regular',
-    color: '#D0D0D0',
-    marginBottom: 12,
+    fontSize: typography.bodyMedium.size - 1,
+    fontWeight: '400',
+    color: colors.textSecondary,
+    marginBottom: spacing.s,
   },
 
   restaurantStats: {
@@ -279,25 +283,25 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   statText: {
-    fontSize: 14,
-    fontFamily: 'Inter_400Regular',
-    color: '#FFFFFF',
+    fontSize: typography.bodyMedium.size - 1,
+    fontWeight: '400',
+    color: colors.text,
   },
 
   /* ---------- RATING BADGE ---------- */
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.rating,
-    paddingHorizontal: spacing.s,
-    paddingVertical: spacing.xxs,
-    borderRadius: borderRadius.medium,
+    backgroundColor: authDesign.colors.primaryicon,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: authDesign.sizes.cornerRadius,
     marginLeft: 'auto',
-    gap: spacing.xxs,
+    gap: 4,
   },
   ratingText: {
-    fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
-    color: '#000000',
+    fontSize: typography.bodyMedium.size - 1,
+    fontWeight: '600',
+    color: colors.background,
   },
 });
