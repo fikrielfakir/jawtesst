@@ -53,6 +53,14 @@ export const colors = {
     secondary: '#B3B3B3',
     tertiary: '#666666',
   },
+  
+  accent: {
+    red: '#FF6B6B',
+    teal: '#4ECDC4',
+    yellow: '#FFE66D',
+    mint: '#A8E6CF',
+    pink: '#FF8B94',
+  },
 } as const;
 
 export const gradients = {
