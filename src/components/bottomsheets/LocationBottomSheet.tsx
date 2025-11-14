@@ -4,6 +4,7 @@ import {
   Text,
   Modal,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   StyleSheet,
   Animated,
   ScrollView,
@@ -37,6 +38,7 @@ export const LocationBottomSheet: React.FC<LocationBottomSheetProps> = ({
   onSelectLocation,
 }) => {
   const [slideAnim] = useState(new Animated.Value(600));
+  const [backdropOpacity] = useState(new Animated.Value(0));
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCities, setFilteredCities] = useState(POPULAR_CITIES);
@@ -44,18 +46,32 @@ export const LocationBottomSheet: React.FC<LocationBottomSheetProps> = ({
   useEffect(() => {
     if (visible) {
       setIsModalVisible(true);
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 65,
-        friction: 11,
-      }).start();
+      Animated.parallel([
+        Animated.timing(backdropOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.spring(slideAnim, {
+          toValue: 0,
+          useNativeDriver: true,
+          tension: 65,
+          friction: 11,
+        }),
+      ]).start();
     } else {
-      Animated.timing(slideAnim, {
-        toValue: 600,
-        duration: 250,
-        useNativeDriver: true,
-      }).start(() => {
+      Animated.parallel([
+        Animated.timing(backdropOpacity, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 600,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
         setIsModalVisible(false);
         setSearchQuery('');
         setFilteredCities(POPULAR_CITIES);
@@ -85,12 +101,20 @@ export const LocationBottomSheet: React.FC<LocationBottomSheetProps> = ({
       transparent
       animationType="none"
       onRequestClose={onClose}
+      statusBarTranslucent
     >
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPress={onClose}
-      >
+      <View style={styles.modalContainer}>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <Animated.View
+            style={[
+              styles.backdrop,
+              {
+                opacity: backdropOpacity,
+              },
+            ]}
+          />
+        </TouchableWithoutFeedback>
+
         <Animated.View
           style={[
             styles.sheetContainer,
@@ -98,7 +122,6 @@ export const LocationBottomSheet: React.FC<LocationBottomSheetProps> = ({
               transform: [{ translateY: slideAnim }],
             },
           ]}
-          onStartShouldSetResponder={() => true}
         >
           <View style={styles.sheet}>
             <View style={styles.dragHandle} />
@@ -167,16 +190,19 @@ export const LocationBottomSheet: React.FC<LocationBottomSheetProps> = ({
             </ScrollView>
           </View>
         </Animated.View>
-      </TouchableOpacity>
+      </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: {
+  modalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'flex-end',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   sheetContainer: {
     maxHeight: '80%',
