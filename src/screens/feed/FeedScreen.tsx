@@ -144,6 +144,8 @@ export function FeedScreen() {
             <View style={styles.notificationBadge} />
           </TouchableOpacity>
         </View>
+        
+        <View style={styles.divider} />
 
         <ScrollView
           style={styles.scrollView}
@@ -184,6 +186,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: authDesign.spacing.paddingHorizontal,
     paddingVertical: 16,
     backgroundColor: '#000000',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: '100%',
   },
   userAvatar: {
     width: 48,
