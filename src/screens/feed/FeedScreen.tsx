@@ -102,17 +102,17 @@ export function FeedScreen() {
             
             <View style={styles.restaurantStats}>
               <View style={styles.statButton}>
-                <Heart size={16} color="#FFFFFF" />
+                <Heart size={24} color="#FFFFFF" />
                 <Text style={styles.statText}>{restaurant.likes}</Text>
               </View>
               
               <View style={styles.statButton}>
-                <MessageCircle size={16} color="#FFFFFF" />
+                <MessageCircle size={24} color="#FFFFFF" />
                 <Text style={styles.statText}>{restaurant.comments}</Text>
               </View>
               
               <View style={styles.ratingBadge}>
-                <Star size={16} color="#000000" fill={authDesign.colors.primaryicon} />
+                <Star size={26} fill={authDesign.colors.yellow} />
                 <Text style={styles.ratingText}>{restaurant.rating}</Text>
               </View>
             </View>
@@ -140,7 +140,7 @@ export function FeedScreen() {
           />
           
           <TouchableOpacity style={styles.notificationButton}>
-            <Bell size={24} color={authDesign.colors.textPrimary} />
+            <Bell size={26} color={authDesign.colors.textPrimary} />
             <View style={styles.notificationBadge} />
           </TouchableOpacity>
         </View>
@@ -278,8 +278,8 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   restaurantName: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 19,
+    fontWeight: '900',
     color: '#FFFFFF',
     marginBottom: 4,
   },
@@ -297,32 +297,30 @@ const styles = StyleSheet.create({
   statButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.8)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 15,
     gap: 6,
   },
   statText: {
-    fontSize: 13,
+    fontSize: 18,
     fontWeight: '600',
     color: '#FFFFFF',
   },
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: authDesign.colors.primaryicon,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    backgroundColor: authDesign.colors.solidetransparent,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     borderRadius: 20,
     marginLeft: 'auto',
     gap: 4,
   },
   ratingText: {
-    fontSize: 13,
+    fontSize: 18,
     fontWeight: '700',
-    color: '#000000',
+    color: authDesign.colors.textPrimary,
   },
 });

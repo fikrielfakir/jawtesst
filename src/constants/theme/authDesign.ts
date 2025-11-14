@@ -8,6 +8,8 @@ export const authDesign = {
     primaryDark: '#6B5CE7',
     primaryPressed: '#AE90EE',
     primaryicon: '#B9A2E1',
+    yellow: '#FFC917',
+    solidetransparent: '#00000077',
     
     textPrimary: '#FFFFFF',
     textSecondary: '#D1D5DB',
