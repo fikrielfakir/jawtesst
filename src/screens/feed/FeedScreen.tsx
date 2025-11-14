@@ -134,7 +134,7 @@ export function FeedScreen() {
         <View style={styles.header}>
           <TouchableOpacity>
             <Image
-              source={require('../../../assets/chefs/mohamed.png')}
+              source={require('../../../assets/onboarding/dining-experience.png')}
               style={styles.userAvatar}
             />
           </TouchableOpacity>
