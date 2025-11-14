@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
-import { Home, Search, Video, Heart, UserRound } from '@tamagui/lucide-icons';
+import { Home, Search, Heart, UserRound } from '@tamagui/lucide-icons';
+import { ReelsIcon } from '../../src/components/icons/ReelsIcon';
 
 export default function TabsLayout() {
   return (
@@ -13,11 +14,9 @@ export default function TabsLayout() {
           backgroundColor: '#000000',
           borderTopColor: 'transparent',
           borderTopWidth: 0,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          height: 72,
-          paddingVertical: 12,
-          paddingHorizontal: 32,
+          height: 60,
+          paddingVertical: 8,
+          paddingHorizontal: 20,
           position: 'absolute',
         },
         tabBarIconStyle: {
@@ -44,6 +43,13 @@ export default function TabsLayout() {
         options={{
           title: 'Wishlist',
           tabBarIcon: ({ color }) => <Heart size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="reels"
+        options={{
+          title: 'Reels',
+          tabBarIcon: ({ color }) => <ReelsIcon size={24} color={color} />,
         }}
       />
       <Tabs.Screen
