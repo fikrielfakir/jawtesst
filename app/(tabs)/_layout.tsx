@@ -1,63 +1,81 @@
 import { Tabs } from 'expo-router';
-import { Home, Search, Calendar, Heart, User } from '@tamagui/lucide-icons';
+import { View } from 'react-native';
+import { Home, MessageSquare, PlusCircle, Heart, UserRound } from '@tamagui/lucide-icons';
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#B9A2E1',
-        tabBarInactiveTintColor: '#8B8B8B',
+        tabBarActiveTintColor: '#FFFFFF',
+        tabBarInactiveTintColor: '#6E6E6E',
+        tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: '#1A0E2E',
-          borderTopColor: '#3D2657',
-          borderTopWidth: 1,
-          height: 80,
-          paddingBottom: 12,
-          paddingTop: 8,
-        },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
+          backgroundColor: '#000000',
+          borderTopColor: 'transparent',
+          borderTopWidth: 0,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          height: 72,
+          paddingVertical: 12,
+          paddingHorizontal: 32,
+          position: 'absolute',
         },
         tabBarIconStyle: {
-          marginTop: 2,
+          marginTop: 0,
         },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => <Home size={focused ? 26 : 22} color={color} />,
+          title: 'Feed',
+          tabBarIcon: ({ color }) => <Home size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Search',
-          tabBarIcon: ({ color, focused }) => <Search size={focused ? 26 : 22} color={color} />,
+          title: 'Messages',
+          tabBarIcon: ({ color }) => <MessageSquare size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="bookings"
         options={{
-          title: 'Bookings',
-          tabBarIcon: ({ color, focused }) => <Calendar size={focused ? 26 : 22} color={color} />,
+          title: 'Add',
+          tabBarIcon: ({ color }) => (
+            <View style={{
+              width: 56,
+              height: 56,
+              borderRadius: 28,
+              backgroundColor: '#FFFFFF',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: -20,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+            }}>
+              <PlusCircle size={32} color="#000000" />
+            </View>
+          ),
         }}
       />
       <Tabs.Screen
         name="favorites"
         options={{
-          title: 'Favorites',
-          tabBarIcon: ({ color, focused }) => <Heart size={focused ? 26 : 22} color={color} />,
+          title: 'Wishlist',
+          tabBarIcon: ({ color }) => <Heart size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, focused }) => <User size={focused ? 26 : 22} color={color} />,
+          tabBarIcon: ({ color }) => <UserRound size={24} color={color} />,
         }}
       />
     </Tabs>

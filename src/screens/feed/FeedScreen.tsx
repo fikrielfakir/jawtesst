@@ -99,7 +99,8 @@ export function FeedScreen() {
         resizeMode="cover"
       >
         <LinearGradient
-          colors={['transparent', 'rgba(0, 0, 0, 0.8)']}
+          colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.4)', 'rgba(0, 0, 0, 0.9)']}
+          locations={[0, 0.5, 1]}
           style={styles.restaurantGradient}
         >
           <View style={styles.restaurantContent}>
@@ -118,7 +119,7 @@ export function FeedScreen() {
               </View>
               
               <View style={styles.ratingBadge}>
-                <Star size={16} color="#000000" fill="#000000" />
+                <Star size={16} color="#F8C123" fill="#F8C123" />
                 <Text style={styles.ratingText}>{restaurant.rating}</Text>
               </View>
             </View>
@@ -196,9 +197,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: 'Inter_700Bold',
     color: '#FFFFFF',
-    position: 'absolute',
-    left: '50%',
-    transform: [{ translateX: -50 }],
+    flex: 1,
+    textAlign: 'center',
   },
   notificationButton: {
     position: 'relative',
