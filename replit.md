@@ -33,7 +33,7 @@ The application adheres to clean architecture principles, separating concerns in
   - Core: Button, Input, Card, Avatar, StatusBadge, TabBar, IconButton
   - Layout: ScreenContainer, SectionHeader, Divider
   - Composite: ListItem
-  - Bottom Sheets: FilterBottomSheet (distance filter with slider control)
+  - Bottom Sheets: FilterBottomSheet (distance filter with slider control), LocationBottomSheet (city selection with search)
 - **Implemented Screens:** All user-facing screens built with design system:
   - Account Settings, Become Partner, Bookings (Upcoming/Past)
   - Contact Us, FAQ, Feed (category-based restaurant browsing), Notifications
@@ -61,6 +61,12 @@ The application adheres to clean architecture principles, separating concerns in
   - Touch gesture handling with full track interaction
   - Optimized header layout with improved filter/location buttons
   - Real-time distance value display and apply functionality
+- **Location Selection Bottom Sheet (Nov 2025):**
+  - Slide-up modal with backdrop fade animation
+  - Search functionality for filtering cities
+  - List of popular Moroccan cities (Tanger, Casablanca, Marrakech, etc.)
+  - Visual feedback for selected location
+  - Proper touch event handling (backdrop closes, sheet content interactive)
 - Category-based Feed screen with chef list and restaurant cards (displays after category selection from Home).
 - Complete user account management and settings.
 - Partner onboarding with document uploads.
