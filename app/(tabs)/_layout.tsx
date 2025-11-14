@@ -53,6 +53,12 @@ export default function TabsLayout() {
           tabBarIcon: ({ color }) => <UserRound size={24} color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="feed"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
