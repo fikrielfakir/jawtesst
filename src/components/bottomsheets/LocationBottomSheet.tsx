@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: authDesign.colors.text,
+    color: authDesign.colors.textPrimary,
   },
   closeButton: {
     padding: 4,
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: authDesign.colors.text,
+    color: authDesign.colors.textPrimary,
     padding: 0,
   },
   citiesList: {
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   cityName: {
     fontSize: 16,
     fontWeight: '600',
-    color: authDesign.colors.text,
+    color: authDesign.colors.textPrimary,
   },
   cityNameSelected: {
     color: authDesign.colors.primary,

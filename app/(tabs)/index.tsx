@@ -21,6 +21,7 @@ import { useRouter } from "expo-router";
 import { authDesign } from "@constants/theme/authDesign";
 import { gradients } from "@constants/theme/colors";
 import { FilterBottomSheet } from "@components/bottomsheets/FilterBottomSheet";
+import { LocationBottomSheet } from "@components/bottomsheets/LocationBottomSheet";
 
 const CafeImg = require("@assets/home/coffee_cup_cafe_latt_38a3b15f.jpg");
 const MoroccoWayImg = require("@assets/home/moroccan_tagine_food_784bfa11.jpg");
@@ -91,6 +92,7 @@ export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState("cafe");
   const [bottleRotation] = useState(new Animated.Value(270));
   const [filterVisible, setFilterVisible] = useState(false);
+  const [locationVisible, setLocationVisible] = useState(false);
   const [selectedDistance, setSelectedDistance] = useState(5);
 
   const handleCategoryPress = (categoryId: string) => {
@@ -120,7 +122,7 @@ export default function HomeScreen() {
   };
 
   const handleFilterPress = () => setFilterVisible(true);
-  const handleLocationPress = () => console.log("Location pressed");
+  const handleLocationPress = () => setLocationVisible(true);
 
   const containerSize = Math.min(width * 0.85, 400);
   const radius = containerSize * 0.45;
@@ -255,6 +257,13 @@ export default function HomeScreen() {
         onClose={() => setFilterVisible(false)}
         selectedDistance={selectedDistance}
         onDistanceChange={setSelectedDistance}
+      />
+
+      <LocationBottomSheet
+        visible={locationVisible}
+        onClose={() => setLocationVisible(false)}
+        selectedLocation={selectedLocation}
+        onSelectLocation={setSelectedLocation}
       />
     </LinearGradient>
   );
