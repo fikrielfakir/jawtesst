@@ -22,6 +22,7 @@ import { authDesign } from "@constants/theme/authDesign";
 import { gradients } from "@constants/theme/colors";
 import { FilterBottomSheet } from "@components/bottomsheets/FilterBottomSheet";
 import { LocationBottomSheet } from "@components/bottomsheets/LocationBottomSheet";
+import { borderRadius, spacing } from "@/constants/theme/spacing";
 
 const CafeImg = require("@assets/home/coffee_cup_cafe_latt_38a3b15f.jpg");
 const MoroccoWayImg = require("@assets/home/moroccan_tagine_food_784bfa11.jpg");
@@ -102,8 +103,8 @@ export default function HomeScreen() {
     // Find the angle of the selected category
     const category = categories.find(cat => cat.id === categoryId);
     if (category) {
-      // Animate bottle rotation to point at the selected category
-      // Add 180 degrees to make the bottle top point towards the category
+      
+      // Add 90 degrees to make the bottle top point towards the category
       const targetAngle = category.angle + 90;
       
       Animated.spring(bottleRotation, {
@@ -284,26 +285,26 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    gap: 10,
-    marginBottom: 24,
+    paddingHorizontal: 2,
+    marginBottom: 28,
   },
 
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: `${authDesign.colors.primaryicon}22`,
-    borderRadius: 24,
+    backgroundColor: `${authDesign.colors.solidetransparent}`,
+    borderRadius: borderRadius.large,
     borderWidth: 1.5,
-    borderColor: `${authDesign.colors.primaryicon}66`,
+    borderColor: `${authDesign.colors.solidetransparent}66`,
     minWidth: 100,
     justifyContent: "center",
   },
   filterText: {
     color: authDesign.colors.textPrimary,
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "700",
   },
 logo: { 
@@ -314,20 +315,22 @@ logo: {
   locationButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    paddingVertical: 12,
+    gap: 8,
+    paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 24,
+    backgroundColor: `${authDesign.colors.solidetransparent}`,
+    borderRadius: borderRadius.large,
     borderWidth: 1.5,
-    borderColor: "rgba(255, 255, 255, 0.25)",
-    flex: 1,
+    borderColor: `${authDesign.colors.solidetransparent}`,
+    minWidth: 100,
+    justifyContent: "center",
   },
+
   locationText: {
     color: authDesign.colors.textPrimary,
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "600",
-    maxWidth: 120,
+    maxWidth: 200,
   },
   content: { 
     flex: 1, 
@@ -398,4 +401,4 @@ logo: {
     letterSpacing: 0.3,
     marginTop: -3,
   },
-});
+}); 

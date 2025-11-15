@@ -200,11 +200,11 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: 'rgba(0, 0, 0, 0.66)',
   },
   bottomSheet: {
     height: BOTTOM_SHEET_HEIGHT,
-    backgroundColor: authDesign.colors.backgroundDark,
+    backgroundColor: authDesign.colors.backgroundsheet,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     boxShadow: '0px -4px 16px rgba(0, 0, 0, 0.3)',

@@ -21,14 +21,14 @@ interface LocationBottomSheetProps {
 }
 
 const POPULAR_CITIES = [
-  { id: '1', name: 'Tanger, Morocco', country: 'Morocco' },
-  { id: '2', name: 'Casablanca, Morocco', country: 'Morocco' },
-  { id: '3', name: 'Marrakech, Morocco', country: 'Morocco' },
-  { id: '4', name: 'Rabat, Morocco', country: 'Morocco' },
-  { id: '5', name: 'Fes, Morocco', country: 'Morocco' },
-  { id: '6', name: 'Agadir, Morocco', country: 'Morocco' },
-  { id: '7', name: 'Tetouan, Morocco', country: 'Morocco' },
-  { id: '8', name: 'Meknes, Morocco', country: 'Morocco' },
+  { id: '1', name: 'Tanger', country: 'Morocco' },
+  { id: '2', name: 'Casablanca', country: 'Morocco' },
+  { id: '3', name: 'Marrakech', country: 'Morocco' },
+  { id: '4', name: 'Rabat', country: 'Morocco' },
+  { id: '5', name: 'Fes', country: 'Morocco' },
+  { id: '6', name: 'Agadir', country: 'Morocco' },
+  { id: '7', name: 'Tetouan', country: 'Morocco' },
+  { id: '8', name: 'Meknes', country: 'Morocco' },
 ];
 
 export const LocationBottomSheet: React.FC<LocationBottomSheetProps> = ({
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
   },
   sheet: {
-    backgroundColor: authDesign.colors.surface,
+    backgroundColor: authDesign.colors.backgroundsheet,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingBottom: 40,

@@ -2,6 +2,7 @@ export const authDesign = {
   colors: {
     background: '#3D3A5C',
     backgroundDark: '#2D2640',
+    backgroundsheet: '#212121ff',
     surface: '#FFFFFF',
     
     primary: '#6C4AB6',
