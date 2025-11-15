@@ -2,16 +2,23 @@
 
 ## How to Run These Scripts
 
-Run these SQL scripts in order in your Supabase SQL Editor:
+Run these SQL scripts **in order** in your Supabase SQL Editor:
+
+### Step 0: Create Auth Users (REQUIRED FIRST)
+Run `00-create-auth-users.sql`
+
+This creates the authentication users that are required before inserting into the public.users table. This script creates 5 test users with these credentials:
+- Email: mohamed@example.com, janes@example.com, moro@example.com, khaoula@example.com, michel@example.com
+- Password: password123 (for all users)
+
+**Note:** If this fails with permission errors, you have two alternatives:
+1. Create users manually via Supabase Dashboard > Authentication > Users
+2. Use the Supabase API to create auth users
 
 ### Step 1: Insert Owner Users
 Run `01-insert-owner-users.sql`
 
-**Important Note:** Before running this script, you need to create the auth users first in Supabase Auth. The UUIDs in this script (11111111-1111-1111-1111-111111111111, etc.) are placeholders. 
-
-**Two options:**
-1. **Option A (Easier):** Create 5 users through Supabase Auth UI or API first, then replace the UUIDs in the script with the actual auth user IDs
-2. **Option B:** Insert directly into auth.users table first (requires admin access)
+This inserts owner profile data into the public.users table using the same IDs from Step 0.
 
 ### Step 2: Insert Venues
 Run `02-insert-venues-for-owners.sql`

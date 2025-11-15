@@ -1,10 +1,13 @@
 -- SQL Script: Insert Owner Users
--- Run this script to add sample restaurant owners to your database
+-- IMPORTANT: Run this in TWO steps!
 
--- Note: You'll need to create auth.users first in Supabase Auth, then use their UUIDs here
--- Or you can replace these UUIDs with actual user IDs from your auth.users table
+-- STEP 1: First, create auth users in Supabase Auth Dashboard or run this:
+-- Go to Authentication > Users > Add User in Supabase Dashboard
+-- Create 5 users and note their UUIDs, then replace the IDs below
 
--- Insert 5 owner users
+-- STEP 2: Then insert into public.users with the same IDs from auth.users
+
+-- Replace these UUIDs with the actual auth.user IDs you created!
 INSERT INTO public.users (id, first_name, last_name, profile_image, user_type, is_verified, bio) VALUES
   ('11111111-1111-1111-1111-111111111111', 'Mohamed', 'Chef', 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400', 'owner', true, 'Passionate chef specializing in Mediterranean cuisine'),
   ('22222222-2222-2222-2222-222222222222', 'Janes', 'Smith', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400', 'owner', true, 'Award-winning pastry chef and restaurant owner'),

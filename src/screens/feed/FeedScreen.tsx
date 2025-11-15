@@ -23,8 +23,10 @@ import { PostCommentsBottomSheet, ReviewsBottomSheet } from '../../components/bo
 interface Chef {
   id: string;
   name: string;
-  avatar: any;
+  avatar: string;
   borderColor: string;
+  hasActiveStories: boolean;
+  venue_id?: string;
 }
 
 interface Venue {
@@ -56,14 +58,6 @@ interface VenuePost {
   average_rating: number;
 }
 
-const chefs: Chef[] = [
-  { id: '1', name: 'Mohamed', avatar: require('../../../assets/chefs/mohamed.png'), borderColor: authDesign.colors.primaryicon },
-  { id: '2', name: 'Janes', avatar: require('../../../assets/chefs/janes.png'), borderColor: '#ffffffff' },
-  { id: '3', name: 'Moro', avatar: require('../../../assets/chefs/moro.png'), borderColor: '#ffffffff' },
-  { id: '4', name: 'Khaoula', avatar: require('../../../assets/chefs/khaoula.png'), borderColor: '#ffffffff' },
-  { id: '5', name: 'Michel', avatar: require('../../../assets/chefs/michel.png'), borderColor: '#f8f8faff' },
-];
-
 export function FeedScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
@@ -85,9 +79,13 @@ export function FeedScreen() {
 
   const [commentsModalVisible, setCommentsModalVisible] = useState(false);
   const [selectedPostForComments, setSelectedPostForComments] = useState<{ id: string; venueName: string } | null>(null);
+  
+  const [chefs, setChefs] = useState<Chef[]>([]);
+  const [chefsLoading, setChefsLoading] = useState(true);
 
   useEffect(() => {
     getCurrentUser();
+    fetchOwnersWithStories();
   }, []);
 
   useEffect(() => {
@@ -141,6 +139,104 @@ export function FeedScreen() {
       setLikedPosts(likedPostIds);
     } catch (error) {
       console.error('Error fetching likes:', error);
+    }
+  };
+
+  const fetchOwnersWithStories = async () => {
+    try {
+      setChefsLoading(true);
+
+      const { data: storiesData, error: storiesError} = await supabase
+        .from('chef_stories')
+        .select('id, venue_id, venues!inner(id, name, owner_id)')
+        .eq('status', 'active')
+        .gte('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false });
+
+      if (storiesError) {
+        console.error('Error fetching stories:', storiesError);
+        setChefsLoading(false);
+        return;
+      }
+
+      if (!storiesData || storiesData.length === 0) {
+        console.log('No active stories found');
+        setChefs([]);
+        setChefsLoading(false);
+        return;
+      }
+
+      const ownerIds = Array.from(new Set(
+        storiesData
+          .map((story: any) => story.venues?.owner_id)
+          .filter((id: any) => id != null)
+      ));
+
+      if (ownerIds.length === 0) {
+        console.log('No owner IDs found');
+        setChefs([]);
+        setChefsLoading(false);
+        return;
+      }
+
+      const { data: ownersData, error: ownersError } = await supabase
+        .from('users')
+        .select('id, first_name, last_name, profile_image')
+        .in('id', ownerIds);
+
+      if (ownersError) {
+        console.error('Error fetching owners:', ownersError);
+        setChefsLoading(false);
+        return;
+      }
+
+      if (!ownersData || ownersData.length === 0) {
+        console.warn('No owner profiles found for stories - possible RLS or schema issue');
+        setChefs([]);
+        setChefsLoading(false);
+        return;
+      }
+
+      const ownerById = new Map();
+      (ownersData || []).forEach((owner: any) => {
+        ownerById.set(owner.id, owner);
+      });
+
+      const venueByOwnerId = new Map();
+      storiesData.forEach((story: any) => {
+        const ownerId = story.venues?.owner_id;
+        if (ownerId && !venueByOwnerId.has(ownerId)) {
+          venueByOwnerId.set(ownerId, story.venue_id);
+        }
+      });
+
+      const chefsWithStories: Chef[] = [];
+      ownerById.forEach((owner: any, ownerId: string) => {
+        const venueId = venueByOwnerId.get(ownerId);
+        if (venueId) {
+          chefsWithStories.push({
+            id: ownerId,
+            name: owner.first_name || 'Chef',
+            avatar: owner.profile_image || 'https://via.placeholder.com/100',
+            borderColor: '#ffffffff',
+            hasActiveStories: true,
+            venue_id: venueId
+          });
+        }
+      });
+
+      if (chefsWithStories.length > 0) {
+        chefsWithStories[0].borderColor = authDesign.colors.primaryicon;
+      }
+
+      setChefs(chefsWithStories);
+      setChefsLoading(false);
+
+      console.log(`Fetched ${chefsWithStories.length} owners with active stories`);
+    } catch (error) {
+      console.error('Error in fetchOwnersWithStories:', error);
+      setChefs([]);
+      setChefsLoading(false);
     }
   };
 
@@ -439,11 +535,11 @@ export function FeedScreen() {
   const renderChefItem = ({ item }: { item: Chef }) => (
     <TouchableOpacity 
       style={styles.chefItem}
-      onPress={() => handleChefStoryPress(item.id)}
+      onPress={() => handleChefStoryPress(item.venue_id || item.id)}
       activeOpacity={0.7}
     >
       <View style={[styles.chefAvatarRing, { borderColor: item.borderColor }]}>
-        <Image source={item.avatar} style={styles.chefAvatar} />
+        <Image source={{ uri: item.avatar }} style={styles.chefAvatar} />
       </View>
       <Text style={styles.chefName}>{item.name}</Text>
     </TouchableOpacity>
