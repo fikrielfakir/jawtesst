@@ -17,7 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Bell, Heart, MessageCircle, Star, Filter, MapPin, X, ArrowLeft, BadgeCheck, Sparkles } from '@tamagui/lucide-icons';
 import { authDesign } from '@constants/theme/authDesign';
 import { supabase } from '../../lib/supabaseClient';
-import { PostCommentsBottomSheet } from '../../components/bottomsheets/ReviewsBottomSheet';
+import { PostCommentsBottomSheet, ReviewsBottomSheet } from '../../components/bottomsheets/ReviewsBottomSheet';
 
 
 interface Chef {
