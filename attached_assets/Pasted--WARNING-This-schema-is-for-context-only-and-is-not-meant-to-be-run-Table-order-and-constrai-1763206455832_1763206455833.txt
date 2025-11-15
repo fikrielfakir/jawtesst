@@ -1,0 +1,441 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.amenities (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  name character varying NOT NULL UNIQUE,
+  icon_url text,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT amenities_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.audit_logs (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  user_id uuid,
+  action character varying NOT NULL,
+  resource_type character varying NOT NULL,
+  resource_id uuid,
+  old_values jsonb,
+  new_values jsonb,
+  ip_address inet,
+  user_agent text,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT audit_logs_pkey PRIMARY KEY (id),
+  CONSTRAINT audit_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.banned_users (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  user_id uuid NOT NULL,
+  banned_by uuid,
+  reason text NOT NULL,
+  ban_type USER-DEFINED DEFAULT 'permanent'::ban_type,
+  banned_at timestamp with time zone DEFAULT now(),
+  expires_at timestamp with time zone,
+  is_active boolean DEFAULT true,
+  CONSTRAINT banned_users_pkey PRIMARY KEY (id),
+  CONSTRAINT banned_users_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
+  CONSTRAINT banned_users_banned_by_fkey FOREIGN KEY (banned_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.bookings (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  user_id uuid NOT NULL,
+  venue_id uuid NOT NULL,
+  booking_date date NOT NULL CHECK (booking_date >= CURRENT_DATE),
+  booking_time time without time zone NOT NULL,
+  party_size integer NOT NULL CHECK (party_size > 0 AND party_size <= 50),
+  status USER-DEFINED DEFAULT 'pending'::booking_status,
+  special_requests text,
+  confirmation_code character varying UNIQUE,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  table_id uuid,
+  cancellation_reason text,
+  cancelled_by uuid,
+  notes text,
+  CONSTRAINT bookings_pkey PRIMARY KEY (id),
+  CONSTRAINT bookings_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
+  CONSTRAINT bookings_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id),
+  CONSTRAINT bookings_table_id_fkey FOREIGN KEY (table_id) REFERENCES public.venue_tables(id)
+);
+CREATE TABLE public.business_analytics (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  venue_id uuid NOT NULL,
+  date date NOT NULL,
+  views integer DEFAULT 0,
+  bookings integer DEFAULT 0,
+  completed_bookings integer DEFAULT 0,
+  cancelled_bookings integer DEFAULT 0,
+  no_shows integer DEFAULT 0,
+  reviews integer DEFAULT 0,
+  revenue numeric DEFAULT 0.0,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT business_analytics_pkey PRIMARY KEY (id),
+  CONSTRAINT business_analytics_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id)
+);
+CREATE TABLE public.categories (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  name character varying NOT NULL UNIQUE,
+  icon_url text NOT NULL,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  description text,
+  display_order integer DEFAULT 0,
+  CONSTRAINT categories_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.cuisine_types (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  name character varying NOT NULL UNIQUE,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  description text,
+  icon_url text,
+  CONSTRAINT cuisine_types_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.favorites (
+  user_id uuid NOT NULL,
+  venue_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT favorites_pkey PRIMARY KEY (user_id, venue_id),
+  CONSTRAINT favorites_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
+  CONSTRAINT favorites_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id)
+);
+CREATE TABLE public.loyalty_points (
+  user_id uuid NOT NULL,
+  total_points integer NOT NULL DEFAULT 0,
+  points_earned integer NOT NULL DEFAULT 0,
+  points_redeemed integer NOT NULL DEFAULT 0,
+  tier_level character varying DEFAULT 'bronze'::character varying,
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT loyalty_points_pkey PRIMARY KEY (user_id),
+  CONSTRAINT loyalty_points_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.loyalty_transactions (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  user_id uuid NOT NULL,
+  points integer NOT NULL,
+  transaction_type USER-DEFINED NOT NULL,
+  reference_type character varying,
+  reference_id uuid,
+  description text,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT loyalty_transactions_pkey PRIMARY KEY (id),
+  CONSTRAINT loyalty_transactions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.menu_items (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  venue_id uuid NOT NULL,
+  name character varying NOT NULL,
+  description text,
+  price numeric NOT NULL CHECK (price >= 0::numeric),
+  category character varying,
+  image_url text,
+  is_available boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  is_featured boolean DEFAULT false,
+  display_order integer DEFAULT 0,
+  allergens ARRAY,
+  nutritional_info jsonb,
+  preparation_time integer,
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT menu_items_pkey PRIMARY KEY (id),
+  CONSTRAINT menu_items_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id)
+);
+CREATE TABLE public.notifications (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  user_id uuid NOT NULL,
+  title character varying NOT NULL,
+  message text NOT NULL,
+  type USER-DEFINED NOT NULL,
+  is_read boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT now(),
+  action_url text,
+  metadata jsonb,
+  CONSTRAINT notifications_pkey PRIMARY KEY (id),
+  CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.password_reset_otps (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  email text NOT NULL,
+  otp text NOT NULL,
+  expires_at timestamp with time zone NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  used_at timestamp with time zone,
+  is_used boolean DEFAULT false,
+  CONSTRAINT password_reset_otps_pkey PRIMARY KEY (id),
+  CONSTRAINT password_reset_otps_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.payment_methods (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  user_id uuid NOT NULL,
+  type USER-DEFINED NOT NULL,
+  last_four character varying,
+  brand character varying,
+  expiry_month integer,
+  expiry_year integer,
+  is_default boolean DEFAULT false,
+  is_active boolean DEFAULT true,
+  stripe_payment_method_id text UNIQUE,
+  billing_address jsonb,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT payment_methods_pkey PRIMARY KEY (id),
+  CONSTRAINT payment_methods_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.permissions (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  name character varying NOT NULL UNIQUE,
+  display_name character varying NOT NULL,
+  module character varying NOT NULL,
+  action character varying NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT permissions_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.premier_subscriptions (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  user_id uuid NOT NULL,
+  plan_type character varying NOT NULL DEFAULT 'premier'::character varying,
+  start_date date NOT NULL,
+  end_date date NOT NULL,
+  price numeric NOT NULL,
+  status USER-DEFINED NOT NULL DEFAULT 'active'::subscription_status,
+  stripe_subscription_id text UNIQUE,
+  stripe_customer_id text,
+  auto_renew boolean DEFAULT true,
+  cancelled_at timestamp with time zone,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT premier_subscriptions_pkey PRIMARY KEY (id),
+  CONSTRAINT premier_subscriptions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.price_ranges (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  symbol character varying NOT NULL UNIQUE,
+  description character varying,
+  min_price numeric,
+  max_price numeric,
+  CONSTRAINT price_ranges_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.promotions (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  venue_id uuid,
+  title character varying NOT NULL,
+  description text,
+  discount_type character varying,
+  discount_value numeric,
+  code character varying UNIQUE,
+  start_date date NOT NULL,
+  end_date date NOT NULL,
+  max_uses integer,
+  current_uses integer DEFAULT 0,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT promotions_pkey PRIMARY KEY (id),
+  CONSTRAINT promotions_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id)
+);
+CREATE TABLE public.review_helpful (
+  review_id uuid NOT NULL,
+  user_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT review_helpful_pkey PRIMARY KEY (review_id, user_id),
+  CONSTRAINT review_helpful_review_id_fkey FOREIGN KEY (review_id) REFERENCES public.reviews(id),
+  CONSTRAINT review_helpful_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.review_images (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  review_id uuid NOT NULL,
+  image_url text NOT NULL,
+  caption text,
+  display_order integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT review_images_pkey PRIMARY KEY (id),
+  CONSTRAINT review_images_review_id_fkey FOREIGN KEY (review_id) REFERENCES public.reviews(id)
+);
+CREATE TABLE public.reviews (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  user_id uuid NOT NULL,
+  venue_id uuid NOT NULL,
+  booking_id uuid,
+  rating integer NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  comment text,
+  created_at timestamp with time zone DEFAULT now(),
+  food_rating integer CHECK (food_rating >= 1 AND food_rating <= 5),
+  service_rating integer CHECK (service_rating >= 1 AND service_rating <= 5),
+  ambiance_rating integer CHECK (ambiance_rating >= 1 AND ambiance_rating <= 5),
+  title character varying,
+  response text,
+  response_date timestamp with time zone,
+  responded_by uuid,
+  is_verified boolean DEFAULT false,
+  is_featured boolean DEFAULT false,
+  helpful_count integer DEFAULT 0,
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT reviews_pkey PRIMARY KEY (id),
+  CONSTRAINT reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
+  CONSTRAINT reviews_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id),
+  CONSTRAINT reviews_booking_id_fkey FOREIGN KEY (booking_id) REFERENCES public.bookings(id)
+);
+CREATE TABLE public.role_permissions (
+  role_id uuid NOT NULL,
+  permission_id uuid NOT NULL,
+  CONSTRAINT role_permissions_pkey PRIMARY KEY (role_id, permission_id),
+  CONSTRAINT role_permissions_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id),
+  CONSTRAINT role_permissions_permission_id_fkey FOREIGN KEY (permission_id) REFERENCES public.permissions(id)
+);
+CREATE TABLE public.roles (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  name character varying NOT NULL UNIQUE,
+  display_name character varying NOT NULL,
+  description text,
+  is_system_role boolean DEFAULT false,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT roles_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.schema_version (
+  version character varying NOT NULL,
+  applied_at timestamp with time zone DEFAULT now(),
+  description text,
+  CONSTRAINT schema_version_pkey PRIMARY KEY (version)
+);
+CREATE TABLE public.user_preferences (
+  user_id uuid NOT NULL,
+  dietary_restrictions ARRAY,
+  favorite_cuisines ARRAY,
+  notification_email boolean DEFAULT true,
+  notification_push boolean DEFAULT true,
+  notification_sms boolean DEFAULT false,
+  marketing_emails boolean DEFAULT true,
+  search_radius integer DEFAULT 25,
+  default_party_size integer DEFAULT 2,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT user_preferences_pkey PRIMARY KEY (user_id),
+  CONSTRAINT user_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.user_roles (
+  user_id uuid NOT NULL,
+  role_id uuid NOT NULL,
+  assigned_at timestamp with time zone DEFAULT now(),
+  expires_at timestamp with time zone,
+  CONSTRAINT user_roles_pkey PRIMARY KEY (user_id, role_id),
+  CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
+  CONSTRAINT user_roles_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id)
+);
+CREATE TABLE public.users (
+  id uuid NOT NULL,
+  first_name character varying,
+  last_name character varying,
+  phone character varying,
+  profile_image text,
+  user_type USER-DEFINED DEFAULT 'customer'::user_type,
+  is_verified boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  bio text,
+  is_banned boolean DEFAULT false,
+  language character varying DEFAULT 'en'::character varying,
+  dark_theme boolean DEFAULT false,
+  last_login timestamp with time zone,
+  CONSTRAINT users_pkey PRIMARY KEY (id),
+  CONSTRAINT users_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.venue_amenities (
+  venue_id uuid NOT NULL,
+  amenity_id uuid NOT NULL,
+  CONSTRAINT venue_amenities_pkey PRIMARY KEY (venue_id, amenity_id),
+  CONSTRAINT venue_amenities_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id),
+  CONSTRAINT venue_amenities_amenity_id_fkey FOREIGN KEY (amenity_id) REFERENCES public.amenities(id)
+);
+CREATE TABLE public.venue_categories (
+  venue_id uuid NOT NULL,
+  category_id uuid NOT NULL,
+  CONSTRAINT venue_categories_pkey PRIMARY KEY (venue_id, category_id),
+  CONSTRAINT venue_categories_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id),
+  CONSTRAINT venue_categories_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id)
+);
+CREATE TABLE public.venue_cuisines (
+  venue_id uuid NOT NULL,
+  cuisine_id uuid NOT NULL,
+  CONSTRAINT venue_cuisines_pkey PRIMARY KEY (venue_id, cuisine_id),
+  CONSTRAINT venue_cuisines_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id),
+  CONSTRAINT venue_cuisines_cuisine_id_fkey FOREIGN KEY (cuisine_id) REFERENCES public.cuisine_types(id)
+);
+CREATE TABLE public.venue_images (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  venue_id uuid NOT NULL,
+  image_url text NOT NULL,
+  is_primary boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT now(),
+  caption text,
+  content_type USER-DEFINED DEFAULT 'image'::content_type,
+  display_order integer DEFAULT 0,
+  CONSTRAINT venue_images_pkey PRIMARY KEY (id),
+  CONSTRAINT venue_images_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id)
+);
+CREATE TABLE public.venue_posts (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  venue_id uuid NOT NULL,
+  image_url text NOT NULL,
+  caption text,
+  content_type USER-DEFINED DEFAULT 'image'::content_type,
+  is_primary boolean DEFAULT false,
+  display_order integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now(),
+  uploaded_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT venue_posts_pkey PRIMARY KEY (id),
+  CONSTRAINT venue_posts_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id)
+);
+CREATE TABLE public.venue_staff (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  venue_id uuid NOT NULL,
+  user_id uuid NOT NULL,
+  role_id uuid NOT NULL,
+  is_active boolean DEFAULT true,
+  joined_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT venue_staff_pkey PRIMARY KEY (id),
+  CONSTRAINT venue_staff_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id),
+  CONSTRAINT venue_staff_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
+  CONSTRAINT venue_staff_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id)
+);
+CREATE TABLE public.venue_tables (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  venue_id uuid NOT NULL,
+  table_number character varying NOT NULL,
+  capacity integer NOT NULL CHECK (capacity > 0),
+  is_available boolean DEFAULT true,
+  location character varying,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT venue_tables_pkey PRIMARY KEY (id),
+  CONSTRAINT venue_tables_venue_id_fkey FOREIGN KEY (venue_id) REFERENCES public.venues(id)
+);
+CREATE TABLE public.venues (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  owner_id uuid NOT NULL,
+  name character varying NOT NULL,
+  description text,
+  address text NOT NULL,
+  city character varying NOT NULL,
+  country character varying NOT NULL,
+  latitude numeric,
+  longitude numeric,
+  phone character varying,
+  email character varying,
+  average_rating numeric DEFAULT 0.0 CHECK (average_rating >= 0::numeric AND average_rating <= 5::numeric),
+  total_reviews integer DEFAULT 0,
+  capacity integer,
+  is_active boolean DEFAULT true,
+  business_hours jsonb,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  slug character varying UNIQUE,
+  state character varying,
+  postal_code character varying,
+  website text,
+  price_range_id uuid,
+  is_verified boolean DEFAULT false,
+  is_featured boolean DEFAULT false,
+  special_hours jsonb,
+  CONSTRAINT venues_pkey PRIMARY KEY (id),
+  CONSTRAINT venues_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.users(id),
+  CONSTRAINT venues_price_range_id_fkey FOREIGN KEY (price_range_id) REFERENCES public.price_ranges(id)
+);
