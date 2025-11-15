@@ -42,6 +42,15 @@ interface Venue {
   price_range?: string | null;
 }
 
+interface VenuePost {
+  id: string;
+  image_url: string;
+  caption: string | null;
+  content_type: string;
+  created_at: string;
+  venue: Venue;
+}
+
 const chefs: Chef[] = [
   { id: '1', name: 'Mohamed', avatar: require('../../../assets/chefs/mohamed.png'), borderColor: authDesign.colors.primaryicon },
   { id: '2', name: 'Janes', avatar: require('../../../assets/chefs/janes.png'), borderColor: '#FF6B9D' },
@@ -57,8 +66,8 @@ export function FeedScreen() {
   const categoryId = params.categoryId as string;
   const categoryName = params.categoryName as string || 'Venues';
 
-  const [venues, setVenues] = useState<Venue[]>([]);
-  const [filteredVenues, setFilteredVenues] = useState<Venue[]>([]);
+  const [venuePosts, setVenuePosts] = useState<VenuePost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<VenuePost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cities, setCities] = useState<string[]>([]);
@@ -68,86 +77,97 @@ export function FeedScreen() {
   useEffect(() => {
     setSelectedCity(null);
     if (categoryId) {
-      fetchVenuesByCategory();
+      fetchVenuePostsByCategory();
     }
   }, [categoryId]);
 
   useEffect(() => {
     if (selectedCity) {
-      setFilteredVenues(venues.filter(v => v.city === selectedCity));
+      setFilteredPosts(venuePosts.filter(post => post.venue.city === selectedCity));
     } else {
-      setFilteredVenues(venues);
+      setFilteredPosts(venuePosts);
     }
-  }, [selectedCity, venues]);
+  }, [selectedCity, venuePosts]);
 
-  const fetchVenuesByCategory = async () => {
+  const fetchVenuePostsByCategory = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Query venues by category using join with enhanced fields
-      const { data: venuesData, error: venuesError } = await supabase
-        .from('venues')
+      // Query venue_posts with venue details filtered by category
+      const { data: postsData, error: postsError } = await supabase
+        .from('venue_posts')
         .select(`
           id,
-          name,
-          slug,
-          description,
-          city,
-          state,
-          postal_code,
-          address,
-          website,
-          average_rating,
-          total_reviews,
-          is_verified,
-          is_featured,
-          price_ranges:price_range_id(symbol),
-          venue_categories!inner(
-            categories!inner(
-              id,
-              name
+          image_url,
+          caption,
+          content_type,
+          created_at,
+          venues!inner(
+            id,
+            name,
+            slug,
+            description,
+            city,
+            state,
+            postal_code,
+            address,
+            website,
+            average_rating,
+            total_reviews,
+            is_verified,
+            is_featured,
+            is_active,
+            price_ranges:price_range_id(symbol),
+            venue_categories!inner(
+              category_id
             )
           )
         `)
-        .eq('venue_categories.category_id', categoryId)
-        .eq('is_active', true)
-        .order('is_featured', { ascending: false })
-        .order('average_rating', { ascending: false });
+        .eq('venues.venue_categories.category_id', categoryId)
+        .eq('venues.is_active', true)
+        .order('created_at', { ascending: false });
 
-      if (venuesError) {
-        console.error('Error fetching venues:', venuesError);
-        throw new Error('Failed to load venues. Please try again.');
+      if (postsError) {
+        console.error('Error fetching venue posts:', postsError);
+        throw new Error('Failed to load posts. Please try again.');
       }
 
-      const parsedVenuesData: Venue[] = (venuesData || []).map((venue: any) => ({
-        id: venue.id,
-        name: venue.name,
-        slug: venue.slug,
-        description: venue.description,
-        city: venue.city,
-        state: venue.state,
-        postal_code: venue.postal_code,
-        address: venue.address,
-        website: venue.website,
-        average_rating: parseFloat(venue.average_rating) || 0,
-        total_reviews: parseInt(venue.total_reviews) || 0,
-        is_verified: venue.is_verified || false,
-        is_featured: venue.is_featured || false,
-        price_range: venue.price_ranges?.symbol || null,
+      const parsedPostsData: VenuePost[] = (postsData || []).map((post: any) => ({
+        id: post.id,
+        image_url: post.image_url,
+        caption: post.caption,
+        content_type: post.content_type,
+        created_at: post.created_at,
+        venue: {
+          id: post.venues.id,
+          name: post.venues.name,
+          slug: post.venues.slug,
+          description: post.venues.description,
+          city: post.venues.city,
+          state: post.venues.state,
+          postal_code: post.venues.postal_code,
+          address: post.venues.address,
+          website: post.venues.website,
+          average_rating: parseFloat(post.venues.average_rating) || 0,
+          total_reviews: parseInt(post.venues.total_reviews) || 0,
+          is_verified: post.venues.is_verified || false,
+          is_featured: post.venues.is_featured || false,
+          price_range: post.venues.price_ranges?.symbol || null,
+        }
       }));
       
-      setVenues(parsedVenuesData);
-      setFilteredVenues(parsedVenuesData);
+      setVenuePosts(parsedPostsData);
+      setFilteredPosts(parsedPostsData);
 
-      const uniqueCities = [...new Set(parsedVenuesData.map((v: Venue) => v.city))].sort();
+      const uniqueCities = [...new Set(parsedPostsData.map((post: VenuePost) => post.venue.city))].sort();
       setCities(uniqueCities);
 
     } catch (error: any) {
-      console.error('Error fetching venues:', error);
-      setError(error.message || 'Failed to load venues. Please check your connection.');
-      setVenues([]);
-      setFilteredVenues([]);
+      console.error('Error fetching venue posts:', error);
+      setError(error.message || 'Failed to load posts. Please check your connection.');
+      setVenuePosts([]);
+      setFilteredPosts([]);
       setCities([]);
     } finally {
       setLoading(false);
@@ -163,18 +183,18 @@ export function FeedScreen() {
     </TouchableOpacity>
   );
 
-  const renderVenueCard = (venue: Venue) => (
+  const renderPostCard = (post: VenuePost) => (
     <TouchableOpacity 
-      key={venue.id} 
+      key={post.id} 
       style={styles.restaurantCard}
       activeOpacity={0.9}
     >
       <ImageBackground
-        source={require('../../../assets/home/fine_dining_elegant__246bdcc1.jpg')}
+        source={{ uri: post.image_url }}
         style={styles.restaurantImage}
         resizeMode="cover"
       >
-        {venue.is_featured && (
+        {post.venue.is_featured && (
           <View style={styles.featuredBadge}>
             <Sparkles size={16} color="#FFD700" fill="#FFD700" />
             <Text style={styles.featuredText}>Featured</Text>
@@ -187,35 +207,39 @@ export function FeedScreen() {
         >
           <View style={styles.restaurantContent}>
             <View style={styles.nameRow}>
-              <Text style={styles.restaurantName}>{venue.name}</Text>
-              {venue.is_verified && (
+              <Text style={styles.restaurantName}>{post.venue.name}</Text>
+              {post.venue.is_verified && (
                 <BadgeCheck size={20} color="#4A9EFF" fill="#4A9EFF" />
               )}
             </View>
             <View style={styles.locationRow}>
               <MapPin size={16} color="rgba(255, 255, 255, 0.7)" />
               <Text style={styles.restaurantLocation}>
-                {venue.city}{venue.state ? `, ${venue.state}` : ''}
+                {post.venue.city}{post.venue.state ? `, ${post.venue.state}` : ''}
               </Text>
-              {venue.price_range && (
-                <Text style={styles.priceRange}> • {venue.price_range}</Text>
+              {post.venue.price_range && (
+                <Text style={styles.priceRange}> • {post.venue.price_range}</Text>
               )}
             </View>
+            
+            {post.caption && (
+              <Text style={styles.postCaption} numberOfLines={2}>{post.caption}</Text>
+            )}
             
             <View style={styles.restaurantStats}>
               <View style={styles.statButton}>
                 <Heart size={24} color="#FFFFFF" />
-                <Text style={styles.statText}>{Math.floor(venue.total_reviews / 10)}k</Text>
+                <Text style={styles.statText}>{Math.floor(post.venue.total_reviews / 10)}k</Text>
               </View>
               
               <View style={styles.statButton}>
                 <MessageCircle size={24} color="#FFFFFF" />
-                <Text style={styles.statText}>{venue.total_reviews}</Text>
+                <Text style={styles.statText}>{post.venue.total_reviews}</Text>
               </View>
               
               <View style={styles.ratingBadge}>
                 <Star size={26} fill={authDesign.colors.yellow} color={authDesign.colors.yellow} />
-                <Text style={styles.ratingText}>{venue.average_rating.toFixed(1)}</Text>
+                <Text style={styles.ratingText}>{post.venue.average_rating.toFixed(1)}</Text>
               </View>
             </View>
           </View>
@@ -339,14 +363,18 @@ export function FeedScreen() {
               <Text style={styles.errorText}>{error}</Text>
               <TouchableOpacity
                 style={styles.retryButton}
-                onPress={() => fetchVenuesByCategory()}
+                onPress={() => fetchVenuePostsByCategory()}
               >
                 <Text style={styles.retryButtonText}>Retry</Text>
               </TouchableOpacity>
             </View>
-          ) : filteredVenues.length === 0 ? (
+          ) : filteredPosts.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No {categoryName} venues found</Text>
+              <Text style={styles.emptyText}>
+                {selectedCity 
+                  ? `No ${categoryName} posts found in ${selectedCity}`
+                  : `No ${categoryName} posts available yet`}
+              </Text>
               {selectedCity && (
                 <TouchableOpacity
                   style={styles.clearFilterButton}
@@ -358,7 +386,7 @@ export function FeedScreen() {
             </View>
           ) : (
             <View style={styles.restaurantList}>
-              {filteredVenues.map(renderVenueCard)}
+              {filteredPosts.map(renderPostCard)}
             </View>
           )}
         </ScrollView>
@@ -609,6 +637,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: authDesign.colors.primaryicon,
+  },
+  postCaption: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: 'rgba(255, 255, 255, 0.85)',
+    marginTop: 8,
+    marginBottom: 8,
+    lineHeight: 20,
   },
   restaurantStats: {
     flexDirection: 'row',
