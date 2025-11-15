@@ -432,8 +432,16 @@ export function FeedScreen() {
     fetchVenuePostsByCategory();
   };
 
+  const handleChefStoryPress = (chefId: string) => {
+    router.push(`/chef-story/${chefId}`);
+  };
+
   const renderChefItem = ({ item }: { item: Chef }) => (
-    <TouchableOpacity style={styles.chefItem}>
+    <TouchableOpacity 
+      style={styles.chefItem}
+      onPress={() => handleChefStoryPress(item.id)}
+      activeOpacity={0.7}
+    >
       <View style={[styles.chefAvatarRing, { borderColor: item.borderColor }]}>
         <Image source={item.avatar} style={styles.chefAvatar} />
       </View>

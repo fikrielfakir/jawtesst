@@ -130,6 +130,44 @@ export type Database = {
         };
         Update: Partial<Database['public']['Tables']['venues']['Insert']>;
       };
+      chef_stories: {
+        Row: {
+          id: string;
+          venue_id: string;
+          media_url: string;
+          media_type: 'image' | 'video';
+          duration: number;
+          views: number;
+          status: 'active' | 'expired';
+          expires_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          venue_id: string;
+          media_url: string;
+          media_type: 'image' | 'video';
+          duration?: number;
+          views?: number;
+          status?: 'active' | 'expired';
+          expires_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['chef_stories']['Insert']>;
+      };
+      story_views: {
+        Row: {
+          id: string;
+          story_id: string;
+          user_id: string;
+          viewed_at: string;
+        };
+        Insert: {
+          id?: string;
+          story_id: string;
+          user_id: string;
+        };
+        Update: never;
+      };
     };
   };
 };
