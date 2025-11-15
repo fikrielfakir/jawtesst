@@ -68,6 +68,16 @@ The application adheres to clean architecture principles, separating concerns in
   - Visual feedback for selected location
   - Proper touch event handling (backdrop closes, sheet content interactive)
 - Category-based Feed screen with chef list and restaurant cards (displays after category selection from Home).
+- **Instagram-Style Chef Stories (Nov 2025):**
+  - Full-screen story viewer with automatic progression
+  - Tap left/right to navigate between stories, swipe down to close
+  - Progress bars at top showing story position
+  - Auto-advance to next story after duration
+  - Chef profile display with avatar, name, and location
+  - Pause on hold, resume on release
+  - Accessible by tapping chef avatars in Feed screen
+  - Stories expire after 24 hours (database-managed)
+  - Visual indicators (colored border rings) show which chefs have active stories
 - Complete user account management and settings.
 - Partner onboarding with document uploads.
 - Booking management with status tracking (Approved, Pending, Closed).
@@ -75,12 +85,13 @@ The application adheres to clean architecture principles, separating concerns in
 - Multi-payment method support.
 
 **Database Schema:**
-Managed by Drizzle ORM, defined in `shared/schema.ts`.
+Managed by Drizzle ORM, defined in `shared/schema.ts`. Updated types in `src/lib/supabaseClient.ts`.
 - `users`: User profiles (customer, restaurant_owner, admin).
 - `restaurants`: Restaurant listings with detailed information.
 - `bookings`: Table reservations with status tracking.
 - `reviews`: Restaurant ratings and comments.
-- `stories`: Time-limited content (e.g., daily specials).
+- `chef_stories`: Instagram-style ephemeral stories for venues (media_url, media_type, duration, views, status, expires_at).
+- `story_views`: Tracks which users have viewed which stories.
 - `favorites`: User-saved restaurants.
 - `menu_items`: Restaurant menu details.
 
