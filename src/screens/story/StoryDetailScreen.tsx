@@ -108,7 +108,8 @@ export function StoryDetailScreen() {
           caption,
           content_type,
           created_at,
-          venues!inner(
+          venue_id,
+          venues(
             id,
             name,
             slug,
@@ -129,6 +130,7 @@ export function StoryDetailScreen() {
         .single();
 
       if (postError) throw postError;
+      if (!postData) throw new Error('Post not found');
 
       const { data: likeCounts } = await supabase
         .from('post_likes')
@@ -149,6 +151,8 @@ export function StoryDetailScreen() {
         ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
         : 0;
 
+      const venueData: any = postData.venues;
+
       const formattedPost: VenuePost = {
         id: postData.id,
         image_url: postData.image_url,
@@ -156,20 +160,20 @@ export function StoryDetailScreen() {
         content_type: postData.content_type,
         created_at: postData.created_at,
         venue: {
-          id: postData.venues.id,
-          name: postData.venues.name,
-          slug: postData.venues.slug,
-          description: postData.venues.description,
-          city: postData.venues.city,
-          state: postData.venues.state,
-          postal_code: postData.venues.postal_code,
-          address: postData.venues.address,
-          website: postData.venues.website,
-          average_rating: parseFloat(postData.venues.average_rating) || 0,
-          total_reviews: parseInt(postData.venues.total_reviews) || 0,
-          is_verified: postData.venues.is_verified,
-          is_featured: postData.venues.is_featured,
-          price_range: postData.venues.price_ranges?.symbol || null,
+          id: venueData.id,
+          name: venueData.name,
+          slug: venueData.slug,
+          description: venueData.description,
+          city: venueData.city,
+          state: venueData.state,
+          postal_code: venueData.postal_code,
+          address: venueData.address,
+          website: venueData.website,
+          average_rating: parseFloat(venueData.average_rating) || 0,
+          total_reviews: parseInt(venueData.total_reviews) || 0,
+          is_verified: venueData.is_verified,
+          is_featured: venueData.is_featured,
+          price_range: venueData.price_ranges?.symbol || null,
         },
         like_count: likeCounts?.length || 0,
         comment_count: commentCounts?.length || 0,
@@ -178,7 +182,7 @@ export function StoryDetailScreen() {
 
       setPost(formattedPost);
 
-      fetchRelatedPosts(postData.venues.id);
+      fetchRelatedPosts(postData.venue_id);
     } catch (error) {
       console.error('Error fetching post details:', error);
     } finally {
