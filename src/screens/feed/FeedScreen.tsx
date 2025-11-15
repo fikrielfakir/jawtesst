@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Bell, Heart, MessageCircle, Star, Filter, MapPin, X, ArrowLeft, BadgeCheck, Sparkles } from '@tamagui/lucide-icons';
 import { authDesign } from '@constants/theme/authDesign';
 import { supabase } from '../../lib/supabaseClient';
+import { ReviewsBottomSheet } from '../../components/bottomsheets/ReviewsBottomSheet';
 
 interface Chef {
   id: string;
@@ -73,6 +74,14 @@ export function FeedScreen() {
   const [cities, setCities] = useState<string[]>([]);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [reviewsModalVisible, setReviewsModalVisible] = useState(false);
+  const [selectedVenueForReview, setSelectedVenueForReview] = useState<{ id: string; name: string } | null>(null);
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
 
   useEffect(() => {
     setSelectedCity(null);
@@ -88,6 +97,41 @@ export function FeedScreen() {
       setFilteredPosts(venuePosts);
     }
   }, [selectedCity, venuePosts]);
+
+  useEffect(() => {
+    if (currentUserId && venuePosts.length > 0) {
+      fetchUserFavorites();
+    }
+  }, [currentUserId, venuePosts]);
+
+  const getCurrentUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    } catch (error) {
+      console.error('Error getting current user:', error);
+    }
+  };
+
+  const fetchUserFavorites = async () => {
+    if (!currentUserId) return;
+
+    try {
+      const venueIds = venuePosts.map(post => post.venue.id);
+      const { data, error } = await supabase
+        .from('favorites')
+        .select('venue_id')
+        .eq('user_id', currentUserId)
+        .in('venue_id', venueIds);
+
+      if (error) throw error;
+
+      const favoriteVenueIds = new Set((data || []).map(fav => fav.venue_id));
+      setLikedPosts(favoriteVenueIds);
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+    }
+  };
 
   const fetchVenuePostsByCategory = async () => {
     try {
@@ -174,6 +218,56 @@ export function FeedScreen() {
     }
   };
 
+  const handleLikePress = async (venueId: string) => {
+    if (!currentUserId) {
+      console.log('User not authenticated');
+      return;
+    }
+
+    const isLiked = likedPosts.has(venueId);
+
+    try {
+      if (isLiked) {
+        const { error } = await supabase
+          .from('favorites')
+          .delete()
+          .eq('user_id', currentUserId)
+          .eq('venue_id', venueId);
+
+        if (error) throw error;
+
+        setLikedPosts(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(venueId);
+          return newSet;
+        });
+      } else {
+        const { error } = await supabase
+          .from('favorites')
+          .insert({
+            user_id: currentUserId,
+            venue_id: venueId,
+          });
+
+        if (error) throw error;
+
+        setLikedPosts(prev => new Set(prev).add(venueId));
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
+  const handleCommentPress = (venueId: string, venueName: string) => {
+    setSelectedVenueForReview({ id: venueId, name: venueName });
+    setReviewsModalVisible(true);
+  };
+
+  const handleRatingPress = (venueId: string, venueName: string) => {
+    setSelectedVenueForReview({ id: venueId, name: venueName });
+    setReviewsModalVisible(true);
+  };
+
   const renderChefItem = ({ item }: { item: Chef }) => (
     <TouchableOpacity style={styles.chefItem}>
       <View style={[styles.chefAvatarRing, { borderColor: item.borderColor }]}>
@@ -227,20 +321,36 @@ export function FeedScreen() {
             )}
             
             <View style={styles.restaurantStats}>
-              <View style={styles.statButton}>
-                <Heart size={24} color="#FFFFFF" />
+              <TouchableOpacity 
+                style={styles.statButton}
+                onPress={() => handleLikePress(post.venue.id)}
+                activeOpacity={0.7}
+              >
+                <Heart 
+                  size={24} 
+                  color={likedPosts.has(post.venue.id) ? authDesign.colors.primaryicon : "#FFFFFF"}
+                  fill={likedPosts.has(post.venue.id) ? authDesign.colors.primaryicon : 'transparent'}
+                />
                 <Text style={styles.statText}>{Math.floor(post.venue.total_reviews / 10)}k</Text>
-              </View>
+              </TouchableOpacity>
               
-              <View style={styles.statButton}>
+              <TouchableOpacity 
+                style={styles.statButton}
+                onPress={() => handleCommentPress(post.venue.id, post.venue.name)}
+                activeOpacity={0.7}
+              >
                 <MessageCircle size={24} color="#FFFFFF" />
                 <Text style={styles.statText}>{post.venue.total_reviews}</Text>
-              </View>
+              </TouchableOpacity>
               
-              <View style={styles.ratingBadge}>
+              <TouchableOpacity 
+                style={styles.ratingBadge}
+                onPress={() => handleRatingPress(post.venue.id, post.venue.name)}
+                activeOpacity={0.7}
+              >
                 <Star size={26} fill={authDesign.colors.yellow} color={authDesign.colors.yellow} />
                 <Text style={styles.ratingText}>{post.venue.average_rating.toFixed(1)}</Text>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         </LinearGradient>
@@ -392,6 +502,18 @@ export function FeedScreen() {
         </ScrollView>
 
         {renderCityFilterModal()}
+
+        {selectedVenueForReview && (
+          <ReviewsBottomSheet
+            visible={reviewsModalVisible}
+            onClose={() => {
+              setReviewsModalVisible(false);
+              setSelectedVenueForReview(null);
+            }}
+            venueId={selectedVenueForReview.id}
+            venueName={selectedVenueForReview.name}
+          />
+        )}
       </SafeAreaView>
     </View>
   );
