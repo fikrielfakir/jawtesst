@@ -1,3 +1,3 @@
-import { StoryDetailScreen } from '@/src/screens/story/StoryDetailScreen';
+import { StoryDetailScreen } from '../../src/screens/story/StoryDetailScreen';
 
 export default StoryDetailScreen;
