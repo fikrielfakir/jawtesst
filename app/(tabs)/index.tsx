@@ -49,7 +49,7 @@ const categoryAnglesByOrder: Record<number, number> = {
 
 // Radius adjustments by display_order
 const categoryRadiusMultiplier: Record<number, number> = {
-  0: 1.2,  // Cafe - further out
+  0: 1.2,  // Cafe - further outr
   5: 1.02, // Chiringuito - slightly further
 };
 

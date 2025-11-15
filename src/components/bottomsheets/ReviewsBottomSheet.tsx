@@ -12,48 +12,53 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
-import { X, Star, Send } from '@tamagui/lucide-icons';
+import { X, Send, Star } from '@tamagui/lucide-icons';
 import { authDesign } from '@constants/theme/authDesign';
 import { supabase } from '../../lib/supabaseClient';
 
-interface Review {
+interface Comment {
   id: string;
   user: {
     first_name: string;
     last_name: string;
     profile_image: string | null;
   };
-  rating: number;
-  comment: string | null;
+  comment: string;
+  rating: number | null;
   created_at: string;
 }
 
-interface ReviewsBottomSheetProps {
+interface PostCommentsBottomSheetProps {
   visible: boolean;
   onClose: () => void;
-  venueId: string;
+  postId: string;
   venueName: string;
 }
 
-export const ReviewsBottomSheet: React.FC<ReviewsBottomSheetProps> = ({
+export const PostCommentsBottomSheet: React.FC<PostCommentsBottomSheetProps> = ({
   visible,
   onClose,
-  venueId,
+  postId,
   venueName,
 }) => {
   const [slideAnim] = useState(new Animated.Value(600));
   const [backdropOpacity] = useState(new Animated.Value(0));
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
+  const [commentText, setCommentText] = useState('');
   const [selectedRating, setSelectedRating] = useState(0);
-  const [reviewText, setReviewText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
 
   useEffect(() => {
     if (visible) {
       setIsModalVisible(true);
-      fetchReviews();
+      fetchComments();
       Animated.parallel([
         Animated.timing(backdropOpacity, {
           toValue: 1,
@@ -81,21 +86,38 @@ export const ReviewsBottomSheet: React.FC<ReviewsBottomSheetProps> = ({
         }),
       ]).start(() => {
         setIsModalVisible(false);
+        setCommentText('');
         setSelectedRating(0);
-        setReviewText('');
       });
     }
   }, [visible]);
 
-  const fetchReviews = async () => {
+  const getCurrentUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('first_name, last_name, profile_image')
+          .eq('id', user.id)
+          .single();
+        
+        setCurrentUser(userData);
+      }
+    } catch (error) {
+      console.error('Error getting current user:', error);
+    }
+  };
+
+  const fetchComments = async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('reviews')
+        .from('post_comments')
         .select(`
           id,
-          rating,
           comment,
+          rating,
           created_at,
           users:user_id (
             first_name,
@@ -103,59 +125,60 @@ export const ReviewsBottomSheet: React.FC<ReviewsBottomSheetProps> = ({
             profile_image
           )
         `)
-        .eq('venue_id', venueId)
+        .eq('post_id', postId)
         .order('created_at', { ascending: false })
-        .limit(10);
+        .limit(50);
 
       if (error) throw error;
 
-      const parsedReviews: Review[] = (data || []).map((review: any) => ({
-        id: review.id,
-        rating: review.rating,
-        comment: review.comment,
-        created_at: review.created_at,
+      const parsedComments: Comment[] = (data || []).map((comment: any) => ({
+        id: comment.id,
+        comment: comment.comment,
+        rating: comment.rating,
+        created_at: comment.created_at,
         user: {
-          first_name: review.users?.first_name || 'Anonymous',
-          last_name: review.users?.last_name || 'User',
-          profile_image: review.users?.profile_image,
+          first_name: comment.users?.first_name || 'Anonymous',
+          last_name: comment.users?.last_name || 'User',
+          profile_image: comment.users?.profile_image,
         },
       }));
 
-      setReviews(parsedReviews);
+      setComments(parsedComments);
     } catch (error) {
-      console.error('Error fetching reviews:', error);
+      console.error('Error fetching comments:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSubmitReview = async () => {
-    if (selectedRating === 0) return;
+  const handleSubmitComment = async () => {
+    const trimmedComment = commentText.trim();
+    if (!trimmedComment && selectedRating === 0) return;
 
     try {
       setSubmitting(true);
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log('Please sign in to submit a review');
+        console.log('Please sign in to submit a comment');
         setSubmitting(false);
         return;
       }
 
-      const { error } = await supabase.from('reviews').insert({
+      const { error } = await supabase.from('post_comments').insert({
         user_id: user.id,
-        venue_id: venueId,
-        rating: selectedRating,
-        comment: reviewText.trim() || null,
+        post_id: postId,
+        comment: trimmedComment || null,
+        rating: selectedRating > 0 ? selectedRating : null,
       });
 
       if (error) throw error;
 
+      setCommentText('');
       setSelectedRating(0);
-      setReviewText('');
-      fetchReviews();
+      fetchComments();
     } catch (error) {
-      console.error('Error submitting review:', error);
+      console.error('Error submitting comment:', error);
     } finally {
       setSubmitting(false);
     }
@@ -163,8 +186,8 @@ export const ReviewsBottomSheet: React.FC<ReviewsBottomSheetProps> = ({
 
   const getTimeAgo = (dateString: string) => {
     const now = new Date();
-    const reviewDate = new Date(dateString);
-    const diffInMinutes = Math.floor((now.getTime() - reviewDate.getTime()) / 60000);
+    const commentDate = new Date(dateString);
+    const diffInMinutes = Math.floor((now.getTime() - commentDate.getTime()) / 60000);
 
     if (diffInMinutes < 1) return 'just now';
     if (diffInMinutes < 60) return `${diffInMinutes}m`;
@@ -173,7 +196,7 @@ export const ReviewsBottomSheet: React.FC<ReviewsBottomSheetProps> = ({
     return `${Math.floor(diffInMinutes / 10080)}w`;
   };
 
-  const renderStars = (rating: number, size: number = 20, interactive: boolean = false) => {
+  const renderStars = (rating: number, size: number = 16, interactive: boolean = false) => {
     return (
       <View style={styles.starsContainer}>
         {[1, 2, 3, 4, 5].map((star) => (
@@ -216,7 +239,10 @@ export const ReviewsBottomSheet: React.FC<ReviewsBottomSheetProps> = ({
         <View style={styles.handle} />
 
         <View style={styles.header}>
-          <Text style={styles.title}>Reviews</Text>
+          <View>
+            <Text style={styles.title}>Reviews</Text>
+            <Text style={styles.subtitle}>{venueName}</Text>
+          </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <X size={24} color={authDesign.colors.textPrimary} />
           </TouchableOpacity>
@@ -231,40 +257,44 @@ export const ReviewsBottomSheet: React.FC<ReviewsBottomSheetProps> = ({
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={authDesign.colors.primaryicon} />
             </View>
-          ) : reviews.length === 0 ? (
+          ) : comments.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No reviews yet</Text>
               <Text style={styles.emptySubtext}>Be the first to share your experience!</Text>
             </View>
           ) : (
-            reviews.map((review) => (
-              <View key={review.id} style={styles.reviewItem}>
-                <View style={styles.reviewHeader}>
+            comments.map((comment) => (
+              <View key={comment.id} style={styles.commentItem}>
+                <View style={styles.commentHeader}>
                   <View style={styles.avatarContainer}>
-                    {review.user.profile_image ? (
+                    {comment.user.profile_image ? (
                       <Image
-                        source={{ uri: review.user.profile_image }}
+                        source={{ uri: comment.user.profile_image }}
                         style={styles.avatar}
                       />
                     ) : (
                       <View style={[styles.avatar, styles.avatarPlaceholder]}>
                         <Text style={styles.avatarText}>
-                          {review.user.first_name.charAt(0).toUpperCase()}
+                          {comment.user.first_name.charAt(0).toUpperCase()}
                         </Text>
                       </View>
                     )}
                   </View>
-                  <View style={styles.reviewInfo}>
+                  <View style={styles.commentInfo}>
                     <View style={styles.nameRow}>
                       <Text style={styles.userName}>
-                        {review.user.first_name} {review.user.last_name}
+                        {comment.user.first_name} {comment.user.last_name}
                       </Text>
-                      <Text style={styles.timeAgo}>{getTimeAgo(review.created_at)}</Text>
+                      <Text style={styles.timeAgo}>{getTimeAgo(comment.created_at)}</Text>
                     </View>
-                    {review.comment && (
-                      <Text style={styles.reviewText}>{review.comment}</Text>
+                    {comment.comment && (
+                      <Text style={styles.commentText}>{comment.comment}</Text>
                     )}
-                    {renderStars(review.rating, 18)}
+                    {comment.rating && comment.rating > 0 && (
+                      <View style={styles.ratingRow}>
+                        {renderStars(comment.rating, 16)}
+                      </View>
+                    )}
                   </View>
                 </View>
               </View>
@@ -272,33 +302,44 @@ export const ReviewsBottomSheet: React.FC<ReviewsBottomSheetProps> = ({
           )}
         </ScrollView>
 
+        {/* Rating Section */}
         <View style={styles.ratingSection}>
           <Text style={styles.ratingTitle}>Rate your experience</Text>
-          {renderStars(selectedRating, 40, true)}
+          {renderStars(selectedRating, 32, true)}
         </View>
 
+        {/* Input Section */}
         <View style={styles.inputContainer}>
           <View style={styles.avatarInputContainer}>
-            <View style={[styles.avatar, styles.avatarPlaceholder, styles.smallAvatar]}>
-              <Text style={styles.avatarText}>U</Text>
-            </View>
+            {currentUser?.profile_image ? (
+              <Image
+                source={{ uri: currentUser.profile_image }}
+                style={[styles.avatar, styles.smallAvatar]}
+              />
+            ) : (
+              <View style={[styles.avatar, styles.avatarPlaceholder, styles.smallAvatar]}>
+                <Text style={styles.avatarText}>
+                  {currentUser?.first_name?.charAt(0).toUpperCase() || 'U'}
+                </Text>
+              </View>
+            )}
           </View>
           <TextInput
             style={styles.input}
             placeholder="Share your thoughts..."
             placeholderTextColor="rgba(255, 255, 255, 0.5)"
-            value={reviewText}
-            onChangeText={setReviewText}
+            value={commentText}
+            onChangeText={setCommentText}
             multiline
             maxLength={500}
           />
           <TouchableOpacity
             style={[
               styles.sendButton,
-              selectedRating === 0 && styles.sendButtonDisabled,
+              (!commentText.trim() && selectedRating === 0) && styles.sendButtonDisabled,
             ]}
-            onPress={handleSubmitReview}
-            disabled={selectedRating === 0 || submitting}
+            onPress={handleSubmitComment}
+            disabled={(!commentText.trim() && selectedRating === 0) || submitting}
           >
             {submitting ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
@@ -325,7 +366,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A1A1A',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    maxHeight: '80%',
+    maxHeight: '85%',
     paddingBottom: 40,
   },
   handle: {
@@ -339,7 +380,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
@@ -351,15 +392,22 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: authDesign.colors.textPrimary,
   },
+  subtitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: authDesign.colors.textSecondary,
+    marginTop: 4,
+  },
   closeButton: {
     padding: 4,
   },
   scrollView: {
-    maxHeight: 300,
+    maxHeight: 250,
   },
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 12,
+    paddingBottom: 8,
   },
   loadingContainer: {
     paddingVertical: 40,
@@ -379,10 +427,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: authDesign.colors.textSecondary,
   },
-  reviewItem: {
+  commentItem: {
     marginBottom: 20,
   },
-  reviewHeader: {
+  commentHeader: {
     flexDirection: 'row',
   },
   avatarContainer: {
@@ -403,7 +451,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#FFFFFF',
   },
-  reviewInfo: {
+  commentInfo: {
     flex: 1,
   },
   nameRow: {
@@ -421,11 +469,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: authDesign.colors.textSecondary,
   },
-  reviewText: {
+  commentText: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.85)',
     lineHeight: 20,
     marginBottom: 8,
+  },
+  ratingRow: {
+    marginTop: 4,
   },
   starsContainer: {
     flexDirection: 'row',
@@ -433,7 +484,7 @@ const styles = StyleSheet.create({
   },
   ratingSection: {
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingVertical: 16,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'center',
@@ -442,12 +493,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: authDesign.colors.textPrimary,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
+    paddingTop: 12,
     gap: 12,
   },
   avatarInputContainer: {
