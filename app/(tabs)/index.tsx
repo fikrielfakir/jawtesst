@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
   Animated,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,34 +24,42 @@ import { authDesign } from "@constants/theme/authDesign";
 import { gradients } from "@constants/theme/colors";
 import { FilterBottomSheet } from "@components/bottomsheets/FilterBottomSheet";
 import { LocationBottomSheet } from "@components/bottomsheets/LocationBottomSheet";
-import { borderRadius, spacing } from "@/constants/theme/spacing";
+import { borderRadius } from "@/constants/theme/spacing";
 import { supabase } from "@/lib/supabaseClient";
 
-// Default images for categories
-const categoryImages: Record<string, any> = {
-  'Cafe': require("@assets/home/coffee_cup_cafe_latt_38a3b15f.jpg"),
-  'Morocco Way': require("@assets/home/moroccan_tagine_food_784bfa11.jpg"),
-  'Fine Dining': require("@assets/home/fine_dining_elegant__246bdcc1.jpg"),
-  'Dance': require("@assets/home/nightclub_dance_floo_110473b2.jpg"),
-  'Lounge & Pub': require("@assets/home/bar_pub_beer_taps_lo_b72fe35e.jpg"),
-  'Chiringuito': require("@assets/home/beach_bar_chiringuit_9200470e.jpg"),
+// Images mapped by display_order (index)
+const categoryImagesByOrder: Record<number, any> = {
+  0: require("@assets/home/coffee_cup_cafe_latt_38a3b15f.jpg"), // Cafe
+  1: require("@assets/home/moroccan_tagine_food_784bfa11.jpg"), // Morocco Way
+  2: require("@assets/home/fine_dining_elegant__246bdcc1.jpg"), // Fine Dining
+  3: require("@assets/home/nightclub_dance_floo_110473b2.jpg"), // Dance
+  4: require("@assets/home/bar_pub_beer_taps_lo_b72fe35e.jpg"), // Lounge & Pub
+  5: require("@assets/home/beach_bar_chiringuit_9200470e.jpg"), // Chiringuito
 };
 
-// Default angles for positioning
-const categoryAngles: Record<string, number> = {
-  'Cafe': 270,
-  'Morocco Way': 210,
-  'Fine Dining': 330,
-  'Dance': 150,
-  'Lounge & Pub': 30,
-  'Chiringuito': 90,
+// Angles mapped by display_order (index)
+const categoryAnglesByOrder: Record<number, number> = {
+  0: 270, // Top
+  1: 210, // Top-left
+  2: 330, // Top-right
+  3: 150, // Bottom-left
+  4: 30,  // Bottom-right
+  5: 90,  // Bottom
+};
+
+// Radius adjustments by display_order
+const categoryRadiusMultiplier: Record<number, number> = {
+  0: 1.2,  // Cafe - further out
+  5: 1.02, // Chiringuito - slightly further
 };
 
 interface Category {
   id: string;
   name: string;
-  icon_url: string;
+  icon_url: string | null;
   is_active: boolean;
+  display_order: number;
+  description?: string | null;
   angle: number;
   image: any;
 }
@@ -75,13 +84,12 @@ export default function HomeScreen() {
   const { width } = useWindowDimensions();
   const router = useRouter();
   const [selectedLocation, setSelectedLocation] = useState("Tanger, Morocco");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [bottleRotation] = useState(new Animated.Value(270));
   const [filterVisible, setFilterVisible] = useState(false);
   const [locationVisible, setLocationVisible] = useState(false);
   const [selectedDistance, setSelectedDistance] = useState(5);
   
-  // Category state
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,43 +105,64 @@ export default function HomeScreen() {
 
       const { data, error: fetchError } = await supabase
         .from('categories')
-        .select('id, name, icon_url, is_active')
+        .select('id, name, icon_url, is_active, display_order, description')
         .eq('is_active', true)
-        .order('name');
+        .order('display_order', { ascending: true });
 
       if (fetchError) {
-        console.error('Error fetching categories:', fetchError);
-        throw new Error('Failed to load categories');
+        throw new Error(`Failed to load categories: ${fetchError.message}`);
       }
 
-      // Map categories with images and angles
-      const mappedCategories: Category[] = (data || []).map((cat, index) => ({
-        ...cat,
-        image: categoryImages[cat.name] || categoryImages['Cafe'],
-        angle: categoryAngles[cat.name] || (index * 60), // Fallback to distributed angles
-      }));
+      if (!data || data.length === 0) {
+        throw new Error('No categories found. Please add categories to the database.');
+      }
+
+      // Map categories using display_order for images and angles
+      const mappedCategories: Category[] = data.map((cat) => {
+        const order = cat.display_order ?? 0;
+        
+        return {
+          id: cat.id,
+          name: cat.name,
+          icon_url: cat.icon_url,
+          is_active: cat.is_active,
+          display_order: order,
+          description: cat.description,
+          // Use display_order to get image and angle
+          image: categoryImagesByOrder[order] || categoryImagesByOrder[0],
+          angle: categoryAnglesByOrder[order] ?? (order * 60), // Fallback to evenly distributed
+        };
+      });
 
       setCategories(mappedCategories);
       
       // Set first category as selected by default
       if (mappedCategories.length > 0) {
-        setSelectedCategory(mappedCategories[0].name);
+        setSelectedCategoryId(mappedCategories[0].id);
+        bottleRotation.setValue(mappedCategories[0].angle + 90);
       }
 
     } catch (err: any) {
-      console.error('Error:', err);
-      setError(err.message || 'Failed to load categories');
+      const errorMessage = err.message || 'Failed to load categories.';
+      setError(errorMessage);
       setCategories([]);
+      
+      Alert.alert(
+        'Error',
+        errorMessage,
+        [
+          { text: 'Retry', onPress: fetchCategories },
+          { text: 'Cancel', style: 'cancel' }
+        ]
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleCategoryPress = (category: Category) => {
-    setSelectedCategory(category.name);
-    console.log("Category pressed:", category.name);
+    setSelectedCategoryId(category.id);
     
-    // Add 90 degrees to make the bottle top point towards the category
     const targetAngle = category.angle + 90;
     
     Animated.spring(bottleRotation, {
@@ -142,7 +171,6 @@ export default function HomeScreen() {
       tension: 50,
       friction: 8,
     }).start(() => {
-      // Navigate to feed screen with category name
       router.push({
         pathname: '/feed',
         params: { 
@@ -153,25 +181,19 @@ export default function HomeScreen() {
     });
   };
 
-  const handleFilterPress = () => setFilterVisible(true);
-  const handleLocationPress = () => setLocationVisible(true);
-
   const containerSize = Math.min(width * 0.85, 400);
   const radius = containerSize * 0.45;
 
   const renderCategoryButton = (category: Category) => {
     const angleInRadians = (category.angle * Math.PI) / 180;
 
-    const customRadius =
-      category.name === "Cafe"
-        ? radius * 1.2 
-        : category.name === "Chiringuito"
-        ? radius * 1.02
-        : radius;
+    // Use display_order to determine custom radius
+    const radiusMultiplier = categoryRadiusMultiplier[category.display_order] || 1;
+    const customRadius = radius * radiusMultiplier;
 
     const x = containerSize / 2 + customRadius * Math.cos(angleInRadians) - 50;
     const y = containerSize / 2 + customRadius * Math.sin(angleInRadians) - 50;
-    const isSelected = selectedCategory === category.name;
+    const isSelected = selectedCategoryId === category.id;
 
     return (
       <TouchableOpacity
@@ -235,7 +257,7 @@ export default function HomeScreen() {
     );
   }
 
-  if (error) {
+  if (error || categories.length === 0) {
     return (
       <LinearGradient
         colors={[...gradients.auth]}
@@ -245,7 +267,9 @@ export default function HomeScreen() {
       >
         <SafeAreaView style={styles.safeArea} edges={["top"]}>
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.errorText}>
+              {error || 'No categories available'}
+            </Text>
             <TouchableOpacity
               style={styles.retryButton}
               onPress={fetchCategories}
@@ -275,7 +299,7 @@ export default function HomeScreen() {
           <View style={styles.controlsRow}>
             <TouchableOpacity
               style={styles.filterButton}
-              onPress={handleFilterPress}
+              onPress={() => setFilterVisible(true)}
               activeOpacity={0.7}
             >
               <SlidersHorizontal size={18} color={authDesign.colors.primaryicon} />
@@ -284,7 +308,7 @@ export default function HomeScreen() {
 
             <TouchableOpacity
               style={styles.locationButton}
-              onPress={handleLocationPress}
+              onPress={() => setLocationVisible(true)}
               activeOpacity={0.7}
             >
               <MapPin size={18} color="#d0d0d0" />
@@ -320,7 +344,7 @@ export default function HomeScreen() {
             >
               <BottleIcon />
             </Animated.View>
-            {categories.map((category) => renderCategoryButton(category))}
+            {categories.map(renderCategoryButton)}
           </View>
         </View>
       </SafeAreaView>

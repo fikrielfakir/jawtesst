@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Bell, Heart, MessageCircle, Star, Filter, MapPin, X, ArrowLeft } from '@tamagui/lucide-icons';
+import { Bell, Heart, MessageCircle, Star, Filter, MapPin, X, ArrowLeft, BadgeCheck, Sparkles } from '@tamagui/lucide-icons';
 import { authDesign } from '@constants/theme/authDesign';
 import { supabase } from '../../lib/supabaseClient';
 
@@ -28,11 +28,18 @@ interface Chef {
 interface Venue {
   id: string;
   name: string;
+  slug: string | null;
   description: string | null;
   city: string;
+  state: string | null;
+  postal_code: string | null;
   address: string;
+  website: string | null;
   average_rating: number;
   total_reviews: number;
+  is_verified: boolean;
+  is_featured: boolean;
+  price_range?: string | null;
 }
 
 const chefs: Chef[] = [
@@ -78,17 +85,24 @@ export function FeedScreen() {
       setLoading(true);
       setError(null);
 
-      // Query venues by category using join
+      // Query venues by category using join with enhanced fields
       const { data: venuesData, error: venuesError } = await supabase
         .from('venues')
         .select(`
           id,
           name,
+          slug,
           description,
           city,
+          state,
+          postal_code,
           address,
+          website,
           average_rating,
           total_reviews,
+          is_verified,
+          is_featured,
+          price_ranges:price_range_id(symbol),
           venue_categories!inner(
             categories!inner(
               id,
@@ -98,6 +112,7 @@ export function FeedScreen() {
         `)
         .eq('venue_categories.category_id', categoryId)
         .eq('is_active', true)
+        .order('is_featured', { ascending: false })
         .order('average_rating', { ascending: false });
 
       if (venuesError) {
@@ -108,11 +123,18 @@ export function FeedScreen() {
       const parsedVenuesData: Venue[] = (venuesData || []).map((venue: any) => ({
         id: venue.id,
         name: venue.name,
+        slug: venue.slug,
         description: venue.description,
         city: venue.city,
+        state: venue.state,
+        postal_code: venue.postal_code,
         address: venue.address,
+        website: venue.website,
         average_rating: parseFloat(venue.average_rating) || 0,
         total_reviews: parseInt(venue.total_reviews) || 0,
+        is_verified: venue.is_verified || false,
+        is_featured: venue.is_featured || false,
+        price_range: venue.price_ranges?.symbol || null,
       }));
       
       setVenues(parsedVenuesData);
@@ -152,16 +174,32 @@ export function FeedScreen() {
         style={styles.restaurantImage}
         resizeMode="cover"
       >
+        {venue.is_featured && (
+          <View style={styles.featuredBadge}>
+            <Sparkles size={16} color="#FFD700" fill="#FFD700" />
+            <Text style={styles.featuredText}>Featured</Text>
+          </View>
+        )}
         <LinearGradient
           colors={['transparent', 'rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.9)']}
           locations={[0, 0.5, 1]}
           style={styles.restaurantGradient}
         >
           <View style={styles.restaurantContent}>
-            <Text style={styles.restaurantName}>{venue.name}</Text>
+            <View style={styles.nameRow}>
+              <Text style={styles.restaurantName}>{venue.name}</Text>
+              {venue.is_verified && (
+                <BadgeCheck size={20} color="#4A9EFF" fill="#4A9EFF" />
+              )}
+            </View>
             <View style={styles.locationRow}>
               <MapPin size={16} color="rgba(255, 255, 255, 0.7)" />
-              <Text style={styles.restaurantLocation}>{venue.city}</Text>
+              <Text style={styles.restaurantLocation}>
+                {venue.city}{venue.state ? `, ${venue.state}` : ''}
+              </Text>
+              {venue.price_range && (
+                <Text style={styles.priceRange}> • {venue.price_range}</Text>
+              )}
             </View>
             
             <View style={styles.restaurantStats}>
@@ -519,6 +557,24 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  featuredBadge: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
+    zIndex: 10,
+  },
+  featuredText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFD700',
+  },
   restaurantGradient: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -527,11 +583,16 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 16,
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
   restaurantName: {
     fontSize: 19,
     fontWeight: '900',
     color: '#FFFFFF',
-    marginBottom: 4,
   },
   locationRow: {
     flexDirection: 'row',
@@ -543,6 +604,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '400',
     color: 'rgba(255, 255, 255, 0.7)',
+  },
+  priceRange: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: authDesign.colors.primaryicon,
   },
   restaurantStats: {
     flexDirection: 'row',
