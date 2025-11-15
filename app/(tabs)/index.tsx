@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Image,
   useWindowDimensions,
   Animated,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,13 +24,36 @@ import { gradients } from "@constants/theme/colors";
 import { FilterBottomSheet } from "@components/bottomsheets/FilterBottomSheet";
 import { LocationBottomSheet } from "@components/bottomsheets/LocationBottomSheet";
 import { borderRadius, spacing } from "@/constants/theme/spacing";
+import { supabase } from "@/lib/supabaseClient";
 
-const CafeImg = require("@assets/home/coffee_cup_cafe_latt_38a3b15f.jpg");
-const MoroccoWayImg = require("@assets/home/moroccan_tagine_food_784bfa11.jpg");
-const FineDiningImg = require("@assets/home/fine_dining_elegant__246bdcc1.jpg");
-const DanceImg = require("@assets/home/nightclub_dance_floo_110473b2.jpg");
-const LoungePubImg = require("@assets/home/bar_pub_beer_taps_lo_b72fe35e.jpg");
-const ChiringuitoImg = require("@assets/home/beach_bar_chiringuit_9200470e.jpg");
+// Default images for categories
+const categoryImages: Record<string, any> = {
+  'Cafe': require("@assets/home/coffee_cup_cafe_latt_38a3b15f.jpg"),
+  'Morocco Way': require("@assets/home/moroccan_tagine_food_784bfa11.jpg"),
+  'Fine Dining': require("@assets/home/fine_dining_elegant__246bdcc1.jpg"),
+  'Dance': require("@assets/home/nightclub_dance_floo_110473b2.jpg"),
+  'Lounge & Pub': require("@assets/home/bar_pub_beer_taps_lo_b72fe35e.jpg"),
+  'Chiringuito': require("@assets/home/beach_bar_chiringuit_9200470e.jpg"),
+};
+
+// Default angles for positioning
+const categoryAngles: Record<string, number> = {
+  'Cafe': 270,
+  'Morocco Way': 210,
+  'Fine Dining': 330,
+  'Dance': 150,
+  'Lounge & Pub': 30,
+  'Chiringuito': 90,
+};
+
+interface Category {
+  id: string;
+  name: string;
+  icon_url: string;
+  is_active: boolean;
+  angle: number;
+  image: any;
+}
 
 const BottleIcon = () => (
   <Svg width="40" height="125" viewBox="0 0 40 138" fill="none">
@@ -47,79 +71,86 @@ const BottleIcon = () => (
   </Svg>
 );
 
-const categories = [
-  {
-    id: "cafe",
-    name: "Cafe",
-    angle: 270,
-    image: CafeImg,
-  },
-  {
-    id: "morocco-way",
-    name: "Morocco Way",
-    angle: 210,
-    image: MoroccoWayImg,
-  },
-  {
-    id: "fine-dining",
-    name: "Fine Dining",
-    angle: 330,
-    image: FineDiningImg,
-  },
-  {
-    id: "dance",
-    name: "Dance",
-    angle: 150,
-    image: DanceImg,
-  },
-  {
-    id: "lounge-pub",
-    name: "Lounge & Pub",
-    angle: 30,
-    image: LoungePubImg,
-  },
-  {
-    id: "chiringuito",
-    name: "Chiringuito",
-    angle: 90,
-    image: ChiringuitoImg,
-  },
-];
-
 export default function HomeScreen() {
   const { width } = useWindowDimensions();
   const router = useRouter();
   const [selectedLocation, setSelectedLocation] = useState("Tanger, Morocco");
-  const [selectedCategory, setSelectedCategory] = useState("cafe");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [bottleRotation] = useState(new Animated.Value(270));
   const [filterVisible, setFilterVisible] = useState(false);
   const [locationVisible, setLocationVisible] = useState(false);
   const [selectedDistance, setSelectedDistance] = useState(5);
+  
+  // Category state
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleCategoryPress = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    console.log("Category pressed:", categoryId);
-    
-    // Find the angle of the selected category
-    const category = categories.find(cat => cat.id === categoryId);
-    if (category) {
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { data, error: fetchError } = await supabase
+        .from('categories')
+        .select('id, name, icon_url, is_active')
+        .eq('is_active', true)
+        .order('name');
+
+      if (fetchError) {
+        console.error('Error fetching categories:', fetchError);
+        throw new Error('Failed to load categories');
+      }
+
+      // Map categories with images and angles
+      const mappedCategories: Category[] = (data || []).map((cat, index) => ({
+        ...cat,
+        image: categoryImages[cat.name] || categoryImages['Cafe'],
+        angle: categoryAngles[cat.name] || (index * 60), // Fallback to distributed angles
+      }));
+
+      setCategories(mappedCategories);
       
-      // Add 90 degrees to make the bottle top point towards the category
-      const targetAngle = category.angle + 90;
-      
-      Animated.spring(bottleRotation, {
-        toValue: targetAngle,
-        useNativeDriver: true,
-        tension: 50,
-        friction: 8,
-      }).start(() => {
-        // Navigate to feed screen after animation completes
-        router.push({
-          pathname: '/feed',
-          params: { category: categoryId }
-        });
-      });
+      // Set first category as selected by default
+      if (mappedCategories.length > 0) {
+        setSelectedCategory(mappedCategories[0].name);
+      }
+
+    } catch (err: any) {
+      console.error('Error:', err);
+      setError(err.message || 'Failed to load categories');
+      setCategories([]);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleCategoryPress = (category: Category) => {
+    setSelectedCategory(category.name);
+    console.log("Category pressed:", category.name);
+    
+    // Add 90 degrees to make the bottle top point towards the category
+    const targetAngle = category.angle + 90;
+    
+    Animated.spring(bottleRotation, {
+      toValue: targetAngle,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 8,
+    }).start(() => {
+      // Navigate to feed screen with category name
+      router.push({
+        pathname: '/feed',
+        params: { 
+          categoryId: category.id,
+          categoryName: category.name 
+        }
+      });
+    });
   };
 
   const handleFilterPress = () => setFilterVisible(true);
@@ -128,25 +159,25 @@ export default function HomeScreen() {
   const containerSize = Math.min(width * 0.85, 400);
   const radius = containerSize * 0.45;
 
-  const renderCategoryButton = (category: (typeof categories)[0]) => {
+  const renderCategoryButton = (category: Category) => {
     const angleInRadians = (category.angle * Math.PI) / 180;
 
     const customRadius =
-      category.id === "cafe"
+      category.name === "Cafe"
         ? radius * 1.2 
-        : category.id === "chiringuito"
+        : category.name === "Chiringuito"
         ? radius * 1.02
         : radius;
 
     const x = containerSize / 2 + customRadius * Math.cos(angleInRadians) - 50;
     const y = containerSize / 2 + customRadius * Math.sin(angleInRadians) - 50;
-    const isSelected = selectedCategory === category.id;
+    const isSelected = selectedCategory === category.name;
 
     return (
       <TouchableOpacity
         key={category.id}
         style={[styles.categoryButton, { left: x, top: y }]}
-        onPress={() => handleCategoryPress(category.id)}
+        onPress={() => handleCategoryPress(category)}
         activeOpacity={0.8}
       >
         <LinearGradient
@@ -185,6 +216,47 @@ export default function HomeScreen() {
       </TouchableOpacity>
     );
   };
+
+  if (loading) {
+    return (
+      <LinearGradient
+        colors={[...gradients.auth]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.container}
+      >
+        <SafeAreaView style={styles.safeArea} edges={["top"]}>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={authDesign.colors.primaryicon} />
+            <Text style={styles.loadingText}>Loading categories...</Text>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+    );
+  }
+
+  if (error) {
+    return (
+      <LinearGradient
+        colors={[...gradients.auth]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.container}
+      >
+        <SafeAreaView style={styles.safeArea} edges={["top"]}>
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity
+              style={styles.retryButton}
+              onPress={fetchCategories}
+            >
+              <Text style={styles.retryButtonText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+    );
+  }
 
   return (
     <LinearGradient
@@ -273,7 +345,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   safeArea: { flex: 1 },
-   header: {
+  header: {
     flexDirection: "column",
     alignItems: "center",
     paddingHorizontal: authDesign.spacing.paddingHorizontal,
@@ -288,7 +360,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     marginBottom: 28,
   },
-
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -307,7 +378,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
   },
-logo: { 
+  logo: { 
     width: 90, 
     height: 45,
     marginBottom: 20,
@@ -325,7 +396,6 @@ logo: {
     minWidth: 100,
     justifyContent: "center",
   },
-
   locationText: {
     color: authDesign.colors.textPrimary,
     fontSize: 14,
@@ -336,7 +406,6 @@ logo: {
     flex: 1, 
     alignItems: "center",
   },
-
   title: {
     fontSize: 24,
     fontWeight: "800",
@@ -401,4 +470,39 @@ logo: {
     letterSpacing: 0.3,
     marginTop: -3,
   },
-}); 
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: authDesign.colors.textSecondary,
+    fontWeight: "600",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 40,
+    gap: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#FF6B6B",
+    textAlign: "center",
+    fontWeight: "600",
+  },
+  retryButton: {
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    backgroundColor: authDesign.colors.primaryicon,
+    borderRadius: 12,
+  },
+  retryButtonText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+});
