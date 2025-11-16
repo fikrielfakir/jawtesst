@@ -117,13 +117,10 @@ export function DiscoverScreen() {
         setSelectedCardIndex(index);
         
         setTimeout(() => {
-          const CARD_HEIGHT = 280;
-          const CARD_MARGIN = 16;
-          const CARDS_PER_ROW = 2;
-          const ROW_HEIGHT = CARD_HEIGHT + CARD_MARGIN;
+          const CARD_HEIGHT = 380;
+          const CARD_MARGIN = spacing.m;
           
-          const rowIndex = Math.floor(index / CARDS_PER_ROW);
-          const yOffset = rowIndex * ROW_HEIGHT;
+          const yOffset = index * (CARD_HEIGHT + CARD_MARGIN);
           
           scrollViewRef.current?.scrollTo({
             y: yOffset,
@@ -214,7 +211,7 @@ export function DiscoverScreen() {
             total_reviews,
             is_verified,
             is_featured,
-            price_range_id
+            price_ranges:price_range_id(symbol)
           )
         `)
         .eq('category_id', catId);
@@ -251,10 +248,14 @@ export function DiscoverScreen() {
 
       const postsWithVenues = postsData.map(post => {
         const venueData = venuesData.find(v => (v.venues as any)?.id === post.venue_id);
+        const venueRaw = venueData?.venues as any;
         return {
           ...post,
-          venue: venueData?.venues as unknown as Venue,
-          average_rating: (venueData?.venues as any)?.average_rating || 0,
+          venue: {
+            ...venueRaw,
+            price_range: venueRaw?.price_ranges?.symbol || null,
+          } as unknown as Venue,
+          average_rating: venueRaw?.average_rating || 0,
         };
       }).filter(post => post.venue);
 
@@ -473,7 +474,7 @@ export function DiscoverScreen() {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.ratingBadge} activeOpacity={0.7}>
-                  <Star size={26} fill={authDesign.colors.yellow} color={authDesign.colors.yellow} />
+                  <Star size={26} fill={colors.gold} color={colors.gold} />
                   <Text style={styles.ratingText}>
                     {post.venue.average_rating > 0 ? post.venue.average_rating.toFixed(1) : '0.0'}
                   </Text>
@@ -490,15 +491,15 @@ export function DiscoverScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ArrowLeft size={24} color={authDesign.colors.textPrimary} />
+          <ArrowLeft size={sizing.icon.md} color={colors.text} />
         </TouchableOpacity>
 
         <View style={styles.searchContainer}>
-          <Search size={20} color={authDesign.colors.textSecondary} />
+          <Search size={sizing.icon.sm} color={colors.textSecondary} />
           <TextInput
             style={styles.searchInput}
             placeholder={`Search ${categoryName}...`}
-            placeholderTextColor={authDesign.colors.textSecondary}
+            placeholderTextColor={colors.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -534,7 +535,7 @@ export function DiscoverScreen() {
       >
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={authDesign.colors.primaryicon} />
+            <ActivityIndicator size="large" color={colors.primary} />
             <Text style={styles.loadingText}>Loading {categoryName}...</Text>
           </View>
         ) : filteredPosts.length === 0 ? (
