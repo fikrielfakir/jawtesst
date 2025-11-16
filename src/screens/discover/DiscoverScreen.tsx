@@ -229,6 +229,7 @@ export function DiscoverScreen() {
         return;
       }
 
+      // Fetch posts
       const { data: postsData, error: postsError } = await supabase
         .from('venue_posts')
         .select(`
@@ -237,15 +238,43 @@ export function DiscoverScreen() {
           image_url,
           caption,
           content_type,
-          created_at,
-          like_count,
-          comment_count
+          created_at
         `)
         .in('venue_id', venueIds)
         .order('created_at', { ascending: false });
 
       if (postsError) throw postsError;
 
+      // Fetch like counts for all posts
+      const postIds = postsData.map(p => p.id);
+      
+      const { data: likeCounts, error: likeError } = await supabase
+        .from('post_likes')
+        .select('post_id')
+        .in('post_id', postIds);
+
+      if (likeError) throw likeError;
+
+      // Fetch comment counts for all posts
+      const { data: commentCounts, error: commentError } = await supabase
+        .from('post_comments')
+        .select('post_id')
+        .in('post_id', postIds);
+
+      if (commentError) throw commentError;
+
+      // Create count maps
+      const likeCountMap = likeCounts.reduce((acc, like) => {
+        acc[like.post_id] = (acc[like.post_id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const commentCountMap = commentCounts.reduce((acc, comment) => {
+        acc[comment.post_id] = (acc[comment.post_id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      // Combine data
       const postsWithVenues = postsData.map(post => {
         const venueData = venuesData.find(v => (v.venues as any)?.id === post.venue_id);
         const venueRaw = venueData?.venues as any;
@@ -256,6 +285,8 @@ export function DiscoverScreen() {
             price_range: venueRaw?.price_ranges?.symbol || null,
           } as unknown as Venue,
           average_rating: venueRaw?.average_rating || 0,
+          like_count: likeCountMap[post.id] || 0,
+          comment_count: commentCountMap[post.id] || 0,
         };
       }).filter(post => post.venue);
 
@@ -297,6 +328,7 @@ export function DiscoverScreen() {
 
     const isLiked = likedPosts.has(postId);
 
+    // Optimistic UI update
     setLikedPosts(prev => {
       const newSet = new Set(prev);
       if (isLiked) {
@@ -320,9 +352,6 @@ export function DiscoverScreen() {
     ));
 
     try {
-      const post = venuePosts.find(p => p.id === postId);
-      if (!post) return;
-
       if (isLiked) {
         const { error: deleteError } = await supabase
           .from('post_likes')
@@ -331,15 +360,6 @@ export function DiscoverScreen() {
           .eq('post_id', postId);
 
         if (deleteError) throw deleteError;
-
-        const { error: updateError } = await supabase
-          .from('venue_posts')
-          .update({ like_count: Math.max(0, post.like_count - 1) })
-          .eq('id', postId);
-
-        if (updateError) {
-          console.warn('Failed to update like count:', updateError);
-        }
       } else {
         const { error: insertError } = await supabase
           .from('post_likes')
@@ -349,19 +369,11 @@ export function DiscoverScreen() {
           });
 
         if (insertError) throw insertError;
-
-        const { error: updateError } = await supabase
-          .from('venue_posts')
-          .update({ like_count: post.like_count + 1 })
-          .eq('id', postId);
-
-        if (updateError) {
-          console.warn('Failed to update like count:', updateError);
-        }
       }
     } catch (error: any) {
       console.error('Error toggling like:', error);
 
+      // Revert optimistic update on error
       setLikedPosts(prev => {
         const newSet = new Set(prev);
         if (isLiked) {
@@ -391,9 +403,6 @@ export function DiscoverScreen() {
     setSelectedCardIndex(0);
   };
 
-  const handleCardPress = (post: VenuePost) => {
-    router.push(`/story/${post.id}`);
-  };
 
   const renderCard = (post: VenuePost, index: number) => {
     const isSelected = selectedVenueId ? post.venue.id === selectedVenueId : index === selectedCardIndex;
@@ -406,7 +415,6 @@ export function DiscoverScreen() {
           isSelected && styles.selectedCard
         ]}
         activeOpacity={0.9}
-        onPress={() => handleCardPress(post)}
       >
         <ImageBackground
           source={{ uri: post.image_url }}
@@ -415,7 +423,7 @@ export function DiscoverScreen() {
         >
           {post.venue.is_featured && (
             <View style={styles.featuredBadge}>
-              <Sparkles size={sizing.icon.sm} color={colors.gold} fill={colors.gold} />
+              <Sparkles size={12} color="#FFD700" fill="#FFD700" />
               <Text style={styles.featuredText}>Featured</Text>
             </View>
           )}
@@ -432,7 +440,7 @@ export function DiscoverScreen() {
                 )}
               </View>
               <View style={styles.locationRow}>
-                <MapPin size={sizing.icon.xs} color="rgba(255, 255, 255, 0.7)" />
+                <MapPin size={14} color="rgba(255, 255, 255, 0.7)" />
                 <Text style={styles.locationText}>
                   {post.venue.city}{post.venue.state ? `, ${post.venue.state}` : ''}
                 </Text>
@@ -452,7 +460,7 @@ export function DiscoverScreen() {
                   activeOpacity={0.7}
                 >
                   <Heart
-                    size={sizing.icon.md}
+                    size={20}
                     color={likedPosts.has(post.id) ? authDesign.colors.primaryicon : colors.white}
                     fill={likedPosts.has(post.id) ? authDesign.colors.primaryicon : 'transparent'}
                   />
@@ -465,7 +473,7 @@ export function DiscoverScreen() {
                   style={styles.statButton}
                   activeOpacity={0.7}
                 >
-                  <MessageCircle size={sizing.icon.md} color={colors.white} />
+                  <MessageCircle size={20} color={colors.white} />
                   <Text style={styles.statText}>
                     {post.comment_count > 999
                       ? `${(post.comment_count / 1000).toFixed(1)}k`
@@ -474,7 +482,7 @@ export function DiscoverScreen() {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.ratingBadge} activeOpacity={0.7}>
-                  <Star size={26} fill={colors.gold} color={colors.gold} />
+                  <Star size={20} fill={colors.gold} color={colors.gold} />
                   <Text style={styles.ratingText}>
                     {post.venue.average_rating > 0 ? post.venue.average_rating.toFixed(1) : '0.0'}
                   </Text>
@@ -498,7 +506,7 @@ export function DiscoverScreen() {
           <Search size={sizing.icon.sm} color={colors.textSecondary} />
           <TextInput
             style={styles.searchInput}
-            placeholder={`Search ${categoryName}...`}
+            placeholder={`Search`}
             placeholderTextColor={colors.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -617,15 +625,10 @@ const styles = StyleSheet.create({
     gap: spacing.m,
   },
   card: {
-    width: '100%',
-    height: 380,
-    borderRadius: borderRadius.large,
+    borderRadius: 16,
     overflow: 'hidden',
-    backgroundColor: colors.card,
-  },
-  selectedCard: {
-    borderWidth: 3,
-    borderColor: authDesign.colors.primaryicon,
+    height: 520,
+    marginBottom: 20,
   },
   cardImage: {
     width: '100%',
@@ -636,82 +639,95 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   cardContent: {
-    padding: spacing.m,
+    padding: 20,
+    paddingBottom: 16,
   },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xxs,
-    marginBottom: spacing.xxs,
+    gap: 8,
+    marginBottom: 4,
   },
   venueName: {
-    fontSize: typography.heading.size,
-    fontWeight: typography.heading.weight,
-    color: colors.white,
-    flex: 1,
+    fontSize: 19,
+    fontWeight: '900',
+    color: '#FFFFFF',
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xxs,
-    marginBottom: spacing.xs,
+    gap: 4,
+    marginBottom: 12,
   },
   locationText: {
-    fontSize: typography.caption.size,
+    fontSize: 13,
+    fontWeight: '400',
     color: 'rgba(255, 255, 255, 0.7)',
   },
   priceRange: {
-    fontSize: typography.caption.size,
-    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 13,
+    fontWeight: '600',
+    color: authDesign.colors.primaryicon,
   },
   postCaption: {
-    fontSize: typography.caption.size,
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-    lineHeight: typography.caption.lineHeight,
+    fontSize: 14,
+    fontWeight: '400',
+    color: 'rgba(255, 255, 255, 0.85)',
+    marginTop: 8,
+    marginBottom: 8,
+    lineHeight: 20,
   },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.s,
+    gap: 8,
   },
   statButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xxs,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 15,
+    gap: 6,
   },
   statText: {
-    fontSize: typography.label.size,
-    color: colors.white,
-    fontWeight: typography.label.weight,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xxs,
+    backgroundColor: authDesign.colors.solidetransparent,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
     marginLeft: 'auto',
+    gap: 4,
   },
   ratingText: {
-    fontSize: typography.caption.size,
-    color: colors.white,
+    fontSize: 18,
     fontWeight: '700',
+    color: authDesign.colors.textPrimary,
   },
   featuredBadge: {
     position: 'absolute',
-    top: spacing.s,
-    right: spacing.s,
+    top: 16,
+    right: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.overlay.black,
-    paddingHorizontal: spacing.xs + 2,
-    paddingVertical: spacing.xxs + 2,
-    borderRadius: borderRadius.medium,
-    gap: spacing.xxs,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
+    zIndex: 10,
   },
   featuredText: {
-    fontSize: typography.tiny.size,
-    color: colors.gold,
+    fontSize: 12,
     fontWeight: '700',
+    color: '#FFD700',
   },
   loadingContainer: {
     flex: 1,

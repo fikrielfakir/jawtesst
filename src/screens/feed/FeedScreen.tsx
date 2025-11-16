@@ -165,11 +165,7 @@ export function FeedScreen() {
         return;
       }
 
-      console.log('Stories data:', storiesData);
-      console.log('Active stories after filtering:', activeStories);
-
       if (!activeStories || activeStories.length === 0) {
-        console.log('No active stories found');
         setChefs([]);
         setChefsLoading(false);
         return;
@@ -179,8 +175,6 @@ export function FeedScreen() {
       const userIds = Array.from(new Set(
         activeStories.map((story: any) => story.user_id).filter(id => id)
       ));
-
-      console.log('User IDs with stories:', userIds);
 
       // Fetch venues owned by these users
       const { data: venuesData, error: venuesError } = await supabase
@@ -193,8 +187,6 @@ export function FeedScreen() {
         console.error('Error fetching venues:', venuesError);
       }
 
-      console.log('Venues data:', venuesData);
-
       // Create a map of owner_id to venue_id
       // If story has venue_id, use that; otherwise use the venue owned by the user
       const venueByOwnerId = new Map();
@@ -203,8 +195,6 @@ export function FeedScreen() {
           venueByOwnerId.set(venue.owner_id, venue.id);
         }
       });
-
-      console.log('Venue by owner map:', Array.from(venueByOwnerId.entries()));
 
       // Build chefs array with stories
       const chefsWithStories: Chef[] = [];
@@ -238,7 +228,6 @@ export function FeedScreen() {
       setChefs(chefsWithStories);
       setChefsLoading(false);
 
-      console.log(`Fetched ${chefsWithStories.length} owners with active stories`);
     } catch (error) {
       console.error('Error in fetchOwnersWithStories:', error);
       setChefs([]);
@@ -265,10 +254,8 @@ export function FeedScreen() {
         return;
       }
 
-      console.log('Stories data:', storiesData);
 
       if (!storiesData || storiesData.length === 0) {
-        console.log('No active stories found');
         setChefs([]);
         setChefsLoading(false);
         return;
@@ -278,8 +265,6 @@ export function FeedScreen() {
       const userIds = Array.from(new Set(
         storiesData.map((story: any) => story.user_id).filter(id => id)
       ));
-
-      console.log('User IDs with stories:', userIds);
 
       // Fetch venues owned by these users
       const { data: venuesData, error: venuesError } = await supabase
@@ -292,8 +277,6 @@ export function FeedScreen() {
         console.error('Error fetching venues:', venuesError);
       }
 
-      console.log('Venues data:', venuesData);
-
       // Create a map of owner_id to venue_id
       // If story has venue_id, use that; otherwise use the venue owned by the user
       const venueByOwnerId = new Map();
@@ -302,8 +285,6 @@ export function FeedScreen() {
           venueByOwnerId.set(venue.owner_id, venue.id);
         }
       });
-
-      console.log('Venue by owner map:', Array.from(venueByOwnerId.entries()));
 
       // Build chefs array with stories
       const chefsWithStories: Chef[] = [];
@@ -336,8 +317,6 @@ export function FeedScreen() {
 
       setChefs(chefsWithStories);
       setChefsLoading(false);
-
-      console.log(`Fetched ${chefsWithStories.length} owners with active stories`);
     } catch (error) {
       console.error('Error in fetchOwnersWithStories:', error);
       setChefs([]);
@@ -482,7 +461,6 @@ export function FeedScreen() {
 
   const handleLikePress = async (postId: string) => {
     if (!currentUserId) {
-      console.log('User not authenticated');
       return;
     }
 
@@ -560,7 +538,6 @@ export function FeedScreen() {
   };
 
   const handleCommentPress = (postId: string, venueName: string) => {
-    console.log('Opening comments for post:', postId, 'venue:', venueName);
     
     if (!postId || postId === 'undefined') {
       console.error('Invalid postId passed to handleCommentPress');
@@ -718,7 +695,6 @@ export function FeedScreen() {
               <TouchableOpacity
                 style={styles.statButton}
                 onPress={() => {
-                  console.log('Comment button pressed for post:', post.id);
                   handleCommentPress(post.id, post.venue.name);
                 }}
                 activeOpacity={0.7}
