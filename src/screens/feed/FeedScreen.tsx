@@ -146,12 +146,18 @@ export function FeedScreen() {
     try {
       setChefsLoading(true);
 
+      // First, get all active chef stories with user data
       const { data: storiesData, error: storiesError} = await supabase
         .from('chef_stories')
-        .select('id, venue_id, venues!inner(id, name, owner_id)')
+        .select('id, user_id, venue_id, status, expires_at, users!inner(id, first_name, last_name, profile_image)')
         .eq('status', 'active')
-        .gte('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false });
+      
+      // Filter out expired stories (only if expires_at is set)
+      const activeStories = (storiesData || []).filter((story: any) => {
+        if (!story.expires_at) return true; // No expiry date means always active
+        return new Date(story.expires_at) > new Date();
+      });
 
       if (storiesError) {
         console.error('Error fetching stories:', storiesError);
@@ -159,65 +165,64 @@ export function FeedScreen() {
         return;
       }
 
-      if (!storiesData || storiesData.length === 0) {
+      console.log('Stories data:', storiesData);
+      console.log('Active stories after filtering:', activeStories);
+
+      if (!activeStories || activeStories.length === 0) {
         console.log('No active stories found');
         setChefs([]);
         setChefsLoading(false);
         return;
       }
 
-      const ownerIds = Array.from(new Set(
-        storiesData
-          .map((story: any) => story.venues?.owner_id)
-          .filter((id: any) => id != null)
+      // Get unique user IDs who have stories
+      const userIds = Array.from(new Set(
+        activeStories.map((story: any) => story.user_id).filter(id => id)
       ));
 
-      if (ownerIds.length === 0) {
-        console.log('No owner IDs found');
-        setChefs([]);
-        setChefsLoading(false);
-        return;
+      console.log('User IDs with stories:', userIds);
+
+      // Fetch venues owned by these users
+      const { data: venuesData, error: venuesError } = await supabase
+        .from('venues')
+        .select('id, owner_id, name, is_active')
+        .in('owner_id', userIds)
+        .eq('is_active', true);
+
+      if (venuesError) {
+        console.error('Error fetching venues:', venuesError);
       }
 
-      const { data: ownersData, error: ownersError } = await supabase
-        .from('users')
-        .select('id, first_name, last_name, profile_image')
-        .in('id', ownerIds);
+      console.log('Venues data:', venuesData);
 
-      if (ownersError) {
-        console.error('Error fetching owners:', ownersError);
-        setChefsLoading(false);
-        return;
-      }
-
-      if (!ownersData || ownersData.length === 0) {
-        console.warn('No owner profiles found for stories - possible RLS or schema issue');
-        setChefs([]);
-        setChefsLoading(false);
-        return;
-      }
-
-      const ownerById = new Map();
-      (ownersData || []).forEach((owner: any) => {
-        ownerById.set(owner.id, owner);
-      });
-
+      // Create a map of owner_id to venue_id
+      // If story has venue_id, use that; otherwise use the venue owned by the user
       const venueByOwnerId = new Map();
-      storiesData.forEach((story: any) => {
-        const ownerId = story.venues?.owner_id;
-        if (ownerId && !venueByOwnerId.has(ownerId)) {
-          venueByOwnerId.set(ownerId, story.venue_id);
+      (venuesData || []).forEach((venue: any) => {
+        if (!venueByOwnerId.has(venue.owner_id)) {
+          venueByOwnerId.set(venue.owner_id, venue.id);
         }
       });
 
+      console.log('Venue by owner map:', Array.from(venueByOwnerId.entries()));
+
+      // Build chefs array with stories
       const chefsWithStories: Chef[] = [];
-      ownerById.forEach((owner: any, ownerId: string) => {
-        const venueId = venueByOwnerId.get(ownerId);
-        if (venueId) {
+      const processedUserIds = new Set();
+
+      activeStories.forEach((story: any) => {
+        const userId = story.user_id;
+        
+        // Use venue_id from story if available, otherwise lookup by owner_id
+        const venueId = story.venue_id || venueByOwnerId.get(userId);
+        
+        // Only add each user once, and only if they have a venue
+        if (!processedUserIds.has(userId) && venueId && story.users) {
+          processedUserIds.add(userId);
           chefsWithStories.push({
-            id: ownerId,
-            name: owner.first_name || 'Chef',
-            avatar: owner.profile_image || 'https://via.placeholder.com/100',
+            id: userId,
+            name: story.users.first_name || 'Chef',
+            avatar: story.users.profile_image || 'https://via.placeholder.com/100',
             borderColor: '#ffffffff',
             hasActiveStories: true,
             venue_id: venueId
@@ -225,6 +230,7 @@ export function FeedScreen() {
         }
       });
 
+      // Highlight the first chef
       if (chefsWithStories.length > 0) {
         chefsWithStories[0].borderColor = authDesign.colors.primaryicon;
       }
@@ -242,7 +248,102 @@ export function FeedScreen() {
 
   const fetchVenuePostsByCategory = async () => {
     try {
-      setLoading(true);
+      setLoading(true);const fetchOwnersWithStories = async () => {
+    try {
+      setChefsLoading(true);
+
+      // First, get all active chef stories with user data
+      const { data: storiesData, error: storiesError} = await supabase
+        .from('chef_stories')
+        .select('id, user_id, venue_id, status, expires_at, users!inner(id, first_name, last_name, profile_image)')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      if (storiesError) {
+        console.error('Error fetching stories:', storiesError);
+        setChefsLoading(false);
+        return;
+      }
+
+      console.log('Stories data:', storiesData);
+
+      if (!storiesData || storiesData.length === 0) {
+        console.log('No active stories found');
+        setChefs([]);
+        setChefsLoading(false);
+        return;
+      }
+
+      // Get unique user IDs who have stories
+      const userIds = Array.from(new Set(
+        storiesData.map((story: any) => story.user_id).filter(id => id)
+      ));
+
+      console.log('User IDs with stories:', userIds);
+
+      // Fetch venues owned by these users
+      const { data: venuesData, error: venuesError } = await supabase
+        .from('venues')
+        .select('id, owner_id, name, is_active')
+        .in('owner_id', userIds)
+        .eq('is_active', true);
+
+      if (venuesError) {
+        console.error('Error fetching venues:', venuesError);
+      }
+
+      console.log('Venues data:', venuesData);
+
+      // Create a map of owner_id to venue_id
+      // If story has venue_id, use that; otherwise use the venue owned by the user
+      const venueByOwnerId = new Map();
+      (venuesData || []).forEach((venue: any) => {
+        if (!venueByOwnerId.has(venue.owner_id)) {
+          venueByOwnerId.set(venue.owner_id, venue.id);
+        }
+      });
+
+      console.log('Venue by owner map:', Array.from(venueByOwnerId.entries()));
+
+      // Build chefs array with stories
+      const chefsWithStories: Chef[] = [];
+      const processedUserIds = new Set();
+
+      storiesData.forEach((story: any) => {
+        const userId = story.user_id;
+        
+        // Use venue_id from story if available, otherwise lookup by owner_id
+        const venueId = story.venue_id || venueByOwnerId.get(userId);
+        
+        // Only add each user once, and only if they have a venue
+        if (!processedUserIds.has(userId) && venueId && story.users) {
+          processedUserIds.add(userId);
+          chefsWithStories.push({
+            id: userId,
+            name: story.users.first_name || 'Chef',
+            avatar: story.users.profile_image || 'https://via.placeholder.com/100',
+            borderColor: '#ffffffff',
+            hasActiveStories: true,
+            venue_id: venueId
+          });
+        }
+      });
+
+      // Highlight the first chef
+      if (chefsWithStories.length > 0) {
+        chefsWithStories[0].borderColor = authDesign.colors.primaryicon;
+      }
+
+      setChefs(chefsWithStories);
+      setChefsLoading(false);
+
+      console.log(`Fetched ${chefsWithStories.length} owners with active stories`);
+    } catch (error) {
+      console.error('Error in fetchOwnersWithStories:', error);
+      setChefs([]);
+      setChefsLoading(false);
+    }
+  };
       setError(null);
 
       // Query venue_posts with venue details
