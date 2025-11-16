@@ -15,6 +15,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft, Search, Heart, MessageCircle, Star, MapPin, BadgeCheck, Sparkles } from '@tamagui/lucide-icons';
 import { authDesign } from '@constants/theme/authDesign';
+import { colors } from '@constants/theme/colors';
+import { spacing, borderRadius, sizing, typography } from '@constants/theme/spacing';
 import { supabase } from '../../lib/supabaseClient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -212,7 +214,7 @@ export function DiscoverScreen() {
             total_reviews,
             is_verified,
             is_featured,
-            price_range
+            price_range_id
           )
         `)
         .eq('category_id', catId);
@@ -412,7 +414,7 @@ export function DiscoverScreen() {
         >
           {post.venue.is_featured && (
             <View style={styles.featuredBadge}>
-              <Sparkles size={14} color="#FFD700" fill="#FFD700" />
+              <Sparkles size={sizing.icon.sm} color={colors.gold} fill={colors.gold} />
               <Text style={styles.featuredText}>Featured</Text>
             </View>
           )}
@@ -423,17 +425,24 @@ export function DiscoverScreen() {
           >
             <View style={styles.cardContent}>
               <View style={styles.nameRow}>
-                <Text style={styles.venueName} numberOfLines={1}>{post.venue.name}</Text>
+                <Text style={styles.venueName}>{post.venue.name}</Text>
                 {post.venue.is_verified && (
-                  <BadgeCheck size={18} color="#4A9EFF" fill="#4A9EFF" />
+                  <BadgeCheck size={sizing.icon.sm} color="#4A9EFF" fill="#4A9EFF" />
                 )}
               </View>
               <View style={styles.locationRow}>
-                <MapPin size={14} color="rgba(255, 255, 255, 0.7)" />
-                <Text style={styles.locationText} numberOfLines={1}>
+                <MapPin size={sizing.icon.xs} color="rgba(255, 255, 255, 0.7)" />
+                <Text style={styles.locationText}>
                   {post.venue.city}{post.venue.state ? `, ${post.venue.state}` : ''}
                 </Text>
+                {post.venue.price_range && (
+                  <Text style={styles.priceRange}> • {post.venue.price_range}</Text>
+                )}
               </View>
+
+              {post.caption && (
+                <Text style={styles.postCaption} numberOfLines={2}>{post.caption}</Text>
+              )}
 
               <View style={styles.statsRow}>
                 <TouchableOpacity
@@ -442,24 +451,33 @@ export function DiscoverScreen() {
                   activeOpacity={0.7}
                 >
                   <Heart
-                    size={20}
-                    color={likedPosts.has(post.id) ? authDesign.colors.primaryicon : "#FFFFFF"}
+                    size={sizing.icon.md}
+                    color={likedPosts.has(post.id) ? authDesign.colors.primaryicon : colors.white}
                     fill={likedPosts.has(post.id) ? authDesign.colors.primaryicon : 'transparent'}
                   />
-                  <Text style={styles.statText}>{post.like_count > 999 ? `${(post.like_count / 1000).toFixed(1)}k` : post.like_count}</Text>
+                  <Text style={styles.statText}>
+                    {post.like_count > 999 ? `${(post.like_count / 1000).toFixed(1)}k` : post.like_count}
+                  </Text>
                 </TouchableOpacity>
 
-                <View style={styles.statButton}>
-                  <MessageCircle size={20} color="#FFFFFF" />
-                  <Text style={styles.statText}>{post.comment_count}</Text>
-                </View>
+                <TouchableOpacity
+                  style={styles.statButton}
+                  activeOpacity={0.7}
+                >
+                  <MessageCircle size={sizing.icon.md} color={colors.white} />
+                  <Text style={styles.statText}>
+                    {post.comment_count > 999
+                      ? `${(post.comment_count / 1000).toFixed(1)}k`
+                      : post.comment_count}
+                  </Text>
+                </TouchableOpacity>
 
-                <View style={styles.ratingBadge}>
-                  <Star size={20} fill={authDesign.colors.yellow} color={authDesign.colors.yellow} />
+                <TouchableOpacity style={styles.ratingBadge} activeOpacity={0.7}>
+                  <Star size={26} fill={authDesign.colors.yellow} color={authDesign.colors.yellow} />
                   <Text style={styles.ratingText}>
                     {post.venue.average_rating > 0 ? post.venue.average_rating.toFixed(1) : '0.0'}
                   </Text>
-                </View>
+                </TouchableOpacity>
               </View>
             </View>
           </LinearGradient>
@@ -526,7 +544,7 @@ export function DiscoverScreen() {
             </Text>
           </View>
         ) : (
-          <View style={styles.cardsGrid}>
+          <View style={styles.cardsList}>
             {filteredPosts.map((post, index) => renderCard(post, index))}
           </View>
         )}
@@ -538,74 +556,71 @@ export function DiscoverScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: authDesign.colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
+    paddingHorizontal: spacing.screenHorizontal,
+    paddingVertical: spacing.s,
+    gap: spacing.s,
   },
   backButton: {
-    padding: 4,
+    padding: spacing.xxs,
   },
   searchContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: authDesign.colors.inputBackground,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
+    backgroundColor: colors.input,
+    borderRadius: borderRadius.medium,
+    paddingHorizontal: spacing.m,
+    paddingVertical: spacing.s,
+    gap: spacing.xs,
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
-    color: authDesign.colors.textPrimary,
+    fontSize: typography.body.size,
+    color: colors.text,
   },
   categoryTabs: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.screenHorizontal,
+    paddingVertical: spacing.s,
     maxHeight: 60,
   },
   categoryTab: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: authDesign.colors.backgroundDark,
-    marginRight: 12,
+    paddingHorizontal: spacing.l,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.large,
+    backgroundColor: colors.surface,
+    marginRight: spacing.s,
   },
   selectedCategoryTab: {
     backgroundColor: authDesign.colors.primaryicon,
   },
   categoryTabText: {
-    fontSize: 14,
-    color: authDesign.colors.textSecondary,
+    fontSize: typography.caption.size,
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   selectedCategoryTabText: {
-    color: '#FFFFFF',
+    color: colors.white,
   },
   content: {
     flex: 1,
   },
   contentContainer: {
-    padding: 16,
+    padding: spacing.screenHorizontal,
   },
-  cardsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  cardsList: {
+    gap: spacing.m,
   },
   card: {
-    width: (SCREEN_WIDTH - 48) / 2,
-    height: 280,
-    marginBottom: 16,
-    borderRadius: 16,
+    width: '100%',
+    height: 380,
+    borderRadius: borderRadius.large,
     overflow: 'hidden',
-    backgroundColor: authDesign.colors.backgroundDark,
+    backgroundColor: colors.card,
   },
   selectedCard: {
     borderWidth: 3,
@@ -620,72 +635,81 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   cardContent: {
-    padding: 12,
+    padding: spacing.m,
   },
   nameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginBottom: 4,
+    gap: spacing.xxs,
+    marginBottom: spacing.xxs,
   },
   venueName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontSize: typography.heading.size,
+    fontWeight: typography.heading.weight,
+    color: colors.white,
     flex: 1,
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginBottom: 8,
+    gap: spacing.xxs,
+    marginBottom: spacing.xs,
   },
   locationText: {
-    fontSize: 12,
+    fontSize: typography.caption.size,
     color: 'rgba(255, 255, 255, 0.7)',
-    flex: 1,
+  },
+  priceRange: {
+    fontSize: typography.caption.size,
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  postCaption: {
+    fontSize: typography.caption.size,
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
+    lineHeight: typography.caption.lineHeight,
   },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.s,
   },
   statButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: spacing.xxs,
   },
   statText: {
-    fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: '600',
+    fontSize: typography.label.size,
+    color: colors.white,
+    fontWeight: typography.label.weight,
   },
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: spacing.xxs,
     marginLeft: 'auto',
   },
   ratingText: {
-    fontSize: 14,
-    color: '#FFFFFF',
+    fontSize: typography.caption.size,
+    color: colors.white,
     fontWeight: '700',
   },
   featuredBadge: {
     position: 'absolute',
-    top: 12,
-    right: 12,
+    top: spacing.s,
+    right: spacing.s,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
-    gap: 4,
+    backgroundColor: colors.overlay.black,
+    paddingHorizontal: spacing.xs + 2,
+    paddingVertical: spacing.xxs + 2,
+    borderRadius: borderRadius.medium,
+    gap: spacing.xxs,
   },
   featuredText: {
-    fontSize: 11,
-    color: '#FFD700',
+    fontSize: typography.tiny.size,
+    color: colors.gold,
     fontWeight: '700',
   },
   loadingContainer: {
@@ -695,9 +719,9 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: authDesign.colors.textSecondary,
+    marginTop: spacing.s,
+    fontSize: typography.body.size,
+    color: colors.textSecondary,
   },
   emptyContainer: {
     flex: 1,
@@ -706,8 +730,8 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
   },
   emptyText: {
-    fontSize: 16,
-    color: authDesign.colors.textSecondary,
+    fontSize: typography.body.size,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });
