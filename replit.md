@@ -68,6 +68,16 @@ The application adheres to clean architecture principles, separating concerns in
   - Visual feedback for selected location
   - Proper touch event handling (backdrop closes, sheet content interactive)
 - Category-based Feed screen with chef list and restaurant cards (displays after category selection from Home).
+- **Discover Screen (Updated Nov 2025):**
+  - **Black Background:** Uses colors.background (#070709) for true dark theme
+  - **Theme-Driven:** Fully uses global theme tokens (colors.*, spacing.*, sizing.*, typography.*, borderRadius.*)
+  - **Database Query:** Joins with price_ranges table to display venue pricing
+  - **Single-Column Layout:** Full-width restaurant cards (380px height) matching FeedScreen design
+  - **Card Features:** ImageBackground with gradient overlay, featured badge, verification badge, location, price range, post caption, like/comment/rating interactions
+  - **Navigation:** Auto-selects category when navigated from FeedScreen with categoryId parameter
+  - **Search:** Real-time search filtering by venue name or city
+  - **Category Switching:** Horizontal scrollable category tabs to change content
+  - **Smart Scrolling:** Auto-scrolls to selected venue card when deep-linking from Feed
 - **Instagram-Style Chef Stories (Nov 2025):**
   - Full-screen story viewer with automatic progression
   - Tap left/right to navigate between stories, swipe down to close
