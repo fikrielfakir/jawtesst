@@ -2,6 +2,7 @@ export { AccountSettingsScreen } from './account/AccountSettingsScreen';
 export { BecomePartnerScreen } from './partner/BecomePartnerScreen';
 export { BookingsScreen } from './bookings/BookingsScreen';
 export { ContactUsScreen } from './contact/ContactUsScreen';
+export { DiscoverScreen } from './discover/DiscoverScreen';
 export { FAQScreen } from './faq/FAQScreen';
 export { FeedScreen } from './feed/FeedScreen';
 export { NotificationsScreen } from './notifications/NotificationsScreen';

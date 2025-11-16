@@ -651,7 +651,14 @@ export function FeedScreen() {
       key={post.id}
       style={styles.restaurantCard}
       activeOpacity={0.9}
-      onPress={() => router.push(`/story/${post.id}`)}
+      onPress={() => router.push({
+        pathname: '/search',
+        params: {
+          venueId: post.venue.id,
+          categoryId: categoryId,
+          categoryName: categoryName,
+        }
+      })}
     >
       <ImageBackground
         source={{ uri: post.image_url }}
